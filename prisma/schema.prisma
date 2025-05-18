@@ -1,0 +1,188 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   Int          @id @default(autoincrement())
+  name                 String
+  email                String       @unique
+  password             String
+  role                 Role
+  photo                String
+  phone                String?
+  createdAt            DateTime     @default(now()) @db.Timestamp(6)
+  updatedAt            DateTime?    @db.Timestamp(6)
+  Kid                  Kid[]
+  createdBySchedule    Schedule[]   @relation("CreatedByUser")
+  teatcherOneSchedules Schedule[]   @relation("TeatcherOneUser")
+  teatcherTwoSchedule  Schedule[]   @relation("TeatcherTwoUser")
+  Impediment           Impediment[]
+  Post                 Post[]
+  image                String?
+  sessions             Session[]
+  accounts             Account[]
+
+  emailVerified Boolean
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                Int
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("accounts")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verifications")
+}
+
+model Kid {
+  id        Int         @id @default(autoincrement())
+  name      String      @db.VarChar(255)
+  age       Int
+  photo     String
+  room      Room
+  userId    Int
+  users     User        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt DateTime    @default(now()) @db.Timestamp(6)
+  updatedAt DateTime?   @db.Timestamp(6)
+  Issue     Issue[]
+  ClassRoom ClassRoom[]
+
+  @@map("kids")
+}
+
+model Issue {
+  id          Int       @id @default(autoincrement())
+  type        String
+  description String?
+  kidId       Int
+  kids        Kid       @relation(fields: [kidId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt   DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime? @db.Timestamp(6)
+
+  @@map("issues")
+}
+
+model Schedule {
+  id              Int         @id @default(autoincrement())
+  date            DateTime
+  period          Period
+  title           String
+  description     String
+  createdBy       Int
+  teatcherOne     Int
+  teatcherTwo     Int
+  createdAt       DateTime    @default(now()) @db.Timestamp(6)
+  updatedAt       DateTime?   @db.Timestamp(6)
+  createdByUser   User        @relation("CreatedByUser", fields: [createdBy], references: [id])
+  teatcherOneUser User        @relation("TeatcherOneUser", fields: [teatcherOne], references: [id])
+  teatcherTwoUser User        @relation("TeatcherTwoUser", fields: [teatcherTwo], references: [id])
+  ClassRoom       ClassRoom[]
+
+  @@map("schedules")
+}
+
+model ClassRoom {
+  id         Int      @id @default(autoincrement())
+  startClass Boolean  @default(false)
+  closeClass Boolean  @default(false)
+  scheduleId Int
+  kidId      Int
+  schedules  Schedule @relation(fields: [scheduleId], references: [id])
+  kids       Kid      @relation(fields: [kidId], references: [id])
+  createdAt  DateTime @default(now()) @db.Timestamp(6)
+
+  @@map("classRooms")
+}
+
+model Impediment {
+  id        Int      @id @default(autoincrement())
+  info      String
+  userId    Int
+  users     User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+
+  @@map("impediments")
+}
+
+model Post {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  photo       String
+  link        String
+  date        DateTime
+  userId      Int
+  users       User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+
+  @@map("posts")
+}
+
+enum Role {
+  ADMIN
+  PROFESSOR
+  PARENTE
+  PASTOR
+}
+
+enum Room {
+  MATERNAL
+  INFANTIL_I
+  INFANTIL_II
+}
+
+enum Period {
+  MANH
+  TARDE
+  NOITE
+}
