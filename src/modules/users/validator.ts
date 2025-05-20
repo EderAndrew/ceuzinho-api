@@ -9,3 +9,8 @@ export const createUserSchema = z.object({
   photo: z.string().optional(),
   role: z.nativeEnum(Role).optional()
 });
+
+export const loginUserSchema = z.object({
+  email: z.string().email(),
+  password: z.string()
+}).strict();

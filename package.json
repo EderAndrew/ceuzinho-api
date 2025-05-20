@@ -15,6 +15,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.18",
     "@types/express": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.15.18",
     "prisma": "^6.8.2",
     "tsx": "^4.19.4",
@@ -29,6 +30,7 @@
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
     "pg": "^8.16.0",
     "zod": "^3.24.4"
   }
