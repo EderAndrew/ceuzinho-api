@@ -7,15 +7,16 @@ import { auth } from "../../lib/auth"
 const prisma = new PrismaClient
 
 export const newUser = async(payload: CreateUserDTO) => {
-    const data = await auth.api.signUpEmail({
-        body: {
+    const user = await prisma.user.create({
+        data: {
             name: payload.name,
             email: payload.email,
-            password: payload.password
+            password: payload.password,
+            role: payload.role
         }
     })
 
-    return data
+    return user
 }
 
 export const findUserByEmail = async(email: string) => {

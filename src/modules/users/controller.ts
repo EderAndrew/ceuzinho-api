@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import { createUserSchema } from "./validator";
 import { hashSync } from "bcrypt";
 import { findUserByEmail, newUser } from "./repository";
+import { Role } from "../../../generated/prisma";
 
 export const createUser: RequestHandler = async (req, res): Promise<any> => {
     try{
@@ -16,9 +17,10 @@ export const createUser: RequestHandler = async (req, res): Promise<any> => {
       const hash = hashSync(safeData.data.password as string, 10)
 
       const payload = {
-          name: safeData.data.name,
-          email: safeData.data.email,
-          password: hash
+        name: safeData.data.name,
+        email: safeData.data.email,
+        password: hash,
+        role: safeData.data.role as Role
       }
 
       const user = await newUser(payload)

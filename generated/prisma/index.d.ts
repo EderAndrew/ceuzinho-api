@@ -2109,7 +2109,7 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date | null
     image: string | null
-    emailVerified: boolean
+    emailVerified: boolean | null
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
     _sum: UserSumAggregateOutputType | null
@@ -2234,7 +2234,7 @@ export namespace Prisma {
       createdAt: Date
       updatedAt: Date | null
       image: string | null
-      emailVerified: boolean
+      emailVerified: boolean | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -13775,7 +13775,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     image?: StringNullableFilter<"User"> | string | null
-    emailVerified?: BoolFilter<"User"> | boolean
+    emailVerified?: BoolNullableFilter<"User"> | boolean | null
     Kid?: KidListRelationFilter
     createdBySchedule?: ScheduleListRelationFilter
     teatcherOneSchedules?: ScheduleListRelationFilter
@@ -13797,7 +13797,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
-    emailVerified?: SortOrder
+    emailVerified?: SortOrderInput | SortOrder
     Kid?: KidOrderByRelationAggregateInput
     createdBySchedule?: ScheduleOrderByRelationAggregateInput
     teatcherOneSchedules?: ScheduleOrderByRelationAggregateInput
@@ -13822,7 +13822,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     image?: StringNullableFilter<"User"> | string | null
-    emailVerified?: BoolFilter<"User"> | boolean
+    emailVerified?: BoolNullableFilter<"User"> | boolean | null
     Kid?: KidListRelationFilter
     createdBySchedule?: ScheduleListRelationFilter
     teatcherOneSchedules?: ScheduleListRelationFilter
@@ -13844,7 +13844,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
-    emailVerified?: SortOrder
+    emailVerified?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -13866,7 +13866,7 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     image?: StringNullableWithAggregatesFilter<"User"> | string | null
-    emailVerified?: BoolWithAggregatesFilter<"User"> | boolean
+    emailVerified?: BoolNullableWithAggregatesFilter<"User"> | boolean | null
   }
 
   export type SessionWhereInput = {
@@ -14525,7 +14525,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified: boolean
+    emailVerified?: boolean | null
     Kid?: KidCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleCreateNestedManyWithoutTeatcherOneUserInput
@@ -14547,7 +14547,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified: boolean
+    emailVerified?: boolean | null
     Kid?: KidUncheckedCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleUncheckedCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleUncheckedCreateNestedManyWithoutTeatcherOneUserInput
@@ -14568,7 +14568,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     Kid?: KidUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUpdateManyWithoutTeatcherOneUserNestedInput
@@ -14590,7 +14590,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     Kid?: KidUncheckedUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUncheckedUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUncheckedUpdateManyWithoutTeatcherOneUserNestedInput
@@ -14612,7 +14612,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified: boolean
+    emailVerified?: boolean | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -14625,7 +14625,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -14639,7 +14639,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
   }
 
   export type SessionCreateInput = {
@@ -15367,9 +15367,9 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
+  export type BoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
   }
 
   export type KidListRelationFilter = {
@@ -15577,12 +15577,12 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
+  export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
   }
 
   export type UserScalarRelationFilter = {
@@ -15908,6 +15908,11 @@ export namespace Prisma {
     _max?: NestedEnumPeriodFilter<$PrismaModel>
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type ScheduleScalarRelationFilter = {
     is?: ScheduleWhereInput
     isNot?: ScheduleWhereInput
@@ -15950,6 +15955,14 @@ export namespace Prisma {
     id?: SortOrder
     scheduleId?: SortOrder
     kidId?: SortOrder
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type ImpedimentCountOrderByAggregateInput = {
@@ -16158,8 +16171,8 @@ export namespace Prisma {
     set?: Date | string | null
   }
 
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
+  export type NullableBoolFieldUpdateOperationsInput = {
+    set?: boolean | null
   }
 
   export type KidUpdateManyWithoutUsersNestedInput = {
@@ -16638,6 +16651,10 @@ export namespace Prisma {
     connect?: KidWhereUniqueInput
   }
 
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
   export type ScheduleUpdateOneRequiredWithoutClassRoomNestedInput = {
     create?: XOR<ScheduleCreateWithoutClassRoomInput, ScheduleUncheckedCreateWithoutClassRoomInput>
     connectOrCreate?: ScheduleCreateOrConnectWithoutClassRoomInput
@@ -16750,9 +16767,9 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
+  export type NestedBoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -16865,12 +16882,12 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
+  export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumRoomFilter<$PrismaModel = never> = {
@@ -16905,6 +16922,19 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumPeriodFilter<$PrismaModel>
     _max?: NestedEnumPeriodFilter<$PrismaModel>
+  }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type KidCreateWithoutUsersInput = {
@@ -17390,7 +17420,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified: boolean
+    emailVerified?: boolean | null
     Kid?: KidCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleCreateNestedManyWithoutTeatcherOneUserInput
@@ -17411,7 +17441,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified: boolean
+    emailVerified?: boolean | null
     Kid?: KidUncheckedCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleUncheckedCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleUncheckedCreateNestedManyWithoutTeatcherOneUserInput
@@ -17447,7 +17477,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     Kid?: KidUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUpdateManyWithoutTeatcherOneUserNestedInput
@@ -17468,7 +17498,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     Kid?: KidUncheckedUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUncheckedUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUncheckedUpdateManyWithoutTeatcherOneUserNestedInput
@@ -17488,7 +17518,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified: boolean
+    emailVerified?: boolean | null
     Kid?: KidCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleCreateNestedManyWithoutTeatcherOneUserInput
@@ -17509,7 +17539,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified: boolean
+    emailVerified?: boolean | null
     Kid?: KidUncheckedCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleUncheckedCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleUncheckedCreateNestedManyWithoutTeatcherOneUserInput
@@ -17545,7 +17575,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     Kid?: KidUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUpdateManyWithoutTeatcherOneUserNestedInput
@@ -17566,7 +17596,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     Kid?: KidUncheckedUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUncheckedUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUncheckedUpdateManyWithoutTeatcherOneUserNestedInput
@@ -17586,7 +17616,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified: boolean
+    emailVerified?: boolean | null
     createdBySchedule?: ScheduleCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleCreateNestedManyWithoutTeatcherOneUserInput
     teatcherTwoSchedule?: ScheduleCreateNestedManyWithoutTeatcherTwoUserInput
@@ -17607,7 +17637,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified: boolean
+    emailVerified?: boolean | null
     createdBySchedule?: ScheduleUncheckedCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleUncheckedCreateNestedManyWithoutTeatcherOneUserInput
     teatcherTwoSchedule?: ScheduleUncheckedCreateNestedManyWithoutTeatcherTwoUserInput
@@ -17693,7 +17723,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdBySchedule?: ScheduleUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUpdateManyWithoutTeatcherOneUserNestedInput
     teatcherTwoSchedule?: ScheduleUpdateManyWithoutTeatcherTwoUserNestedInput
@@ -17714,7 +17744,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdBySchedule?: ScheduleUncheckedUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUncheckedUpdateManyWithoutTeatcherOneUserNestedInput
     teatcherTwoSchedule?: ScheduleUncheckedUpdateManyWithoutTeatcherTwoUserNestedInput
@@ -17852,7 +17882,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified: boolean
+    emailVerified?: boolean | null
     Kid?: KidCreateNestedManyWithoutUsersInput
     teatcherOneSchedules?: ScheduleCreateNestedManyWithoutTeatcherOneUserInput
     teatcherTwoSchedule?: ScheduleCreateNestedManyWithoutTeatcherTwoUserInput
@@ -17873,7 +17903,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified: boolean
+    emailVerified?: boolean | null
     Kid?: KidUncheckedCreateNestedManyWithoutUsersInput
     teatcherOneSchedules?: ScheduleUncheckedCreateNestedManyWithoutTeatcherOneUserInput
     teatcherTwoSchedule?: ScheduleUncheckedCreateNestedManyWithoutTeatcherTwoUserInput
@@ -17898,7 +17928,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified: boolean
+    emailVerified?: boolean | null
     Kid?: KidCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleCreateNestedManyWithoutCreatedByUserInput
     teatcherTwoSchedule?: ScheduleCreateNestedManyWithoutTeatcherTwoUserInput
@@ -17919,7 +17949,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified: boolean
+    emailVerified?: boolean | null
     Kid?: KidUncheckedCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleUncheckedCreateNestedManyWithoutCreatedByUserInput
     teatcherTwoSchedule?: ScheduleUncheckedCreateNestedManyWithoutTeatcherTwoUserInput
@@ -17944,7 +17974,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified: boolean
+    emailVerified?: boolean | null
     Kid?: KidCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleCreateNestedManyWithoutTeatcherOneUserInput
@@ -17965,7 +17995,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified: boolean
+    emailVerified?: boolean | null
     Kid?: KidUncheckedCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleUncheckedCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleUncheckedCreateNestedManyWithoutTeatcherOneUserInput
@@ -18026,7 +18056,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     Kid?: KidUpdateManyWithoutUsersNestedInput
     teatcherOneSchedules?: ScheduleUpdateManyWithoutTeatcherOneUserNestedInput
     teatcherTwoSchedule?: ScheduleUpdateManyWithoutTeatcherTwoUserNestedInput
@@ -18047,7 +18077,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     Kid?: KidUncheckedUpdateManyWithoutUsersNestedInput
     teatcherOneSchedules?: ScheduleUncheckedUpdateManyWithoutTeatcherOneUserNestedInput
     teatcherTwoSchedule?: ScheduleUncheckedUpdateManyWithoutTeatcherTwoUserNestedInput
@@ -18078,7 +18108,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     Kid?: KidUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUpdateManyWithoutCreatedByUserNestedInput
     teatcherTwoSchedule?: ScheduleUpdateManyWithoutTeatcherTwoUserNestedInput
@@ -18099,7 +18129,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     Kid?: KidUncheckedUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUncheckedUpdateManyWithoutCreatedByUserNestedInput
     teatcherTwoSchedule?: ScheduleUncheckedUpdateManyWithoutTeatcherTwoUserNestedInput
@@ -18130,7 +18160,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     Kid?: KidUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUpdateManyWithoutTeatcherOneUserNestedInput
@@ -18151,7 +18181,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     Kid?: KidUncheckedUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUncheckedUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUncheckedUpdateManyWithoutTeatcherOneUserNestedInput
@@ -18315,7 +18345,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified: boolean
+    emailVerified?: boolean | null
     Kid?: KidCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleCreateNestedManyWithoutTeatcherOneUserInput
@@ -18336,7 +18366,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified: boolean
+    emailVerified?: boolean | null
     Kid?: KidUncheckedCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleUncheckedCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleUncheckedCreateNestedManyWithoutTeatcherOneUserInput
@@ -18372,7 +18402,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     Kid?: KidUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUpdateManyWithoutTeatcherOneUserNestedInput
@@ -18393,7 +18423,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     Kid?: KidUncheckedUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUncheckedUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUncheckedUpdateManyWithoutTeatcherOneUserNestedInput
@@ -18413,7 +18443,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified: boolean
+    emailVerified?: boolean | null
     Kid?: KidCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleCreateNestedManyWithoutTeatcherOneUserInput
@@ -18434,7 +18464,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified: boolean
+    emailVerified?: boolean | null
     Kid?: KidUncheckedCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleUncheckedCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleUncheckedCreateNestedManyWithoutTeatcherOneUserInput
@@ -18470,7 +18500,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     Kid?: KidUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUpdateManyWithoutTeatcherOneUserNestedInput
@@ -18491,7 +18521,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     Kid?: KidUncheckedUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUncheckedUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUncheckedUpdateManyWithoutTeatcherOneUserNestedInput

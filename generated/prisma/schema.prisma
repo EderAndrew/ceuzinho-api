@@ -33,8 +33,7 @@ model User {
   image                String?
   sessions             Session[]
   accounts             Account[]
-
-  emailVerified Boolean
+  emailVerified        Boolean?
 
   @@map("users")
 }
