@@ -1,8 +1,6 @@
 //configuração de conexão com o prisma
 import { PrismaClient } from "../../../generated/prisma"
 import { CreateUserDTO } from "./dto/createuser.dto"
-import { auth } from "../../lib/auth"
-
 
 const prisma = new PrismaClient
 

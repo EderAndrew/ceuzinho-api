@@ -6,7 +6,7 @@ import { createUserService, findUserByEmailService } from "./service";
 import { createJWT } from "../../lib/jwt";
 
 
-export const SignIn: RequestHandler = async (req, res): Promise<any> => {
+export const signIn: RequestHandler = async (req, res): Promise<any> => {
   try{
     const safeData = loginUserSchema.safeParse(req.body);
     if (!safeData.success) {
@@ -41,7 +41,7 @@ export const SignIn: RequestHandler = async (req, res): Promise<any> => {
   }
 }
 
-export const createUser: RequestHandler = async (req, res): Promise<any> => {
+export const signUp: RequestHandler = async (req, res): Promise<any> => {
     try{
       const safeData = createUserSchema.safeParse(req.body)
 

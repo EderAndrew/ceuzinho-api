@@ -1,8 +1,7 @@
-import express from "express"
+import express, { ErrorRequestHandler, Request, Response } from "express"
 import cors from "cors"
 import helmet from "helmet"
-import { toNodeHandler } from "better-auth/node"
-import { auth } from "./lib/auth"
+import passport from "passport"
 import { PrismaClient } from "../generated/prisma"
 import routes from "./routes"
 
@@ -11,10 +10,21 @@ const prisma = new PrismaClient()
 
 server.use(cors())
 server.use(helmet())
-server.all("/api/auth/*splat", toNodeHandler(auth))
 server.use(express.json())
 server.use(express.urlencoded({ extended: true }))
+server.use(passport.initialize())
 server.use("/api", routes)
+
+server.use((req: Request, res: Response) => {
+    res.status(404).json({ status: 404, message: "Endpoint não encontrado." })
+})
+
+const errorHandler:ErrorRequestHandler = (err, req, res, next) => {
+    console.log(err)
+    res.status(400).json({error: "Ocorreu algum erro"})
+}
+
+server.use(errorHandler)
 
 process.on('SIGINT', async () => {
     await prisma.$disconnect()
