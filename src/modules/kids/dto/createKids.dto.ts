@@ -1,9 +1,12 @@
+import { Room } from "../../../../generated/prisma";
+
 export interface createKidsDTO {
     id?: number;
     photo?: string;
     name: string;
     age: number;
     birthDate: Date;
-    user_id: number;
+    room: Room;
+    userId: number;
     created_at: Date;
 }
