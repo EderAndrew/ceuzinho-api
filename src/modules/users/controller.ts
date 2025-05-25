@@ -2,8 +2,8 @@ import { RequestHandler } from "express";
 import { createUserSchema, loginUserSchema } from "./validator";
 import { compare, hashSync } from "bcrypt";
 import { Role } from "../../../generated/prisma";
-import { createUserService, findUserByEmailService } from "./service";
-import { createJWT } from "../../lib/jwt";
+import { createUserService, findUserByEmailService, findUserByIdService } from "./service";
+import { createJWT, decodeJwt } from "../../lib/jwt";
 
 
 export const signIn: RequestHandler = async (req, res): Promise<any> => {
@@ -22,17 +22,10 @@ export const signIn: RequestHandler = async (req, res): Promise<any> => {
     const hash = await compare(safeData.data.password, user.password);
 
     if(!hash) return res.status(401).json({ message: "Email ou senha incorreto." })
-    
-    const payload = {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role
-    }
+  
+    const token = createJWT({id: user.id})
 
-    const token = createJWT(payload)
-
-    return res.status(200).json({ user, token })
+    return res.status(200).json({ token })
 
   }catch(error){
     if(error instanceof Error){
@@ -73,12 +66,14 @@ export const signUp: RequestHandler = async (req, res): Promise<any> => {
     }
 }
 
-export const getUser: RequestHandler = async (req, res): Promise<any> => {
-  const id = req.params.id
+export const me: RequestHandler = async (req, res): Promise<any> => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader?.split(" ")[1];
+  const resp = decodeJwt(token as string)
+
+  if(!resp?.id) return res.status(400).json({ message: "ID não informado." })
   
-  if(!id) return res.status(400).json({ message: "ID não informado." })
-  
-  const user = await findUserByEmailService(id)
+  const user = await findUserByIdService(resp.id)
 
   if(!user) return res.status(404).json({ message: "Usuário não encontrado." })
 

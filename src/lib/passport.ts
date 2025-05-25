@@ -2,6 +2,8 @@ import passport from "passport"
 import { Strategy as JWTStrategy, ExtractJwt } from "passport-jwt"
 import { PrismaClient } from "../../generated/prisma"
 import { NextFunction, Request, Response } from "express"
+import { findUserByIdService } from "../modules/users/service"
+
 
 const notAuthorizedJson = { status: 401, message: "Não Autorizado." }
 const options = {
@@ -13,7 +15,7 @@ const prisma = new PrismaClient()
 
 passport.use(new JWTStrategy(options, async(payload, done) => {
     try{
-        const user = await prisma.user.findUnique({ where: { id: payload.id } })
+        const user = await findUserByIdService(payload.payload.id)
 
         if(!user){
             return done(notAuthorizedJson, false)
@@ -21,7 +23,9 @@ passport.use(new JWTStrategy(options, async(payload, done) => {
 
         return done(null, user)
     }catch(error){
-        console.log(error)
+        if(error instanceof Error){
+            console.log(error.message)
+        }
     }
 }))
 

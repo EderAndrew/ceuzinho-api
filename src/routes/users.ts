@@ -7,7 +7,7 @@ const router = Router()
 
 router.post("/signin", controller.signIn)
 router.post("/signup", controller.signUp)
-router.get("/me", authenticate, verifyJWT, controller.getUser)
+router.get("/me", verifyJWT, controller.me)
 router.get("/ping", controller.pong)
 
 export default router

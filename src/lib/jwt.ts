@@ -3,10 +3,15 @@ import jwt from "jsonwebtoken";
 import { findUserByIdService } from "../modules/users/service";
 
 export const createJWT = (payload: object) => {
-  return jwt.sign({ payload }, process.env.JWT_SECRET as string, {
+  return jwt.sign(payload, process.env.JWT_SECRET as string, {
     expiresIn: "2h",
   });
 };
+
+export const decodeJwt = (token: string) => {
+  const resp = jwt.decode(token);
+  return JSON.parse(JSON.stringify(resp));
+}
 
 export const verifyJWT = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   const authHeader = req.headers["authorization"];
