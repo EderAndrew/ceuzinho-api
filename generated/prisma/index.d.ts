@@ -2109,7 +2109,7 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date | null
     image: string | null
-    emailVerified: boolean | null
+    emailVerified: boolean
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
     _sum: UserSumAggregateOutputType | null
@@ -2234,7 +2234,7 @@ export namespace Prisma {
       createdAt: Date
       updatedAt: Date | null
       image: string | null
-      emailVerified: boolean | null
+      emailVerified: boolean
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -6639,6 +6639,7 @@ export namespace Prisma {
     name: string | null
     age: number | null
     photo: string | null
+    birthDate: Date | null
     room: $Enums.Room | null
     userId: number | null
     createdAt: Date | null
@@ -6650,6 +6651,7 @@ export namespace Prisma {
     name: string | null
     age: number | null
     photo: string | null
+    birthDate: Date | null
     room: $Enums.Room | null
     userId: number | null
     createdAt: Date | null
@@ -6661,6 +6663,7 @@ export namespace Prisma {
     name: number
     age: number
     photo: number
+    birthDate: number
     room: number
     userId: number
     createdAt: number
@@ -6686,6 +6689,7 @@ export namespace Prisma {
     name?: true
     age?: true
     photo?: true
+    birthDate?: true
     room?: true
     userId?: true
     createdAt?: true
@@ -6697,6 +6701,7 @@ export namespace Prisma {
     name?: true
     age?: true
     photo?: true
+    birthDate?: true
     room?: true
     userId?: true
     createdAt?: true
@@ -6708,6 +6713,7 @@ export namespace Prisma {
     name?: true
     age?: true
     photo?: true
+    birthDate?: true
     room?: true
     userId?: true
     createdAt?: true
@@ -6806,6 +6812,7 @@ export namespace Prisma {
     name: string
     age: number
     photo: string
+    birthDate: Date | null
     room: $Enums.Room
     userId: number
     createdAt: Date
@@ -6836,6 +6843,7 @@ export namespace Prisma {
     name?: boolean
     age?: boolean
     photo?: boolean
+    birthDate?: boolean
     room?: boolean
     userId?: boolean
     createdAt?: boolean
@@ -6851,6 +6859,7 @@ export namespace Prisma {
     name?: boolean
     age?: boolean
     photo?: boolean
+    birthDate?: boolean
     room?: boolean
     userId?: boolean
     createdAt?: boolean
@@ -6863,6 +6872,7 @@ export namespace Prisma {
     name?: boolean
     age?: boolean
     photo?: boolean
+    birthDate?: boolean
     room?: boolean
     userId?: boolean
     createdAt?: boolean
@@ -6875,13 +6885,14 @@ export namespace Prisma {
     name?: boolean
     age?: boolean
     photo?: boolean
+    birthDate?: boolean
     room?: boolean
     userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type KidOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "age" | "photo" | "room" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["kid"]>
+  export type KidOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "age" | "photo" | "birthDate" | "room" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["kid"]>
   export type KidInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | UserDefaultArgs<ExtArgs>
     Issue?: boolean | Kid$IssueArgs<ExtArgs>
@@ -6907,6 +6918,7 @@ export namespace Prisma {
       name: string
       age: number
       photo: string
+      birthDate: Date | null
       room: $Enums.Room
       userId: number
       createdAt: Date
@@ -7341,6 +7353,7 @@ export namespace Prisma {
     readonly name: FieldRef<"Kid", 'String'>
     readonly age: FieldRef<"Kid", 'Int'>
     readonly photo: FieldRef<"Kid", 'String'>
+    readonly birthDate: FieldRef<"Kid", 'DateTime'>
     readonly room: FieldRef<"Kid", 'Room'>
     readonly userId: FieldRef<"Kid", 'Int'>
     readonly createdAt: FieldRef<"Kid", 'DateTime'>
@@ -13551,6 +13564,7 @@ export namespace Prisma {
     name: 'name',
     age: 'age',
     photo: 'photo',
+    birthDate: 'birthDate',
     room: 'room',
     userId: 'userId',
     createdAt: 'createdAt',
@@ -13775,7 +13789,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     image?: StringNullableFilter<"User"> | string | null
-    emailVerified?: BoolNullableFilter<"User"> | boolean | null
+    emailVerified?: BoolFilter<"User"> | boolean
     Kid?: KidListRelationFilter
     createdBySchedule?: ScheduleListRelationFilter
     teatcherOneSchedules?: ScheduleListRelationFilter
@@ -13797,7 +13811,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
-    emailVerified?: SortOrderInput | SortOrder
+    emailVerified?: SortOrder
     Kid?: KidOrderByRelationAggregateInput
     createdBySchedule?: ScheduleOrderByRelationAggregateInput
     teatcherOneSchedules?: ScheduleOrderByRelationAggregateInput
@@ -13822,7 +13836,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     image?: StringNullableFilter<"User"> | string | null
-    emailVerified?: BoolNullableFilter<"User"> | boolean | null
+    emailVerified?: BoolFilter<"User"> | boolean
     Kid?: KidListRelationFilter
     createdBySchedule?: ScheduleListRelationFilter
     teatcherOneSchedules?: ScheduleListRelationFilter
@@ -13844,7 +13858,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
-    emailVerified?: SortOrderInput | SortOrder
+    emailVerified?: SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -13866,7 +13880,7 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     image?: StringNullableWithAggregatesFilter<"User"> | string | null
-    emailVerified?: BoolNullableWithAggregatesFilter<"User"> | boolean | null
+    emailVerified?: BoolWithAggregatesFilter<"User"> | boolean
   }
 
   export type SessionWhereInput = {
@@ -14103,6 +14117,7 @@ export namespace Prisma {
     name?: StringFilter<"Kid"> | string
     age?: IntFilter<"Kid"> | number
     photo?: StringFilter<"Kid"> | string
+    birthDate?: DateTimeNullableFilter<"Kid"> | Date | string | null
     room?: EnumRoomFilter<"Kid"> | $Enums.Room
     userId?: IntFilter<"Kid"> | number
     createdAt?: DateTimeFilter<"Kid"> | Date | string
@@ -14117,6 +14132,7 @@ export namespace Prisma {
     name?: SortOrder
     age?: SortOrder
     photo?: SortOrder
+    birthDate?: SortOrderInput | SortOrder
     room?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
@@ -14134,6 +14150,7 @@ export namespace Prisma {
     name?: StringFilter<"Kid"> | string
     age?: IntFilter<"Kid"> | number
     photo?: StringFilter<"Kid"> | string
+    birthDate?: DateTimeNullableFilter<"Kid"> | Date | string | null
     room?: EnumRoomFilter<"Kid"> | $Enums.Room
     userId?: IntFilter<"Kid"> | number
     createdAt?: DateTimeFilter<"Kid"> | Date | string
@@ -14148,6 +14165,7 @@ export namespace Prisma {
     name?: SortOrder
     age?: SortOrder
     photo?: SortOrder
+    birthDate?: SortOrderInput | SortOrder
     room?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
@@ -14167,6 +14185,7 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Kid"> | string
     age?: IntWithAggregatesFilter<"Kid"> | number
     photo?: StringWithAggregatesFilter<"Kid"> | string
+    birthDate?: DateTimeNullableWithAggregatesFilter<"Kid"> | Date | string | null
     room?: EnumRoomWithAggregatesFilter<"Kid"> | $Enums.Room
     userId?: IntWithAggregatesFilter<"Kid"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Kid"> | Date | string
@@ -14525,7 +14544,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified?: boolean | null
+    emailVerified?: boolean
     Kid?: KidCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleCreateNestedManyWithoutTeatcherOneUserInput
@@ -14547,7 +14566,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified?: boolean | null
+    emailVerified?: boolean
     Kid?: KidUncheckedCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleUncheckedCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleUncheckedCreateNestedManyWithoutTeatcherOneUserInput
@@ -14568,7 +14587,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     Kid?: KidUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUpdateManyWithoutTeatcherOneUserNestedInput
@@ -14590,7 +14609,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     Kid?: KidUncheckedUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUncheckedUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUncheckedUpdateManyWithoutTeatcherOneUserNestedInput
@@ -14612,7 +14631,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified?: boolean | null
+    emailVerified?: boolean
   }
 
   export type UserUpdateManyMutationInput = {
@@ -14625,7 +14644,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -14639,7 +14658,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type SessionCreateInput = {
@@ -14896,6 +14915,7 @@ export namespace Prisma {
     name: string
     age: number
     photo: string
+    birthDate?: Date | string | null
     room: $Enums.Room
     createdAt?: Date | string
     updatedAt?: Date | string | null
@@ -14909,6 +14929,7 @@ export namespace Prisma {
     name: string
     age: number
     photo: string
+    birthDate?: Date | string | null
     room: $Enums.Room
     userId: number
     createdAt?: Date | string
@@ -14921,6 +14942,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     age?: IntFieldUpdateOperationsInput | number
     photo?: StringFieldUpdateOperationsInput | string
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     room?: EnumRoomFieldUpdateOperationsInput | $Enums.Room
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14934,6 +14956,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     age?: IntFieldUpdateOperationsInput | number
     photo?: StringFieldUpdateOperationsInput | string
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     room?: EnumRoomFieldUpdateOperationsInput | $Enums.Room
     userId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14947,6 +14970,7 @@ export namespace Prisma {
     name: string
     age: number
     photo: string
+    birthDate?: Date | string | null
     room: $Enums.Room
     userId: number
     createdAt?: Date | string
@@ -14957,6 +14981,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     age?: IntFieldUpdateOperationsInput | number
     photo?: StringFieldUpdateOperationsInput | string
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     room?: EnumRoomFieldUpdateOperationsInput | $Enums.Room
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14967,6 +14992,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     age?: IntFieldUpdateOperationsInput | number
     photo?: StringFieldUpdateOperationsInput | string
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     room?: EnumRoomFieldUpdateOperationsInput | $Enums.Room
     userId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15367,9 +15393,9 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
-  export type BoolNullableFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
-    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type KidListRelationFilter = {
@@ -15577,12 +15603,12 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
-  export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
-    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedBoolNullableFilter<$PrismaModel>
-    _max?: NestedBoolNullableFilter<$PrismaModel>
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type UserScalarRelationFilter = {
@@ -15746,6 +15772,7 @@ export namespace Prisma {
     name?: SortOrder
     age?: SortOrder
     photo?: SortOrder
+    birthDate?: SortOrder
     room?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
@@ -15763,6 +15790,7 @@ export namespace Prisma {
     name?: SortOrder
     age?: SortOrder
     photo?: SortOrder
+    birthDate?: SortOrder
     room?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
@@ -15774,6 +15802,7 @@ export namespace Prisma {
     name?: SortOrder
     age?: SortOrder
     photo?: SortOrder
+    birthDate?: SortOrder
     room?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
@@ -15908,11 +15937,6 @@ export namespace Prisma {
     _max?: NestedEnumPeriodFilter<$PrismaModel>
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type ScheduleScalarRelationFilter = {
     is?: ScheduleWhereInput
     isNot?: ScheduleWhereInput
@@ -15955,14 +15979,6 @@ export namespace Prisma {
     id?: SortOrder
     scheduleId?: SortOrder
     kidId?: SortOrder
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type ImpedimentCountOrderByAggregateInput = {
@@ -16171,8 +16187,8 @@ export namespace Prisma {
     set?: Date | string | null
   }
 
-  export type NullableBoolFieldUpdateOperationsInput = {
-    set?: boolean | null
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
   }
 
   export type KidUpdateManyWithoutUsersNestedInput = {
@@ -16651,10 +16667,6 @@ export namespace Prisma {
     connect?: KidWhereUniqueInput
   }
 
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
-  }
-
   export type ScheduleUpdateOneRequiredWithoutClassRoomNestedInput = {
     create?: XOR<ScheduleCreateWithoutClassRoomInput, ScheduleUncheckedCreateWithoutClassRoomInput>
     connectOrCreate?: ScheduleCreateOrConnectWithoutClassRoomInput
@@ -16767,9 +16779,9 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
-  export type NestedBoolNullableFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
-    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -16882,12 +16894,12 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
-  export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
-    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedBoolNullableFilter<$PrismaModel>
-    _max?: NestedBoolNullableFilter<$PrismaModel>
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type NestedEnumRoomFilter<$PrismaModel = never> = {
@@ -16924,23 +16936,11 @@ export namespace Prisma {
     _max?: NestedEnumPeriodFilter<$PrismaModel>
   }
 
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
-  }
-
   export type KidCreateWithoutUsersInput = {
     name: string
     age: number
     photo: string
+    birthDate?: Date | string | null
     room: $Enums.Room
     createdAt?: Date | string
     updatedAt?: Date | string | null
@@ -16953,6 +16953,7 @@ export namespace Prisma {
     name: string
     age: number
     photo: string
+    birthDate?: Date | string | null
     room: $Enums.Room
     createdAt?: Date | string
     updatedAt?: Date | string | null
@@ -17219,6 +17220,7 @@ export namespace Prisma {
     name?: StringFilter<"Kid"> | string
     age?: IntFilter<"Kid"> | number
     photo?: StringFilter<"Kid"> | string
+    birthDate?: DateTimeNullableFilter<"Kid"> | Date | string | null
     room?: EnumRoomFilter<"Kid"> | $Enums.Room
     userId?: IntFilter<"Kid"> | number
     createdAt?: DateTimeFilter<"Kid"> | Date | string
@@ -17420,7 +17422,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified?: boolean | null
+    emailVerified?: boolean
     Kid?: KidCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleCreateNestedManyWithoutTeatcherOneUserInput
@@ -17441,7 +17443,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified?: boolean | null
+    emailVerified?: boolean
     Kid?: KidUncheckedCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleUncheckedCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleUncheckedCreateNestedManyWithoutTeatcherOneUserInput
@@ -17477,7 +17479,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     Kid?: KidUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUpdateManyWithoutTeatcherOneUserNestedInput
@@ -17498,7 +17500,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     Kid?: KidUncheckedUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUncheckedUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUncheckedUpdateManyWithoutTeatcherOneUserNestedInput
@@ -17518,7 +17520,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified?: boolean | null
+    emailVerified?: boolean
     Kid?: KidCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleCreateNestedManyWithoutTeatcherOneUserInput
@@ -17539,7 +17541,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified?: boolean | null
+    emailVerified?: boolean
     Kid?: KidUncheckedCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleUncheckedCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleUncheckedCreateNestedManyWithoutTeatcherOneUserInput
@@ -17575,7 +17577,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     Kid?: KidUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUpdateManyWithoutTeatcherOneUserNestedInput
@@ -17596,7 +17598,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     Kid?: KidUncheckedUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUncheckedUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUncheckedUpdateManyWithoutTeatcherOneUserNestedInput
@@ -17616,7 +17618,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified?: boolean | null
+    emailVerified?: boolean
     createdBySchedule?: ScheduleCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleCreateNestedManyWithoutTeatcherOneUserInput
     teatcherTwoSchedule?: ScheduleCreateNestedManyWithoutTeatcherTwoUserInput
@@ -17637,7 +17639,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified?: boolean | null
+    emailVerified?: boolean
     createdBySchedule?: ScheduleUncheckedCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleUncheckedCreateNestedManyWithoutTeatcherOneUserInput
     teatcherTwoSchedule?: ScheduleUncheckedCreateNestedManyWithoutTeatcherTwoUserInput
@@ -17723,7 +17725,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdBySchedule?: ScheduleUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUpdateManyWithoutTeatcherOneUserNestedInput
     teatcherTwoSchedule?: ScheduleUpdateManyWithoutTeatcherTwoUserNestedInput
@@ -17744,7 +17746,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     createdBySchedule?: ScheduleUncheckedUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUncheckedUpdateManyWithoutTeatcherOneUserNestedInput
     teatcherTwoSchedule?: ScheduleUncheckedUpdateManyWithoutTeatcherTwoUserNestedInput
@@ -17814,6 +17816,7 @@ export namespace Prisma {
     name: string
     age: number
     photo: string
+    birthDate?: Date | string | null
     room: $Enums.Room
     createdAt?: Date | string
     updatedAt?: Date | string | null
@@ -17826,6 +17829,7 @@ export namespace Prisma {
     name: string
     age: number
     photo: string
+    birthDate?: Date | string | null
     room: $Enums.Room
     userId: number
     createdAt?: Date | string
@@ -17853,6 +17857,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     age?: IntFieldUpdateOperationsInput | number
     photo?: StringFieldUpdateOperationsInput | string
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     room?: EnumRoomFieldUpdateOperationsInput | $Enums.Room
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -17865,6 +17870,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     age?: IntFieldUpdateOperationsInput | number
     photo?: StringFieldUpdateOperationsInput | string
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     room?: EnumRoomFieldUpdateOperationsInput | $Enums.Room
     userId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17882,7 +17888,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified?: boolean | null
+    emailVerified?: boolean
     Kid?: KidCreateNestedManyWithoutUsersInput
     teatcherOneSchedules?: ScheduleCreateNestedManyWithoutTeatcherOneUserInput
     teatcherTwoSchedule?: ScheduleCreateNestedManyWithoutTeatcherTwoUserInput
@@ -17903,7 +17909,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified?: boolean | null
+    emailVerified?: boolean
     Kid?: KidUncheckedCreateNestedManyWithoutUsersInput
     teatcherOneSchedules?: ScheduleUncheckedCreateNestedManyWithoutTeatcherOneUserInput
     teatcherTwoSchedule?: ScheduleUncheckedCreateNestedManyWithoutTeatcherTwoUserInput
@@ -17928,7 +17934,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified?: boolean | null
+    emailVerified?: boolean
     Kid?: KidCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleCreateNestedManyWithoutCreatedByUserInput
     teatcherTwoSchedule?: ScheduleCreateNestedManyWithoutTeatcherTwoUserInput
@@ -17949,7 +17955,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified?: boolean | null
+    emailVerified?: boolean
     Kid?: KidUncheckedCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleUncheckedCreateNestedManyWithoutCreatedByUserInput
     teatcherTwoSchedule?: ScheduleUncheckedCreateNestedManyWithoutTeatcherTwoUserInput
@@ -17974,7 +17980,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified?: boolean | null
+    emailVerified?: boolean
     Kid?: KidCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleCreateNestedManyWithoutTeatcherOneUserInput
@@ -17995,7 +18001,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified?: boolean | null
+    emailVerified?: boolean
     Kid?: KidUncheckedCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleUncheckedCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleUncheckedCreateNestedManyWithoutTeatcherOneUserInput
@@ -18056,7 +18062,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     Kid?: KidUpdateManyWithoutUsersNestedInput
     teatcherOneSchedules?: ScheduleUpdateManyWithoutTeatcherOneUserNestedInput
     teatcherTwoSchedule?: ScheduleUpdateManyWithoutTeatcherTwoUserNestedInput
@@ -18077,7 +18083,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     Kid?: KidUncheckedUpdateManyWithoutUsersNestedInput
     teatcherOneSchedules?: ScheduleUncheckedUpdateManyWithoutTeatcherOneUserNestedInput
     teatcherTwoSchedule?: ScheduleUncheckedUpdateManyWithoutTeatcherTwoUserNestedInput
@@ -18108,7 +18114,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     Kid?: KidUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUpdateManyWithoutCreatedByUserNestedInput
     teatcherTwoSchedule?: ScheduleUpdateManyWithoutTeatcherTwoUserNestedInput
@@ -18129,7 +18135,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     Kid?: KidUncheckedUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUncheckedUpdateManyWithoutCreatedByUserNestedInput
     teatcherTwoSchedule?: ScheduleUncheckedUpdateManyWithoutTeatcherTwoUserNestedInput
@@ -18160,7 +18166,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     Kid?: KidUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUpdateManyWithoutTeatcherOneUserNestedInput
@@ -18181,7 +18187,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     Kid?: KidUncheckedUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUncheckedUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUncheckedUpdateManyWithoutTeatcherOneUserNestedInput
@@ -18241,6 +18247,7 @@ export namespace Prisma {
     name: string
     age: number
     photo: string
+    birthDate?: Date | string | null
     room: $Enums.Room
     createdAt?: Date | string
     updatedAt?: Date | string | null
@@ -18253,6 +18260,7 @@ export namespace Prisma {
     name: string
     age: number
     photo: string
+    birthDate?: Date | string | null
     room: $Enums.Room
     userId: number
     createdAt?: Date | string
@@ -18316,6 +18324,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     age?: IntFieldUpdateOperationsInput | number
     photo?: StringFieldUpdateOperationsInput | string
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     room?: EnumRoomFieldUpdateOperationsInput | $Enums.Room
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -18328,6 +18337,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     age?: IntFieldUpdateOperationsInput | number
     photo?: StringFieldUpdateOperationsInput | string
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     room?: EnumRoomFieldUpdateOperationsInput | $Enums.Room
     userId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18345,7 +18355,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified?: boolean | null
+    emailVerified?: boolean
     Kid?: KidCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleCreateNestedManyWithoutTeatcherOneUserInput
@@ -18366,7 +18376,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified?: boolean | null
+    emailVerified?: boolean
     Kid?: KidUncheckedCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleUncheckedCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleUncheckedCreateNestedManyWithoutTeatcherOneUserInput
@@ -18402,7 +18412,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     Kid?: KidUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUpdateManyWithoutTeatcherOneUserNestedInput
@@ -18423,7 +18433,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     Kid?: KidUncheckedUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUncheckedUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUncheckedUpdateManyWithoutTeatcherOneUserNestedInput
@@ -18443,7 +18453,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified?: boolean | null
+    emailVerified?: boolean
     Kid?: KidCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleCreateNestedManyWithoutTeatcherOneUserInput
@@ -18464,7 +18474,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string | null
     image?: string | null
-    emailVerified?: boolean | null
+    emailVerified?: boolean
     Kid?: KidUncheckedCreateNestedManyWithoutUsersInput
     createdBySchedule?: ScheduleUncheckedCreateNestedManyWithoutCreatedByUserInput
     teatcherOneSchedules?: ScheduleUncheckedCreateNestedManyWithoutTeatcherOneUserInput
@@ -18500,7 +18510,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     Kid?: KidUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUpdateManyWithoutTeatcherOneUserNestedInput
@@ -18521,7 +18531,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
     Kid?: KidUncheckedUpdateManyWithoutUsersNestedInput
     createdBySchedule?: ScheduleUncheckedUpdateManyWithoutCreatedByUserNestedInput
     teatcherOneSchedules?: ScheduleUncheckedUpdateManyWithoutTeatcherOneUserNestedInput
@@ -18536,6 +18546,7 @@ export namespace Prisma {
     name: string
     age: number
     photo: string
+    birthDate?: Date | string | null
     room: $Enums.Room
     createdAt?: Date | string
     updatedAt?: Date | string | null
@@ -18622,6 +18633,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     age?: IntFieldUpdateOperationsInput | number
     photo?: StringFieldUpdateOperationsInput | string
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     room?: EnumRoomFieldUpdateOperationsInput | $Enums.Room
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -18634,6 +18646,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     age?: IntFieldUpdateOperationsInput | number
     photo?: StringFieldUpdateOperationsInput | string
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     room?: EnumRoomFieldUpdateOperationsInput | $Enums.Room
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -18646,6 +18659,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     age?: IntFieldUpdateOperationsInput | number
     photo?: StringFieldUpdateOperationsInput | string
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     room?: EnumRoomFieldUpdateOperationsInput | $Enums.Room
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

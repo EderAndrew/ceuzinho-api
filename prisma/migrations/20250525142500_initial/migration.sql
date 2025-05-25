@@ -5,7 +5,7 @@ CREATE TYPE "Role" AS ENUM ('ADMIN', 'PROFESSOR', 'PARENTE', 'PASTOR');
 CREATE TYPE "Room" AS ENUM ('MATERNAL', 'INFANTIL_I', 'INFANTIL_II');
 
 -- CreateEnum
-CREATE TYPE "Period" AS ENUM ('MANHÃ', 'TARDE', 'NOITE');
+CREATE TYPE "Period" AS ENUM ('MANH', 'TARDE', 'NOITE');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -13,13 +13,60 @@ CREATE TABLE "users" (
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "role" "Role" NOT NULL,
-    "photo" TEXT NOT NULL,
+    "role" "Role",
+    "photo" TEXT,
     "phone" TEXT,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(6),
+    "image" TEXT,
+    "emailVerified" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "sessions" (
+    "id" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "token" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "ipAddress" TEXT,
+    "userAgent" TEXT,
+    "userId" INTEGER NOT NULL,
+
+    CONSTRAINT "sessions_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "accounts" (
+    "id" TEXT NOT NULL,
+    "accountId" TEXT NOT NULL,
+    "providerId" TEXT NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "accessToken" TEXT,
+    "refreshToken" TEXT,
+    "idToken" TEXT,
+    "accessTokenExpiresAt" TIMESTAMP(3),
+    "refreshTokenExpiresAt" TIMESTAMP(3),
+    "scope" TEXT,
+    "password" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "accounts_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "verifications" (
+    "id" TEXT NOT NULL,
+    "identifier" TEXT NOT NULL,
+    "value" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3),
+    "updatedAt" TIMESTAMP(3),
+
+    CONSTRAINT "verifications_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -28,6 +75,7 @@ CREATE TABLE "kids" (
     "name" VARCHAR(255) NOT NULL,
     "age" INTEGER NOT NULL,
     "photo" TEXT NOT NULL,
+    "birthDate" TIMESTAMP(3),
     "room" "Room" NOT NULL,
     "userId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -102,6 +150,15 @@ CREATE TABLE "posts" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "sessions_token_key" ON "sessions"("token");
+
+-- AddForeignKey
+ALTER TABLE "sessions" ADD CONSTRAINT "sessions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "accounts" ADD CONSTRAINT "accounts_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "kids" ADD CONSTRAINT "kids_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
