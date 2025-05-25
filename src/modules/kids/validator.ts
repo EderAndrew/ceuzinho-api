@@ -7,6 +7,5 @@ export const createKidSchema = z.object({
   name: z.string().min(1),
   age: z.number(),
   birthDate: z.date(),
-  room: z.nativeEnum(Room).optional(),
-  user_id: z.number(),
+  room: z.nativeEnum(Room).optional()
 });
