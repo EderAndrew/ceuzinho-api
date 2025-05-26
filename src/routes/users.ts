@@ -1,7 +1,6 @@
 import { Router } from "express"
 import * as controller from "../modules/users/controller"
 import { verifyJWT } from "../lib/jwt"
-import { authenticate } from "../lib/passport"
 
 const router = Router()
 
