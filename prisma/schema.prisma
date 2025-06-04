@@ -5,8 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -22,6 +22,7 @@ model User {
   role                 Role?
   photo                String?
   phone                String?
+  sex                  Sex
   createdAt            DateTime     @default(now()) @db.Timestamp(6)
   updatedAt            DateTime?    @db.Timestamp(6)
   Kid                  Kid[]
@@ -32,8 +33,7 @@ model User {
   Post                 Post[]
   image                String?
   sessions             Session[]
-  accounts             Account[]
-  emailVerified        Boolean      @default(false)
+  Document             Document[]   @relation("CreatedByUser")
 
   @@map("users")
 }
@@ -51,36 +51,6 @@ model Session {
 
   @@unique([token])
   @@map("sessions")
-}
-
-model Account {
-  id                    String    @id
-  accountId             String
-  providerId            String
-  userId                Int
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
-  scope                 String?
-  password              String?
-  createdAt             DateTime
-  updatedAt             DateTime
-
-  @@map("accounts")
-}
-
-model Verification {
-  id         String    @id
-  identifier String
-  value      String
-  expiresAt  DateTime
-  createdAt  DateTime?
-  updatedAt  DateTime?
-
-  @@map("verifications")
 }
 
 model Kid {
@@ -113,22 +83,39 @@ model Issue {
 }
 
 model Schedule {
-  id              Int         @id @default(autoincrement())
+  id              Int          @id @default(autoincrement())
   date            DateTime
-  period          Period
-  title           String
-  description     String
+  timeStart       String?
+  timeEnd         String?
+  period          Period?
+  scheduleType    String
+  tema            String
+  info            String?
   createdBy       Int
-  teatcherOne     Int
-  teatcherTwo     Int
-  createdAt       DateTime    @default(now()) @db.Timestamp(6)
-  updatedAt       DateTime?   @db.Timestamp(6)
-  createdByUser   User        @relation("CreatedByUser", fields: [createdBy], references: [id])
-  teatcherOneUser User        @relation("TeatcherOneUser", fields: [teatcherOne], references: [id])
-  teatcherTwoUser User        @relation("TeatcherTwoUser", fields: [teatcherTwo], references: [id])
+  teatcherOne     Int?
+  teatcherTwo     Int?
+  ministratorOne  String?
+  ministratorTwo  String?
+  document        String?
+  createdAt       DateTime     @default(now()) @db.Timestamp(6)
+  updatedAt       DateTime?    @db.Timestamp(6)
+  createdByUser   User         @relation("CreatedByUser", fields: [createdBy], references: [id])
+  teatcherOneUser User?        @relation("TeatcherOneUser", fields: [teatcherOne], references: [id])
+  teatcherTwoUser User?        @relation("TeatcherTwoUser", fields: [teatcherTwo], references: [id])
   ClassRoom       ClassRoom[]
+  Impediment      Impediment[]
 
   @@map("schedules")
+}
+
+model Document {
+  id            Int      @id @default(autoincrement())
+  dataInitial   DateTime
+  dataFinal     DateTime
+  url           String
+  createdBy     Int
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  createdByUser User     @relation("CreatedByUser", fields: [createdBy], references: [id])
 }
 
 model ClassRoom {
@@ -145,11 +132,13 @@ model ClassRoom {
 }
 
 model Impediment {
-  id        Int      @id @default(autoincrement())
-  info      String
-  userId    Int
-  users     User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  createdAt DateTime @default(now()) @db.Timestamp(6)
+  id         Int      @id @default(autoincrement())
+  info       String
+  userId     Int
+  scheduleId Int
+  users      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt  DateTime @default(now()) @db.Timestamp(6)
 
   @@map("impediments")
 }
@@ -182,7 +171,12 @@ enum Room {
 }
 
 enum Period {
-  MANH
+  MANHÃ
   TARDE
   NOITE
+}
+
+enum Sex {
+  MASCULINO
+  FEMININO
 }

@@ -5,7 +5,10 @@ CREATE TYPE "Role" AS ENUM ('ADMIN', 'PROFESSOR', 'PARENTE', 'PASTOR');
 CREATE TYPE "Room" AS ENUM ('MATERNAL', 'INFANTIL_I', 'INFANTIL_II');
 
 -- CreateEnum
-CREATE TYPE "Period" AS ENUM ('MANH', 'TARDE', 'NOITE');
+CREATE TYPE "Period" AS ENUM ('MANHÃ', 'TARDE', 'NOITE');
+
+-- CreateEnum
+CREATE TYPE "Sex" AS ENUM ('MASCULINO', 'FEMININO');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -16,10 +19,10 @@ CREATE TABLE "users" (
     "role" "Role",
     "photo" TEXT,
     "phone" TEXT,
+    "sex" "Sex" NOT NULL,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(6),
     "image" TEXT,
-    "emailVerified" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -36,37 +39,6 @@ CREATE TABLE "sessions" (
     "userId" INTEGER NOT NULL,
 
     CONSTRAINT "sessions_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "accounts" (
-    "id" TEXT NOT NULL,
-    "accountId" TEXT NOT NULL,
-    "providerId" TEXT NOT NULL,
-    "userId" INTEGER NOT NULL,
-    "accessToken" TEXT,
-    "refreshToken" TEXT,
-    "idToken" TEXT,
-    "accessTokenExpiresAt" TIMESTAMP(3),
-    "refreshTokenExpiresAt" TIMESTAMP(3),
-    "scope" TEXT,
-    "password" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "accounts_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "verifications" (
-    "id" TEXT NOT NULL,
-    "identifier" TEXT NOT NULL,
-    "value" TEXT NOT NULL,
-    "expiresAt" TIMESTAMP(3) NOT NULL,
-    "createdAt" TIMESTAMP(3),
-    "updatedAt" TIMESTAMP(3),
-
-    CONSTRAINT "verifications_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -100,16 +72,34 @@ CREATE TABLE "issues" (
 CREATE TABLE "schedules" (
     "id" SERIAL NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
-    "period" "Period" NOT NULL,
-    "title" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
+    "timeStart" TEXT,
+    "timeEnd" TEXT,
+    "period" "Period",
+    "scheduleType" TEXT NOT NULL,
+    "tema" TEXT NOT NULL,
+    "info" TEXT,
     "createdBy" INTEGER NOT NULL,
-    "teatcherOne" INTEGER NOT NULL,
-    "teatcherTwo" INTEGER NOT NULL,
+    "teatcherOne" INTEGER,
+    "teatcherTwo" INTEGER,
+    "ministratorOne" TEXT,
+    "ministratorTwo" TEXT,
+    "document" TEXT,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(6),
 
     CONSTRAINT "schedules_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Document" (
+    "id" SERIAL NOT NULL,
+    "dataInitial" TIMESTAMP(3) NOT NULL,
+    "dataFinal" TIMESTAMP(3) NOT NULL,
+    "url" TEXT NOT NULL,
+    "createdBy" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Document_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -129,6 +119,7 @@ CREATE TABLE "impediments" (
     "id" SERIAL NOT NULL,
     "info" TEXT NOT NULL,
     "userId" INTEGER NOT NULL,
+    "scheduleId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "impediments_pkey" PRIMARY KEY ("id")
@@ -158,9 +149,6 @@ CREATE UNIQUE INDEX "sessions_token_key" ON "sessions"("token");
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "accounts" ADD CONSTRAINT "accounts_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "kids" ADD CONSTRAINT "kids_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -170,10 +158,13 @@ ALTER TABLE "issues" ADD CONSTRAINT "issues_kidId_fkey" FOREIGN KEY ("kidId") RE
 ALTER TABLE "schedules" ADD CONSTRAINT "schedules_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "schedules" ADD CONSTRAINT "schedules_teatcherOne_fkey" FOREIGN KEY ("teatcherOne") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "schedules" ADD CONSTRAINT "schedules_teatcherOne_fkey" FOREIGN KEY ("teatcherOne") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "schedules" ADD CONSTRAINT "schedules_teatcherTwo_fkey" FOREIGN KEY ("teatcherTwo") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "schedules" ADD CONSTRAINT "schedules_teatcherTwo_fkey" FOREIGN KEY ("teatcherTwo") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Document" ADD CONSTRAINT "Document_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "classRooms" ADD CONSTRAINT "classRooms_scheduleId_fkey" FOREIGN KEY ("scheduleId") REFERENCES "schedules"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -183,6 +174,9 @@ ALTER TABLE "classRooms" ADD CONSTRAINT "classRooms_kidId_fkey" FOREIGN KEY ("ki
 
 -- AddForeignKey
 ALTER TABLE "impediments" ADD CONSTRAINT "impediments_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "impediments" ADD CONSTRAINT "impediments_scheduleId_fkey" FOREIGN KEY ("scheduleId") REFERENCES "schedules"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "posts" ADD CONSTRAINT "posts_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

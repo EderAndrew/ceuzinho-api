@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@prisma/adapter-neon':
+        specifier: ^6.9.0
+        version: 6.9.0(@neondatabase/serverless@1.0.0)
       '@prisma/client':
         specifier: ^6.9.0
         version: 6.9.0(prisma@6.9.0(typescript@5.8.3))(typescript@5.8.3)
@@ -219,12 +222,21 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@neondatabase/serverless@1.0.0':
+    resolution: {integrity: sha512-XWmEeWpBXIoksZSDN74kftfTnXFEGZ3iX8jbANWBc+ag6dsiQuvuR4LgB0WdCOKMb5AQgjqgufc0TgAsZubUYw==}
+    engines: {node: '>=19.0.0'}
+
   '@noble/hashes@1.8.0':
     resolution: {integrity: sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==}
     engines: {node: ^14.21.3 || >=16}
 
   '@paralleldrive/cuid2@2.2.2':
     resolution: {integrity: sha512-ZOBkgDwEdoYVlSeRbYYXs0S9MejQofiVYoTbKzy/6GQa39/q5tQU2IX46+shYnUkpEl3wc+J6wRlar7r2EK2xA==}
+
+  '@prisma/adapter-neon@6.9.0':
+    resolution: {integrity: sha512-IieUWFTXB4PliGenc0MuShyLlAfO8rpWQr9T3oim/uztnvIFcz9PSia83kdrCfaNKre+MJH3GJd3bI/RvGrWWg==}
+    peerDependencies:
+      '@neondatabase/serverless': '>0.6.0 <2'
 
   '@prisma/client@6.9.0':
     resolution: {integrity: sha512-Gg7j1hwy3SgF1KHrh0PZsYvAaykeR0PaxusnLXydehS96voYCGt1U5zVR31NIouYc63hWzidcrir1a7AIyCsNQ==}
@@ -243,6 +255,9 @@ packages:
 
   '@prisma/debug@6.9.0':
     resolution: {integrity: sha512-bFeur/qi/Q+Mqk4JdQ3R38upSYPebv5aOyD1RKywVD+rAMLtRkmTFn28ZuTtVOnZHEdtxnNOCH+bPIeSGz1+Fg==}
+
+  '@prisma/driver-adapter-utils@6.9.0':
+    resolution: {integrity: sha512-HtugVGw5y50drVTboKubHJeOmoUQfDZa8vJBhzgR+iZ8KfUsJuTIU20rNd7Hi/S+JdLJGJXIxzbXiQABMNArjw==}
 
   '@prisma/engines-version@6.9.0-10.81e4af48011447c3cc503a190e86995b66d2a28e':
     resolution: {integrity: sha512-Qp9gMoBHgqhKlrvumZWujmuD7q4DV/gooEyPCLtbkc13EZdSz2RsGUJ5mHb3RJgAbk+dm6XenqG7obJEhXcJ6Q==}
@@ -615,6 +630,10 @@ packages:
     resolution: {integrity: sha512-VpZrUqU5A69eQyW2c5CA1jtLecCsN2U/bD6VilrFDWq5+5UIEVO7nazS3TEcHf1zuPYO/sqGvUvW62g86RXZuA==}
     engines: {node: '>=4'}
 
+  postgres-array@3.0.4:
+    resolution: {integrity: sha512-nAUSGfSDGOaOAEGwqsRY27GPOea7CNipJPOA7lPbdEpx5Kg3qzdP0AaWC5MlhTWV9s4hFX39nomVZ+C4tnGOJQ==}
+    engines: {node: '>=12'}
+
   postgres-bytea@1.0.0:
     resolution: {integrity: sha512-xy3pmLuQqRBZBXDULy7KbaitYqLcmxigw14Q5sj8QBVLqEwXfeybIKVWiqAXTlcvdvb0+xkOtDbfQMOf4lST1w==}
     engines: {node: '>=0.10.0'}
@@ -822,11 +841,22 @@ snapshots:
   '@esbuild/win32-x64@0.25.5':
     optional: true
 
+  '@neondatabase/serverless@1.0.0':
+    dependencies:
+      '@types/node': 22.15.29
+      '@types/pg': 8.15.4
+
   '@noble/hashes@1.8.0': {}
 
   '@paralleldrive/cuid2@2.2.2':
     dependencies:
       '@noble/hashes': 1.8.0
+
+  '@prisma/adapter-neon@6.9.0(@neondatabase/serverless@1.0.0)':
+    dependencies:
+      '@neondatabase/serverless': 1.0.0
+      '@prisma/driver-adapter-utils': 6.9.0
+      postgres-array: 3.0.4
 
   '@prisma/client@6.9.0(prisma@6.9.0(typescript@5.8.3))(typescript@5.8.3)':
     optionalDependencies:
@@ -838,6 +868,10 @@ snapshots:
       jiti: 2.4.2
 
   '@prisma/debug@6.9.0': {}
+
+  '@prisma/driver-adapter-utils@6.9.0':
+    dependencies:
+      '@prisma/debug': 6.9.0
 
   '@prisma/engines-version@6.9.0-10.81e4af48011447c3cc503a190e86995b66d2a28e': {}
 
@@ -1268,6 +1302,8 @@ snapshots:
       split2: 4.2.0
 
   postgres-array@2.0.0: {}
+
+  postgres-array@3.0.4: {}
 
   postgres-bytea@1.0.0: {}
 

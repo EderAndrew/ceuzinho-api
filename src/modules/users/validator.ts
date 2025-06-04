@@ -1,5 +1,5 @@
+import { Role } from '@prisma/client';
 import { z } from 'zod';
-import { Role } from '../../../generated/prisma';
 
 export const createUserSchema = z.object({
   id: z.number().optional(),
@@ -7,6 +7,8 @@ export const createUserSchema = z.object({
   email: z.string().email(),
   password: z.string(),
   photo: z.string().optional(),
+  phone: z.string().optional(),
+  sex: z.string().optional(),
   role: z.nativeEnum(Role).optional()
 });
 

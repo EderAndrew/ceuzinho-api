@@ -1,8 +1,7 @@
 import express, { ErrorRequestHandler, Request, Response } from "express"
 import cors from "cors"
 import helmet from "helmet"
-import passport from "passport"
-import { PrismaClient } from "../generated/prisma"
+import { PrismaClient } from "@prisma/client"
 import routes from "./routes"
 
 const server = express()
@@ -12,7 +11,6 @@ server.use(cors())
 server.use(helmet())
 server.use(express.json())
 server.use(express.urlencoded({ extended: true }))
-server.use(passport.initialize())
 server.use("/api", routes)
 
 server.use((req: Request, res: Response) => {
