@@ -23,6 +23,7 @@ model User {
   photo                String?
   phone                String?
   sex                  Sex
+  bgColor              String
   createdAt            DateTime     @default(now()) @db.Timestamp(6)
   updatedAt            DateTime?    @db.Timestamp(6)
   Kid                  Kid[]

@@ -9,7 +9,8 @@ export const createUserSchema = z.object({
   photo: z.string().optional(),
   phone: z.string().optional(),
   sex: z.string().optional(),
-  role: z.nativeEnum(Role).optional()
+  role: z.nativeEnum(Role).optional(),
+  bgColor: z.string()
 });
 
 export const loginUserSchema = z.object({

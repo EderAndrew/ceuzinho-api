@@ -1,5 +1,5 @@
 //configuração de conexão com o prisma
-import { PrismaClient } from "../../../generated/prisma"
+import { PrismaClient } from "@prisma/client"
 import { CreateUserDTO } from "./dto/createuser.dto"
 
 const prisma = new PrismaClient
@@ -10,7 +10,9 @@ export const create = async(payload: CreateUserDTO) => {
             name: payload.name,
             email: payload.email,
             password: payload.password,
-            role: payload.role
+            role: payload.role,
+            sex: payload.sex,
+            bgColor: payload.bgColor
         }
     })
 

@@ -1,9 +1,9 @@
 import { RequestHandler } from "express";
 import { createUserSchema, loginUserSchema } from "./validator";
 import { compare, hashSync } from "bcrypt";
-import { Role } from "../../../generated/prisma";
 import { createUserService, findUserByEmailService, findUserByIdService } from "./service";
 import { createJWT, decodeJwt } from "../../lib/jwt";
+import { Role, Sex } from "@prisma/client";
 
 
 export const signIn: RequestHandler = async (req, res): Promise<any> => {
@@ -50,7 +50,9 @@ export const signUp: RequestHandler = async (req, res): Promise<any> => {
         name: safeData.data.name,
         email: safeData.data.email,
         password: hash,
-        role: safeData.data.role as Role
+        role: safeData.data.role as Role,
+        sex: safeData.data.sex as Sex,
+        bgColor: safeData.data.bgColor
       }
 
       const user = await createUserService(payload)

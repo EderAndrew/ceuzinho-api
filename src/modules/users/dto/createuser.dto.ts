@@ -1,4 +1,4 @@
-import { Role } from "../../../../generated/prisma";
+import { Role, Sex } from "@prisma/client";
 
 export interface CreateUserDTO {
   name: string;
@@ -6,5 +6,7 @@ export interface CreateUserDTO {
   password: string;
   role?: Role;
   photo?: string;
-  phone?: string
+  phone?: string;
+  sex: Sex;
+  bgColor: string
 }
