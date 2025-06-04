@@ -5,7 +5,7 @@ import { verifyJWT } from "../lib/jwt"
 const router = Router()
 
 router.post("/signin", controller.signIn)
-router.post("/signup", controller.signUp)
+router.post("/signup", verifyJWT, controller.signUp)
 router.get("/me", verifyJWT, controller.me)
 router.get("/ping", controller.pong)
 
