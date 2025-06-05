@@ -5,7 +5,7 @@ import formidable from "formidable";
 import { createScheduleSchema } from "./validator";
 import sharp from "sharp";
 import path from "path";
-import { createScheduleService } from "./service";
+import { createScheduleService, findSchedulesByDateService } from "./service";
 import { CreateScheduleDTO } from "./dto/createSchedule.dto";
 
 sharp.cache(false)
@@ -115,6 +115,22 @@ export const deleteSchedule: RequestHandler = async(req, res): Promise<any> => {
     try{
 
         return res.status(200).json({ message: "Agendamento excluido com sucesso." })
+    }catch(error){
+        if(error instanceof Error){
+            console.log(error.message)
+        }
+    }
+    
+}
+
+export const allSchedulesByDate: RequestHandler = async(req, res): Promise<any> => {
+    try{
+        let { date } = req.params
+        const schedules = await findSchedulesByDateService(date)
+
+        if(!schedules) return res.status(404).json({ message: "Agendamentos nao encontrados." , data: [] })
+            
+        return res.status(200).json({ message: "Agendamentos encontrados com sucesso." , data: schedules })
     }catch(error){
         if(error instanceof Error){
             console.log(error.message)

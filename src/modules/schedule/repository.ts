@@ -26,3 +26,16 @@ export const createSchedule = async (payload: CreateScheduleDTO) => {
 
     return schedule
 }
+
+export const findSchedulesByDate = async (date: string) => {
+    const schedules = await prisma.schedule.findMany({
+        where: {
+            date: {
+                gte: new Date(`${date}T00:00:00.000Z`),
+                lte: new Date(`${date}T23:59:59.000Z`)
+            }
+        }
+    })
+    
+    return schedules
+}

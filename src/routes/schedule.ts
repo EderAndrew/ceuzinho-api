@@ -6,6 +6,7 @@ import { formMiddleware } from "../middlewares/formMiddlware"
 const router = Router()
 
 router.post("/createSchedule", verifyJWT, formMiddleware, controller.createSchedule)
+router.get("/schedules/:date", verifyJWT, controller.allSchedulesByDate)
 router.put("/updateSchedule", verifyJWT, controller.updateSchedule)
 router.delete("/deleteSchedule", verifyJWT, controller.deleteSchedule)
 
