@@ -6,6 +6,7 @@ export const createScheduleSchema = z.object({
     date: z.date(),
     timeStart: z.string().optional(),
     timeEnd: z.string().optional(),
+    bgColor: z.string(),
     period: z.string().optional(),
     scheduleType: z.string(),
     room: z.nativeEnum(Room).optional(),

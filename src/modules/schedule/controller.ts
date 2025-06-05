@@ -17,6 +17,7 @@ export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res)
             period: req.fields?.period?.[0],
             timeStart: req.fields?.period?.[0] === "MANHÃ" ? "09:00" : req.fields?.period?.[0] === "TARDE" ? "14:00" : "19:00",
             timeEnd: req.fields?.period?.[0] === "MANHÃ" ? "11:00" : req.fields?.period?.[0] === "TARDE" ? "16:00" : "21:00",
+            bgColor: req.fields?.period?.[0] === "MANHÃ" ? "#008C96" : req.fields?.period?.[0] === "TARDE" ? "#7A9B44" : "#043A68",
             scheduleType: req.fields?.scheduleType?.[0],
             room: req.fields?.room?.[0],
             tema: req.fields?.tema?.[0],

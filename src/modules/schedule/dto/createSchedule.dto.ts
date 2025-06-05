@@ -5,6 +5,7 @@ export interface CreateScheduleDTO {
     date: Date,
     timeStart?: string,
     timeEnd?: string,
+    bgColor: string,
     period?: string,
     scheduleType: string,
     room?: Room,

@@ -101,6 +101,7 @@ model Schedule {
   ministratorTwo  String?
   document        String?
   documentUrl     String?
+  bgColor         String?
   createdAt       DateTime     @default(now()) @db.Timestamp(6)
   updatedAt       DateTime?    @db.Timestamp(6)
   createdByUser   User         @relation("CreatedByUser", fields: [createdBy], references: [id])
