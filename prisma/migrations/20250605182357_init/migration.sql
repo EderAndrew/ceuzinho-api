@@ -18,11 +18,12 @@ CREATE TABLE "users" (
     "password" TEXT NOT NULL,
     "role" "Role",
     "photo" TEXT,
+    "photoUrl" TEXT,
     "phone" TEXT,
     "sex" "Sex" NOT NULL,
+    "bgColor" TEXT NOT NULL,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(6),
-    "image" TEXT,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -47,6 +48,7 @@ CREATE TABLE "kids" (
     "name" VARCHAR(255) NOT NULL,
     "age" INTEGER NOT NULL,
     "photo" TEXT NOT NULL,
+    "photUrl" TEXT NOT NULL,
     "birthDate" TIMESTAMP(3),
     "room" "Room" NOT NULL,
     "userId" INTEGER NOT NULL,
@@ -76,6 +78,7 @@ CREATE TABLE "schedules" (
     "timeEnd" TEXT,
     "period" "Period",
     "scheduleType" TEXT NOT NULL,
+    "room" "Room",
     "tema" TEXT NOT NULL,
     "info" TEXT,
     "createdBy" INTEGER NOT NULL,
@@ -84,6 +87,8 @@ CREATE TABLE "schedules" (
     "ministratorOne" TEXT,
     "ministratorTwo" TEXT,
     "document" TEXT,
+    "documentUrl" TEXT,
+    "bgColor" TEXT,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(6),
 

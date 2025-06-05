@@ -13,7 +13,7 @@ sharp.cache(false)
 export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res): Promise<any> => {
     try{
         const ESchedule = {
-            date: new Date(req.fields?.date?.[0] as string).toLocaleDateString("pt-BR"),
+            date: req.fields?.date?.[0],
             period: req.fields?.period?.[0],
             timeStart: req.fields?.period?.[0] === "MANHÃ" ? "09:00" : req.fields?.period?.[0] === "TARDE" ? "14:00" : "19:00",
             timeEnd: req.fields?.period?.[0] === "MANHÃ" ? "11:00" : req.fields?.period?.[0] === "TARDE" ? "16:00" : "21:00",
