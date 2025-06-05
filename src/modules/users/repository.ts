@@ -35,3 +35,7 @@ export const findUserById = async(id: number) => {
         }
     })
 }
+
+export const findUsers = async() => {
+    return await prisma.user.findMany({})
+}

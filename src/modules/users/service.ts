@@ -12,3 +12,7 @@ export const findUserByEmailService = async (email: string) => {
 export const findUserByIdService = async (id: number) => {
   return await userRepo.findUserById(id);
 }
+
+export const findUsersService = async () => {
+  return await userRepo.findUsers();
+}

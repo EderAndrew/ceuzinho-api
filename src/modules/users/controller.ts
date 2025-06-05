@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import { createUserSchema, loginUserSchema } from "./validator";
 import { compare, hashSync } from "bcrypt";
-import { createUserService, findUserByEmailService, findUserByIdService } from "./service";
+import { createUserService, findUserByEmailService, findUserByIdService, findUsersService } from "./service";
 import { createJWT, decodeJwt } from "../../middlewares/jwt";
 import { Role, Sex } from "@prisma/client";
 
@@ -81,6 +81,21 @@ export const me: RequestHandler = async (req, res): Promise<any> => {
   if(!user) return res.status(404).json({ message: "Usuário não encontrado." })
 
   return res.status(200).json({ user })
+}
+
+export const allUsers: RequestHandler = async (req, res): Promise<any> => {
+  try{
+    const users = await findUsersService()
+
+    if(!users) return res.status(404).json({ message: "Usuários nao encontrados." })
+
+    return res.status(200).json({ users })
+  }catch(error){
+    if(error instanceof Error){
+      console.log(error.message)
+    }
+  }
+
 }
 
 export const pong: RequestHandler = (req, res) => {
