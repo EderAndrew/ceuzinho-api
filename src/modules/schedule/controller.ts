@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { ExtendFileRequest } from "../../lib/types/extendRequest";
 import formidable from "formidable";
+import { createScheduleSchema } from "./validator";
 
 export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res): Promise<any> => {
     try{
@@ -15,8 +16,15 @@ export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res)
             teatcherOne: req.fields?.teatcherOne?.[0],
             teatcherTwo:req.fields?.teatcherTwo?.[0]
         }
+        
+        const safeData = createScheduleSchema.safeParse(ESchedule)
 
-        console.log(ESchedule)
+        if(!safeData.success) return res.status(400).json({ error: safeData.error.flatten().fieldErrors })
+
+        let files = req.files as {[fieldname: string]: formidable.File[]}
+
+        console.log(files)
+        
         return res.status(200).json({ message: "Schedule criado com sucesso" })
     }catch(error){
         if(error instanceof Error){
