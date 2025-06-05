@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import { createUserSchema, loginUserSchema } from "./validator";
 import { compare, hashSync } from "bcrypt";
 import { createUserService, findUserByEmailService, findUserByIdService } from "./service";
-import { createJWT, decodeJwt } from "../../lib/jwt";
+import { createJWT, decodeJwt } from "../../middlewares/jwt";
 import { Role, Sex } from "@prisma/client";
 
 

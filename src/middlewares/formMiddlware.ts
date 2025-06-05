@@ -1,5 +1,5 @@
 import { NextFunction, Response } from "express";
-import { ExtendFileRequest } from "./types/extendRequest";
+import { ExtendFileRequest } from "../lib/types/extendRequest";
 import formidable from "formidable";
 
 export const formMiddleware = async (req: ExtendFileRequest, res: Response, next: NextFunction) => {

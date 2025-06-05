@@ -1,6 +1,6 @@
 import { Router } from "express"
 import * as controller from "../modules/users/controller"
-import { verifyJWT } from "../lib/jwt"
+import { verifyJWT } from "../middlewares/jwt"
 
 const router = Router()
 
