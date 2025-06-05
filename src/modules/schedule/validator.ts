@@ -1,3 +1,4 @@
+import { Room } from '@prisma/client';
 import { z } from 'zod';
 
 export const createScheduleSchema = z.object({
@@ -7,6 +8,7 @@ export const createScheduleSchema = z.object({
     timeEnd: z.string().optional(),
     period: z.string().optional(),
     scheduleType: z.string(),
+    room: z.nativeEnum(Room).optional(),
     tema: z.string(),
     info: z.string().optional(),
     createdBy: z.number(),
