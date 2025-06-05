@@ -1,10 +1,10 @@
 import { Router } from "express"
 import users from "./users"
-import schedules from "./schedule"
+import schedule from "./schedule"
 
 const router = Router()
 
 router.use("/users", users)
-router.use("/schedule", schedules)
+router.use("/schedules", schedule)
 
 export default router

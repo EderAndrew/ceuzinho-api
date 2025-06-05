@@ -6,8 +6,9 @@ export const formMiddleware = async (req: ExtendFileRequest, res: Response, next
     try{
         const form = formidable({
             uploadDir: "./tmp",
+            maxFileSize: 100 * 1024 * 1024,
             filter: (part) => {
-                const allowed: string[] = ["image/webp", "image/jpeg", "image/png", "image/jpg","application/pdf"]
+                const allowed: string[] = ["image/webp", "image/jpeg", "image/png", "image/jpg", "application/pdf"]
 
                 if(part.mimetype && !allowed.includes(part.mimetype)){
                     return false

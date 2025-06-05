@@ -1,9 +1,12 @@
 import { RequestHandler } from "express";
+import { ExtendFileRequest } from "../../lib/types/extendRequest";
+import formidable from "formidable";
 
-export const createSchedule: RequestHandler = async(req, res): Promise<any> => {
+export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res): Promise<any> => {
     try{
-
-        return res.status(200).json({ message: "Agendamento criado com sucesso." })
+        const ESchedule = req.files as { [fieldname: string]: formidable.File[] };
+        console.log(ESchedule)
+        return res.status(200).json({ message: "Schedule criado com sucesso" })
     }catch(error){
         if(error instanceof Error){
             console.log(error.message)
