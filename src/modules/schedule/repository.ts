@@ -12,6 +12,7 @@ export const createSchedule = async (payload: CreateScheduleDTO) => {
             timeEnd: payload.timeEnd,
             period: payload.period as Period,
             scheduleType: payload.scheduleType,
+            bgColor: payload.bgColor,
             room: payload.room,
             tema: payload.tema,
             info: payload.info,

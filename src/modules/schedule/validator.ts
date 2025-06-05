@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const createScheduleSchema = z.object({
     id: z.number().optional(),
-    date: z.date(),
+    date: z.string(),
     timeStart: z.string().optional(),
     timeEnd: z.string().optional(),
     bgColor: z.string(),

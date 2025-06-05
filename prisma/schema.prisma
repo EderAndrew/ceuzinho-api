@@ -86,7 +86,7 @@ model Issue {
 
 model Schedule {
   id              Int          @id @default(autoincrement())
-  date            DateTime
+  date            String
   timeStart       String?
   timeEnd         String?
   period          Period?
