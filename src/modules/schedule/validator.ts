@@ -17,5 +17,6 @@ export const createScheduleSchema = z.object({
     ministratorOne: z.string().optional(),
     ministratorTwo: z.string().optional(),
     document: z.string().optional(),
+    documentUrl: z.string().optional(),
     updatedAt: z.date().optional()
 })

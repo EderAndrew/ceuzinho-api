@@ -52,7 +52,7 @@ export const signUp: RequestHandler = async (req, res): Promise<any> => {
         password: hash,
         role: safeData.data.role as Role,
         sex: safeData.data.sex as Sex,
-        bgColor: safeData.data.bgColor
+        bgColor: safeData.data.sex === "MASCULINO" ? "#009CD9" : "#DF1B7D"
       }
 
       const user = await createUserService(payload)

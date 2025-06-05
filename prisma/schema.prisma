@@ -21,6 +21,7 @@ model User {
   password             String
   role                 Role?
   photo                String?
+  photoUrl             String?
   phone                String?
   sex                  Sex
   bgColor              String
@@ -32,7 +33,6 @@ model User {
   teatcherTwoSchedule  Schedule[]   @relation("TeatcherTwoUser")
   Impediment           Impediment[]
   Post                 Post[]
-  image                String?
   sessions             Session[]
   Document             Document[]   @relation("CreatedByUser")
 
@@ -59,6 +59,7 @@ model Kid {
   name      String      @db.VarChar(255)
   age       Int
   photo     String
+  photUrl   String
   birthDate DateTime?
   room      Room
   userId    Int
@@ -99,6 +100,7 @@ model Schedule {
   ministratorOne  String?
   ministratorTwo  String?
   document        String?
+  documentUrl     String?
   createdAt       DateTime     @default(now()) @db.Timestamp(6)
   updatedAt       DateTime?    @db.Timestamp(6)
   createdByUser   User         @relation("CreatedByUser", fields: [createdBy], references: [id])

@@ -16,6 +16,7 @@ export interface CreateScheduleDTO {
     ministratorOne?: string,
     ministratorTwo?: string,
     document?: string,
+    documentUrl?: string,
     createdAt: Date,
     updatedAt?: Date
 }

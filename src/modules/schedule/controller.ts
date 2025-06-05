@@ -2,6 +2,9 @@ import { RequestHandler } from "express";
 import { ExtendFileRequest } from "../../lib/types/extendRequest";
 import formidable from "formidable";
 import { createScheduleSchema } from "./validator";
+import sharp from "sharp";
+
+sharp.cache(false)
 
 export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res): Promise<any> => {
     try{
@@ -13,9 +16,9 @@ export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res)
             scheduleType: req.fields?.scheduleType?.[0],
             room: req.fields?.room?.[0],
             tema: req.fields?.tema?.[0],
-            createdBy: req.fields?.createdBy?.[0],
-            teatcherOne: req.fields?.teatcherOne?.[0],
-            teatcherTwo:req.fields?.teatcherTwo?.[0]
+            createdBy: parseInt(req.fields?.createdBy?.[0] as string),
+            teatcherOne: parseInt(req.fields?.teatcherOne?.[0] as string),
+            teatcherTwo:parseInt(req.fields?.teatcherTwo?.[0] as string)
         }
         
         const safeData = createScheduleSchema.safeParse(ESchedule)
@@ -24,7 +27,13 @@ export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res)
 
         let files = req.files as {[fieldname: string]: formidable.File[]}
 
-        console.log(files)
+        console.log(files.document)
+        //Verifica se o arquivo é diferente de pdf
+        if(files.document[0].mimetype !== "application/pdf"){
+            await sharp(files.document[0].filepath)
+             .toFormat("webp")
+             .toFile(`./public/media/${files.document[0].originalFilename?.split(".")[0]}.webp`)
+        }
         
         return res.status(200).json({ message: "Schedule criado com sucesso" })
     }catch(error){
