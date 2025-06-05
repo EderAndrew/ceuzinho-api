@@ -90,6 +90,7 @@ model Schedule {
   timeEnd         String?
   period          Period?
   scheduleType    String
+  room            Room?
   tema            String
   info            String?
   createdBy       Int

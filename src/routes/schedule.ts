@@ -1,7 +1,7 @@
 import { Router } from "express"
 import * as controller from "../modules/schedule/controller"
 import { verifyJWT } from "../middlewares/jwt"
-import { formMiddleware } from "../lib/formMiddlware"
+import { formMiddleware } from "../middlewares/formMiddlware"
 
 const router = Router()
 
