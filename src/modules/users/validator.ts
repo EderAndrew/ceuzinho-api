@@ -10,7 +10,7 @@ export const createUserSchema = z.object({
   phone: z.string().optional(),
   sex: z.string().optional(),
   role: z.nativeEnum(Role).optional(),
-  bgColor: z.string()
+  bgColor: z.string().optional()
 });
 
 export const loginUserSchema = z.object({

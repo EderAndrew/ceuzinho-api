@@ -10,9 +10,10 @@ export const create = async(payload: CreateUserDTO) => {
             name: payload.name,
             email: payload.email,
             password: payload.password,
+            phone: payload.phone,
             role: payload.role,
             sex: payload.sex,
-            bgColor: payload.bgColor
+            bgColor: payload.bgColor as string
         }
     })
 

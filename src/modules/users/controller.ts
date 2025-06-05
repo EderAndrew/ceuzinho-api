@@ -50,6 +50,7 @@ export const signUp: RequestHandler = async (req, res): Promise<any> => {
         name: safeData.data.name,
         email: safeData.data.email,
         password: hash,
+        phone: safeData.data.phone,
         role: safeData.data.role as Role,
         sex: safeData.data.sex as Sex,
         bgColor: safeData.data.sex === "MASCULINO" ? "#009CD9" : "#DF1B7D"

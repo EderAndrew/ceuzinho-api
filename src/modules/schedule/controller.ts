@@ -5,6 +5,8 @@ import formidable from "formidable";
 import { createScheduleSchema } from "./validator";
 import sharp from "sharp";
 import path from "path";
+import { createScheduleService } from "./service";
+import { CreateScheduleDTO } from "./dto/createSchedule.dto";
 
 sharp.cache(false)
 
@@ -21,7 +23,7 @@ export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res)
             createdBy: parseInt(req.fields?.createdBy?.[0] as string),
             teatcherOne: parseInt(req.fields?.teatcherOne?.[0] as string),
             teatcherTwo:parseInt(req.fields?.teatcherTwo?.[0] as string)
-        }
+        } as CreateScheduleDTO
         
         const safeData = createScheduleSchema.safeParse(ESchedule)
 
@@ -31,7 +33,11 @@ export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res)
 
         //Save informations with out document
         if(!files.document) {
-            return res.status(201).json({ message: "Schedule sem documento salvo com sucesso." })
+            const schedule = await createScheduleService(ESchedule)
+
+            if(!schedule) return res.status(500).json({ message: "Erro ao criar agendamento." })
+
+            return res.status(201).json({ message: "Schedule criado com sucesso..." })
         }
 
         //Verifica se o arquivo é diferente de pdf
@@ -54,9 +60,11 @@ export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res)
 
             await fs.unlink(files.document[0].filepath)
 
-            console.log(formData)
-            return res.status(201).json({ message: "Schedule criado com sucesso!" })
+            const schedule = await createScheduleService(formData)
 
+            if(!schedule) return res.status(500).json({ message: "Erro ao criar agendamento." })
+
+            return res.status(201).json({ message: "Schedule criado com sucesso!" })
         }
 
         const publicDir = path.join(__dirname, "../../../public/files");
@@ -65,21 +73,21 @@ export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res)
 
         const filePath = path.join(publicDir, files.document[0].originalFilename as string);
 
-        const newFile = await fs.writeFile(filePath, files.document[0].originalFilename as string);
-
-        console.log(newFile)
+        await fs.writeFile(filePath, files.document[0].originalFilename as string);
 
         const formData = { 
             ...ESchedule,
             document: files.document[0].originalFilename?.split(".pdf")[0],
             documentUrl: process.env.NODE_ENV === "production"
-            ? `${process.env.URL_DOC_PROD}${files.document[0].originalFilename?.split(".pdf")[0]}.pdf`
-            : `${process.env.URL_DOC_DEV}${files.document[0].originalFilename?.split(".pdf")[0]}.pdf`
+            ? `${process.env.URL_DOC_PROD}${files.document[0].originalFilename}`
+            : `${process.env.URL_DOC_DEV}${files.document[0].originalFilename}`
         }
 
         await fs.unlink(files.document[0].filepath)
 
-        console.log(formData)
+        const schedule = await createScheduleService(formData)
+
+        if(!schedule) return res.status(500).json({ message: "Erro ao criar agendamento." })
         
         return res.status(201).json({ message: "Schedule criado com sucesso" })
     }catch(error){

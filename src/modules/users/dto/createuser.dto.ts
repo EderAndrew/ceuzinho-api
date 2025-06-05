@@ -8,5 +8,5 @@ export interface CreateUserDTO {
   photo?: string;
   phone?: string;
   sex: Sex;
-  bgColor: string
+  bgColor?: string
 }
