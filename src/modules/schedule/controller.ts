@@ -1,8 +1,10 @@
+import fs from "fs/promises";
 import { RequestHandler } from "express";
 import { ExtendFileRequest } from "../../lib/types/extendRequest";
 import formidable from "formidable";
 import { createScheduleSchema } from "./validator";
 import sharp from "sharp";
+import path from "path";
 
 sharp.cache(false)
 
@@ -27,15 +29,59 @@ export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res)
 
         let files = req.files as {[fieldname: string]: formidable.File[]}
 
-        console.log(files.document)
+        //Save informations with out document
+        if(!files.document) {
+            return res.status(201).json({ message: "Schedule sem documento salvo com sucesso." })
+        }
+
         //Verifica se o arquivo é diferente de pdf
         if(files.document[0].mimetype !== "application/pdf"){
+            const publicDir = path.join(__dirname, "../../../public/media");
+
+            await verifyDir(publicDir)
+
             await sharp(files.document[0].filepath)
              .toFormat("webp")
              .toFile(`./public/media/${files.document[0].originalFilename?.split(".")[0]}.webp`)
+
+            const formData = { 
+                ...ESchedule,
+                document: files.document[0].originalFilename?.split(".")[0],
+                documentUrl: process.env.NODE_ENV === "production"
+                ? `${process.env.URL_DOC_PROD}${files.document[0].originalFilename?.split(".")[0]}.webp`
+                : `${process.env.URL_DOC_DEV}${files.document[0].originalFilename?.split(".")[0]}.webp`
+            }
+
+            await fs.unlink(files.document[0].filepath)
+
+            console.log(formData)
+            return res.status(201).json({ message: "Schedule criado com sucesso!" })
+
         }
+
+        const publicDir = path.join(__dirname, "../../../public/files");
+
+        await verifyDir(publicDir)
+
+        const filePath = path.join(publicDir, files.document[0].originalFilename as string);
+
+        const newFile = await fs.writeFile(filePath, files.document[0].originalFilename as string);
+
+        console.log(newFile)
+
+        const formData = { 
+            ...ESchedule,
+            document: files.document[0].originalFilename?.split(".pdf")[0],
+            documentUrl: process.env.NODE_ENV === "production"
+            ? `${process.env.URL_DOC_PROD}${files.document[0].originalFilename?.split(".pdf")[0]}.pdf`
+            : `${process.env.URL_DOC_DEV}${files.document[0].originalFilename?.split(".pdf")[0]}.pdf`
+        }
+
+        await fs.unlink(files.document[0].filepath)
+
+        console.log(formData)
         
-        return res.status(200).json({ message: "Schedule criado com sucesso" })
+        return res.status(201).json({ message: "Schedule criado com sucesso" })
     }catch(error){
         if(error instanceof Error){
             console.log(error.message)
@@ -66,4 +112,14 @@ export const deleteSchedule: RequestHandler = async(req, res): Promise<any> => {
         }
     }
     
-}   
+}
+
+const verifyDir = async (path: string) => {
+    try{
+        await fs.access(path)
+        return
+    }catch{
+        await fs.mkdir(path, { recursive: true })
+        return
+    }
+}
