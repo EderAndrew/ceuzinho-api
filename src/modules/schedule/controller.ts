@@ -4,7 +4,18 @@ import formidable from "formidable";
 
 export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res): Promise<any> => {
     try{
-        const ESchedule = req.files as { [fieldname: string]: formidable.File[] };
+        const ESchedule = {
+            date: new Date(req.fields?.date?.[0] as string),
+            period: req.fields?.period?.[0],
+            timeStart: req.fields?.period?.[0] === "MANHÃ" ? "09:00" : req.fields?.period?.[0] === "TARDE" ? "14:00" : "19:00",
+            timeEnd: req.fields?.period?.[0] === "MANHÃ" ? "11:00" : req.fields?.period?.[0] === "TARDE" ? "16:00" : "21:00",
+            scheduleType: req.fields?.scheduleType?.[0],
+            tema: req.fields?.tema?.[0],
+            createdBy: req.fields?.createdBy?.[0],
+            teatcherOne: req.fields?.teatcherOne?.[0],
+            teatcherTwo:req.fields?.teatcherTwo?.[0]
+        }
+
         console.log(ESchedule)
         return res.status(200).json({ message: "Schedule criado com sucesso" })
     }catch(error){
