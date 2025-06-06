@@ -8,6 +8,7 @@ router.post("/signin", controller.signIn)
 router.post("/signup", verifyJWT, controller.signUp)
 router.get("/me", verifyJWT, controller.me)
 router.get("/all", verifyJWT, controller.allUsers)
+router.get("/send-email", verifyJWT, controller.sendEmail)
 router.get("/ping", controller.pong)
 
 export default router

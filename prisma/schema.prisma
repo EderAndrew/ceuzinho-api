@@ -25,6 +25,7 @@ model User {
   phone                String?
   sex                  Sex
   bgColor              String
+  firstAccess          Boolean      @default(true)
   createdAt            DateTime     @default(now()) @db.Timestamp(6)
   updatedAt            DateTime?    @db.Timestamp(6)
   Kid                  Kid[]
@@ -86,7 +87,7 @@ model Issue {
 
 model Schedule {
   id              Int          @id @default(autoincrement())
-  date            DateTime 
+  date            DateTime
   timeStart       String?
   timeEnd         String?
   period          Period?

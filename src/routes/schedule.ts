@@ -7,7 +7,7 @@ const router = Router()
 
 router.post("/createSchedule", verifyJWT, formMiddleware, controller.createSchedule)
 router.get("/schedules/:date", verifyJWT, controller.allSchedulesByDate)
-router.put("/updateSchedule", verifyJWT, controller.updateSchedule)
+router.put("/updateSchedule", verifyJWT, formMiddleware, controller.updateSchedule)
 router.get("/schedule/:id", verifyJWT, controller.scheduleById)
 router.delete("/deleteSchedule", verifyJWT, controller.deleteSchedule)
 

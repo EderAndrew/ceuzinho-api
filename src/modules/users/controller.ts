@@ -98,6 +98,10 @@ export const allUsers: RequestHandler = async (req, res): Promise<any> => {
 
 }
 
+export const sendEmail: RequestHandler = (req, res) => {
+  
+}
+
 export const pong: RequestHandler = (req, res) => {
   res.status(200).json({ pong: true})
 }
