@@ -7,3 +7,7 @@ export const createScheduleService = async (data: CreateScheduleDTO) => {
 export const findSchedulesByDateService = async (date: string) => {
     return await scheduleRepo.findSchedulesByDate(date);
 }
+
+export const findScheduleByIdService = async (id: string) => {
+    return await scheduleRepo.findScheduleById(id)
+}

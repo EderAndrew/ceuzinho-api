@@ -5,7 +5,7 @@ import formidable from "formidable";
 import { createScheduleSchema } from "./validator";
 import sharp from "sharp";
 import path from "path";
-import { createScheduleService, findSchedulesByDateService } from "./service";
+import { createScheduleService, findScheduleByIdService, findSchedulesByDateService } from "./service";
 import { CreateScheduleDTO } from "./dto/createSchedule.dto";
 
 sharp.cache(false)
@@ -30,6 +30,11 @@ export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res)
 
         if(!safeData.success) return res.status(400).json({ error: safeData.error.flatten().fieldErrors })
 
+        const yesterday = new Date(req.fields?.date?.[0] as string)
+        const today = new Date()
+        
+        if(yesterday <= today) return res.status(200).json({message: "Data deve ser maior que a data atual."})
+        
         let files = req.files as {[fieldname: string]: formidable.File[]}
 
         //Save informations with out document
@@ -55,8 +60,8 @@ export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res)
                 ...ESchedule,
                 document: files.document[0].originalFilename?.split(".")[0],
                 documentUrl: process.env.NODE_ENV === "production"
-                ? `${process.env.URL_DOC_PROD}${files.document[0].originalFilename?.split(".")[0]}.webp`
-                : `${process.env.URL_DOC_DEV}${files.document[0].originalFilename?.split(".")[0]}.webp`
+                ? `${process.env.URL_DOC_PROD}media${files.document[0].originalFilename?.split(".")[0]}.webp`
+                : `${process.env.URL_DOC_DEV}media${files.document[0].originalFilename?.split(".")[0]}.webp`
             }
 
             await fs.unlink(files.document[0].filepath)
@@ -80,8 +85,8 @@ export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res)
             ...ESchedule,
             document: files.document[0].originalFilename?.split(".pdf")[0],
             documentUrl: process.env.NODE_ENV === "production"
-            ? `${process.env.URL_DOC_PROD}${files.document[0].originalFilename}`
-            : `${process.env.URL_DOC_DEV}${files.document[0].originalFilename}`
+            ? `${process.env.URL_DOC_PROD}files${files.document[0].originalFilename}`
+            : `${process.env.URL_DOC_DEV}files${files.document[0].originalFilename}`
         }
 
         await fs.unlink(files.document[0].filepath)
@@ -137,6 +142,22 @@ export const allSchedulesByDate: RequestHandler = async(req, res): Promise<any> 
         }
     }
     
+}
+
+export const scheduleById: RequestHandler = async(req, res): Promise<any> => {
+    try{
+        let { id } = req.params
+
+        const schedule = await findScheduleByIdService(id)
+
+        if(!schedule) return res.status(404).json({ message: "Agendamento nao encontrados." , data: [] })
+        
+        return res.status(200).json({ message: "Agendamento encontrado com sucesso." , data: schedule })
+    }catch(error){
+        if(error instanceof Error){
+            console.log(error.message)
+        }
+    }
 }
 
 const verifyDir = async (path: string) => {

@@ -34,8 +34,82 @@ export const findSchedulesByDate = async (date: string) => {
                 gte: new Date(`${date}T00:00:00.000Z`),
                 lte: new Date(`${date}T23:59:59.000Z`)
             }
+        },
+        include: {
+            createdByUser: {
+                select: {
+                    id: true,
+                    photo: true,
+                    photoUrl: true,
+                    name: true,
+                    email: true,
+                    phone: true
+                }
+            },
+            teatcherOneUser: {
+                select: {
+                    id: true,
+                    photo: true,
+                    photoUrl: true,
+                    name: true,
+                    email: true,
+                    phone: true
+                }
+            },
+            teatcherTwoUser: {
+                select: {
+                    id: true,
+                    photo: true,
+                    photoUrl: true,
+                    name: true,
+                    email: true,
+                    phone: true
+                }
+            }
         }
     })
     
     return schedules
+}
+
+export const findScheduleById = async (id: string) => {
+    const schedule = await prisma.schedule.findUnique({
+        where: {
+            id: parseInt(id)
+        },
+        include: {
+            createdByUser: {
+                select: {
+                    id: true,
+                    photo: true,
+                    photoUrl: true,
+                    name: true,
+                    email: true,
+                    phone: true
+                }
+            },
+            teatcherOneUser: {
+                select: {
+                    id: true,
+                    photo: true,
+                    photoUrl: true,
+                    name: true,
+                    email: true,
+                    phone: true
+                }
+            },
+            teatcherTwoUser: {
+                select: {
+                    id: true,
+                    photo: true,
+                    photoUrl: true,
+                    name: true,
+                    email: true,
+                    phone: true
+                }
+            }
+        }
+    })
+
+    return schedule
 }
