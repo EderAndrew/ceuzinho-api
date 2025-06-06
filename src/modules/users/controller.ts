@@ -4,6 +4,7 @@ import { compare, hashSync } from "bcrypt";
 import { createUserService, findUserByEmailService, findUserByIdService, findUsersService } from "./service";
 import { createJWT, decodeJwt } from "../../middlewares/jwt";
 import { Role, Sex } from "@prisma/client";
+import { sendEmail } from "../../lib/sendEmail";
 
 
 export const signIn: RequestHandler = async (req, res): Promise<any> => {
@@ -44,7 +45,9 @@ export const signUp: RequestHandler = async (req, res): Promise<any> => {
 
       if(hasUser) return res.status(200).json({message: "Já existe um usuário com este email."})
       
-      const hash = hashSync(safeData.data.password as string, 10)
+      let randonPwd = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000
+      
+      const hash = hashSync(randonPwd.toString(), 10)
 
       const payload = {
         name: safeData.data.name,
@@ -59,8 +62,10 @@ export const signUp: RequestHandler = async (req, res): Promise<any> => {
       const user = await createUserService(payload)
 
       if(!user) return res.status(500).json({ message: "Erro ao criar usuário." })
+      
+      const email = await sendEmail(safeData.data.email, randonPwd.toString())
 
-      return res.status(201).json({  message: "Usuário criado com sucesso." })
+      return res.status(201).json({  message: email.response })
 
     }catch(error){
       if(error instanceof Error){
@@ -98,9 +103,6 @@ export const allUsers: RequestHandler = async (req, res): Promise<any> => {
 
 }
 
-export const sendEmail: RequestHandler = (req, res) => {
-  
-}
 
 export const pong: RequestHandler = (req, res) => {
   res.status(200).json({ pong: true})
