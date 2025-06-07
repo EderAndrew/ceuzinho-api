@@ -195,13 +195,13 @@ export const editUser: RequestHandler = async (req: ExtendFileRequest, res): Pro
 
 export const disableUser: RequestHandler = async(req, res): Promise<any> => {
   try{
-    let { id, status } = req.body
+    let { id } = req.params
 
-    const hasUser = await findUserByIdService(id)
+    const hasUser = await findUserByIdService(parseInt(id))
 
     if(!hasUser) return res.status(200).json({message: "Usuário não identificado."})
 
-    await disableUserService(id, status)
+    await disableUserService(hasUser.id, hasUser.status)
 
     return res.status(200).json({ message: "Usuário desativado." })
 
