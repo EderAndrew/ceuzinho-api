@@ -228,7 +228,7 @@ export const sendotc: RequestHandler = async(req, res): Promise<any> => {
     
     let OTCode = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000
 
-    const selectRecovery = await selectRecoverService(safeData.data.email)
+    const selectRecovery = await selectRecoveryService(safeData.data.email)
 
     if(selectRecovery){
       const verifyOTC = await compare(OTCode.toString(), selectRecovery.otc);
@@ -244,7 +244,7 @@ export const sendotc: RequestHandler = async(req, res): Promise<any> => {
     if(!email.response) return res.status(201).json({ message: "Email não enviado." })
     
     const hash = hashSync(OTCode.toString(), 10)
-    const recovery = await saveRecoveryService(user.email, OTCode)
+    const recovery = await saveRecoveryService(user.email, hash)
 
     if(!recovery) return res.status(500).json({ message: "OTC não registrado" })
     

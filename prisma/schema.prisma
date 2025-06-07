@@ -37,6 +37,7 @@ model User {
   Post                 Post[]
   sessions             Session[]
   Document             Document[]   @relation("CreatedByUser")
+  Recovery             Recovery[]
 
   @@map("users")
 }
@@ -54,6 +55,18 @@ model Session {
 
   @@unique([token])
   @@map("sessions")
+}
+
+model Recovery {
+  id        Int       @id @default(autoincrement())
+  expiresAt DateTime
+  userEmail String
+  otc       String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+  user      User      @relation(fields: [userEmail], references: [email])
+
+  @@map("recoveries")
 }
 
 model Kid {
