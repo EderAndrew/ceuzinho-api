@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import { impedimentSchema } from "./validator";
 import { createImpedimentService } from "./service";
 import { CreateImpedimentDTO } from "./dto/createImpediment.dto";
+import { findScheduleByIdService } from "../schedule/service";
 
 export const createImpediment: RequestHandler = async(req, res): Promise<any> => {
     try{
@@ -9,6 +10,10 @@ export const createImpediment: RequestHandler = async(req, res): Promise<any> =>
         if (!safeData.success) {
             return res.status(400).json({ error: safeData.error.flatten().fieldErrors });
         }
+        
+        const verifySchedule = await findScheduleByIdService(safeData.data.scheduleId as number)
+
+        if(!verifySchedule) return res.status(200).json({ message: "Não foi identificado nenhum agendamento." })
 
         const impediment = {
             info: safeData.data.info,

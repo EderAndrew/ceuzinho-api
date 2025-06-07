@@ -72,10 +72,10 @@ export const findSchedulesByDate = async (date: string) => {
     return schedules
 }
 
-export const findScheduleById = async (id: string) => {
+export const findScheduleById = async (id: number) => {
     const schedule = await prisma.schedule.findUnique({
         where: {
-            id: parseInt(id)
+            id: id
         },
         include: {
             createdByUser: {
