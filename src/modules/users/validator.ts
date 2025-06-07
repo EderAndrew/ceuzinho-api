@@ -25,4 +25,5 @@ export const updateUserSchema =  z.object({
   photo: z.string().optional(),
   phone: z.string().optional(),
   role: z.nativeEnum(Role).optional(),
+  status: z.boolean().optional()
 });

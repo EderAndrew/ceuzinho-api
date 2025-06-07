@@ -1,4 +1,5 @@
 import { CreateUserDTO } from './dto/createuser.dto';
+import { UpdateUserDTO } from './dto/updateuser.dto';
 import * as userRepo from './repository';
 
 export const createUserService = async (data: CreateUserDTO) => {
@@ -15,4 +16,8 @@ export const findUserByIdService = async (id: number) => {
 
 export const findUsersService = async () => {
   return await userRepo.findUsers();
+}
+
+export const updateUserService = async (id: number, user: UpdateUserDTO) => {
+  return await userRepo.updateUser(id, user)
 }

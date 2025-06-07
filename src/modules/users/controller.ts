@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import { createUserSchema, loginUserSchema, updateUserSchema } from "./validator";
 import { compare, hashSync } from "bcrypt";
-import { createUserService, findUserByEmailService, findUserByIdService, findUsersService } from "./service";
+import { createUserService, findUserByEmailService, findUserByIdService, findUsersService, updateUserService } from "./service";
 import { createJWT, decodeJwt } from "../../middlewares/jwt";
 import { Role, Sex } from "@prisma/client";
 import { sendEmail } from "../../lib/sendEmail";
@@ -121,7 +121,6 @@ export const editUser: RequestHandler = async (req: ExtendFileRequest, res): Pro
       email: req.fields?.email?.[0],
       password: req.fields?.password?.[0],
       role: req.fields?.role?.[0],
-      firstAccess: false,
       phone: req.fields?.phone?.[0]
     } as UpdateUserDTO
 
@@ -129,15 +128,29 @@ export const editUser: RequestHandler = async (req: ExtendFileRequest, res): Pro
 
     if(!safeData.success) return res.status(400).json({ error: safeData.error.flatten().fieldErrors })
     
+    const hasUser = await findUserByIdService(parseInt(id))
+
+    if(!hasUser) return res.status(404).json({message: "Não foi identificado um usuário com essas informações."})
+    
     let files = req.files as {[fieldname: string]: formidable.File[]}
 
-     //Save informations with out document
     if(!files.document) {
-      const user = await updateUserService(id, EUser)
+      let pwdUser:UpdateUserDTO = {...EUser}
+
+      if(req.fields?.password?.[0] !== undefined){
+        const hash = hashSync(req.fields?.password?.[0] as string, 10)
+
+        pwdUser = {
+          ...EUser,
+          password: hash
+        }
+      }
+      
+      const user = await updateUserService(parseInt(id), pwdUser)
 
       if(!user) return res.status(500).json({ message: "Erro ao editar usuário." })
 
-      return res.status(201).json({ message: "Usuário editado com sucesso..." })
+      return res.status(200).json({ message: "Usuário editado com sucesso..." })
     }
 
     const imageTypes = ["image/webp", "image/jpeg", "image/png", "image/jpg"]
@@ -164,11 +177,11 @@ export const editUser: RequestHandler = async (req: ExtendFileRequest, res): Pro
 
     await fs.unlink(files.document[0].filepath)
 
-    const user = await updateUserService(id, formUser)
+    const user = await updateUserService(parseInt(id), formUser)
 
     if(!user) return res.status(500).json({ message: "Erro ao atualizar usuário." })
         
-    return res.status(201).json({ message: "Usuário atualizado com sucesso" })
+    return res.status(200).json({ message: "Usuário atualizado com sucesso" })
 
   }catch(error){
     if(error instanceof Error){

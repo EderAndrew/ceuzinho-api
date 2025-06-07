@@ -8,4 +8,5 @@ export interface UpdateUserDTO {
   photo?: string;
   photoUrl?: string;
   phone?: string;
+  status?: boolean
 }
