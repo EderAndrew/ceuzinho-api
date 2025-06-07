@@ -7,6 +7,7 @@ import sharp from "sharp";
 import path from "path";
 import { createScheduleService, findScheduleByIdService, findScheduleByUserIdService, findSchedulesByDateService } from "./service";
 import { CreateScheduleDTO } from "./dto/createSchedule.dto";
+import { verifyDir } from "../../lib/verifyDir";
 
 sharp.cache(false)
 
@@ -176,12 +177,3 @@ export const scheduleByUserId: RequestHandler = async(req, res):Promise<any> => 
     }
 }
 
-const verifyDir = async (path: string) => {
-    try{
-        await fs.access(path)
-        return
-    }catch{
-        await fs.mkdir(path, { recursive: true })
-        return
-    }
-}

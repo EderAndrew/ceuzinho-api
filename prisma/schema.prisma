@@ -24,6 +24,7 @@ model User {
   photoUrl             String?
   phone                String?
   sex                  Sex
+  status               Boolean      @default(true)
   bgColor              String
   firstAccess          Boolean      @default(true)
   createdAt            DateTime     @default(now()) @db.Timestamp(6)

@@ -1,11 +1,19 @@
 import { RequestHandler } from "express";
-import { createUserSchema, loginUserSchema } from "./validator";
+import { createUserSchema, loginUserSchema, updateUserSchema } from "./validator";
 import { compare, hashSync } from "bcrypt";
 import { createUserService, findUserByEmailService, findUserByIdService, findUsersService } from "./service";
 import { createJWT, decodeJwt } from "../../middlewares/jwt";
 import { Role, Sex } from "@prisma/client";
 import { sendEmail } from "../../lib/sendEmail";
+import { ExtendFileRequest } from "../../lib/types/extendRequest";
+import { UpdateUserDTO } from "./dto/updateuser.dto";
+import formidable from "formidable";
+import path from "path";
+import { verifyDir } from "../../lib/verifyDir";
+import sharp from "sharp";
+import fs from "fs/promises";
 
+sharp.cache(false)
 
 export const signIn: RequestHandler = async (req, res): Promise<any> => {
   try{
@@ -105,6 +113,69 @@ export const allUsers: RequestHandler = async (req, res): Promise<any> => {
 
 }
 
+export const editUser: RequestHandler = async (req: ExtendFileRequest, res): Promise<any> => {
+  try{
+    const { id } = req.params
+    const EUser = {
+      name: req.fields?.name?.[0],
+      email: req.fields?.email?.[0],
+      password: req.fields?.password?.[0],
+      role: req.fields?.role?.[0],
+      firstAccess: false,
+      phone: req.fields?.phone?.[0]
+    } as UpdateUserDTO
+
+    const safeData = updateUserSchema.safeParse(EUser)
+
+    if(!safeData.success) return res.status(400).json({ error: safeData.error.flatten().fieldErrors })
+    
+    let files = req.files as {[fieldname: string]: formidable.File[]}
+
+     //Save informations with out document
+    if(!files.document) {
+      const user = await updateUserService(id, EUser)
+
+      if(!user) return res.status(500).json({ message: "Erro ao editar usuário." })
+
+      return res.status(201).json({ message: "Usuário editado com sucesso..." })
+    }
+
+    const imageTypes = ["image/webp", "image/jpeg", "image/png", "image/jpg"]
+
+    if(!imageTypes.includes(files.document[0].mimetype as string)){
+      return res.status(500).json({ message: "Tipo de imagem incompativel. Escolha uma imagem do tipo jpg ou png." })
+    }
+
+    const publicDir = path.join(__dirname, "../../../public/media");
+    
+    await verifyDir(publicDir)
+
+    await sharp(files.document[0].filepath)
+     .toFormat("webp")
+     .toFile(`./public/media/${files.document[0].originalFilename?.split(".")[0]}.webp`)
+
+    const formUser = {
+      ...EUser,
+      photo: files.document[0].originalFilename?.split(".")[0],
+      photoUrl: process.env.NODE_ENV === "production"
+      ? `${process.env.URL_DOC_PROD}media${files.document[0].originalFilename?.split(".")[0]}.webp`
+      : `${process.env.URL_DOC_DEV}media${files.document[0].originalFilename?.split(".")[0]}.webp`
+    }
+
+    await fs.unlink(files.document[0].filepath)
+
+    const user = await updateUserService(id, formUser)
+
+    if(!user) return res.status(500).json({ message: "Erro ao atualizar usuário." })
+        
+    return res.status(201).json({ message: "Usuário atualizado com sucesso" })
+
+  }catch(error){
+    if(error instanceof Error){
+      console.error(error.message)
+    }
+  }
+}
 
 export const pong: RequestHandler = (req, res) => {
   res.status(200).json({ pong: true})
