@@ -107,7 +107,9 @@ export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res)
 
 export const updateSchedule: RequestHandler = async(req, res): Promise<any> => {
     try{
-
+        //pegar os dados
+        //verificar se a schedule existe
+        //Editar as informações
         return res.status(200).json({ message: "Agendamento atualizado com sucesso." })
     }catch(error){
         if(error instanceof Error){
@@ -149,7 +151,7 @@ export const scheduleById: RequestHandler = async(req, res): Promise<any> => {
     try{
         let { id } = req.params
 
-        const schedule = await findScheduleByIdService(id)
+        const schedule = await findScheduleByIdService(parseInt(id))
 
         if(!schedule) return res.status(404).json({ message: "Agendamento nao encontrados." , data: [] })
         

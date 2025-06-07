@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import { createUserSchema, loginUserSchema, updateUserSchema } from "./validator";
 import { compare, hashSync } from "bcrypt";
-import { createUserService, findUserByEmailService, findUserByIdService, findUsersService, updateUserService } from "./service";
+import { createUserService, disableUserService, findUserByEmailService, findUserByIdService, findUsersService, updateUserService } from "./service";
 import { createJWT, decodeJwt } from "../../middlewares/jwt";
 import { Role, Sex } from "@prisma/client";
 import { sendEmail } from "../../lib/sendEmail";
@@ -22,19 +22,22 @@ export const signIn: RequestHandler = async (req, res): Promise<any> => {
       return res.status(400).json({ error: safeData.error.flatten().fieldErrors });
     }
 
-    if(!safeData.data.email || !safeData.data.password) return res.status(400).json({ message: "Email ou senha não informados." })
+    if(!safeData.data.email || !safeData.data.password) return res.status(400).json({ message: "Email ou senha não informados.", token: null })
 
     const user = await findUserByEmailService(safeData.data.email)
+    
+    //Verificar se o usuário encontrado esta ativo
+    if(!user?.status) return res.status(200).json({ message: "Usuário não identificado.", token: null })
 
-    if(!user) return res.status(404).json({ message: "Email ou senha incorreto." })
+    if(!user) return res.status(404).json({ message: "Email ou senha incorreto.", token: null })
 
     const hash = await compare(safeData.data.password, user.password);
 
-    if(!hash) return res.status(401).json({ message: "Email ou senha incorreto." })
+    if(!hash) return res.status(401).json({ message: "Email ou senha incorreto.", token: null })
   
     const token = createJWT({id: user.id})
 
-    return res.status(200).json({ token })
+    return res.status(200).json({ message: "Acesso permitido.", token })
 
   }catch(error){
     if(error instanceof Error){
@@ -182,6 +185,25 @@ export const editUser: RequestHandler = async (req: ExtendFileRequest, res): Pro
     if(!user) return res.status(500).json({ message: "Erro ao atualizar usuário." })
         
     return res.status(200).json({ message: "Usuário atualizado com sucesso" })
+
+  }catch(error){
+    if(error instanceof Error){
+      console.error(error.message)
+    }
+  }
+}
+
+export const disableUser: RequestHandler = async(req, res): Promise<any> => {
+  try{
+    let { id, status } = req.body
+
+    const hasUser = await findUserByIdService(id)
+
+    if(!hasUser) return res.status(200).json({message: "Usuário não identificado."})
+
+    await disableUserService(id, status)
+
+    return res.status(200).json({ message: "Usuário desativado." })
 
   }catch(error){
     if(error instanceof Error){

@@ -61,3 +61,16 @@ export const updateUser = async(id: number, user: UpdateUserDTO) => {
 
     return userData
 }
+
+export const handleDisabled = async(id: number, userStatus: boolean) => {
+    const user = await prisma.user.update({
+        where:{
+            id
+        },
+        data:{
+            status: userStatus ? false : true
+        }
+    })
+
+    return user
+}
