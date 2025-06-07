@@ -2,22 +2,22 @@ import { Room } from "@prisma/client"
 
 export interface CreateScheduleDTO {
     id?: number,
-    date: string,
+    date?: string,
     timeStart?: string,
     timeEnd?: string,
-    bgColor: string,
+    bgColor?: string,
     period?: string,
-    scheduleType: string,
+    scheduleType?: string,
     room?: Room,
-    tema: string,
+    tema?: string,
     info?: string,
-    createdBy: number,
+    createdBy?: number,
     teatcherOne?: number,
     teatcherTwo?: number,
     ministratorOne?: string,
     ministratorTwo?: string,
     document?: string,
     documentUrl?: string,
-    createdAt: Date,
+    createdAt?: Date,
     updatedAt?: Date
 }

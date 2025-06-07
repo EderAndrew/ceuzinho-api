@@ -7,16 +7,16 @@ const prisma = new PrismaClient
 export const createSchedule = async (payload: CreateScheduleDTO) => {
     const schedule = await prisma.schedule.create({
         data: {
-            date: new Date(payload.date),
+            date: new Date(payload.date as string),
             timeStart: payload.timeStart,
             timeEnd: payload.timeEnd,
             period: payload.period as Period,
-            scheduleType: payload.scheduleType,
+            scheduleType: payload.scheduleType as string,
             bgColor: payload.bgColor,
             room: payload.room,
-            tema: payload.tema,
+            tema: payload.tema as string,
             info: payload.info,
-            createdBy: payload.createdBy,
+            createdBy: payload.createdBy as number,
             teatcherOne: payload.teatcherOne,
             teatcherTwo: payload.teatcherTwo,
             document: payload.document ? payload.document : null,
@@ -153,6 +153,29 @@ export const findScheduleByUserId = async (id: string) => {
                     phone: true
                 }
             }
+        }
+    })
+
+    return schedule
+}
+
+export const updateSchedule = async (id: number, payload:CreateScheduleDTO) => {
+    const schedule = await prisma.schedule.update({
+        where: {
+            id
+        },
+        data: {
+            period: payload.period as Period,
+            timeStart: payload.timeStart,
+            timeEnd: payload.timeEnd,
+            bgColor: payload.bgColor,
+            scheduleType: payload.scheduleType,
+            room: payload.room,
+            tema: payload.tema,
+            teatcherOne: payload.teatcherOne,
+            teatcherTwo: payload.teatcherTwo,
+            document: payload.document,
+            documentUrl: payload.documentUrl
         }
     })
 

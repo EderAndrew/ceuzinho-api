@@ -203,7 +203,7 @@ export const disableUser: RequestHandler = async(req, res): Promise<any> => {
 
     await disableUserService(hasUser.id, hasUser.status)
 
-    return res.status(200).json({ message: "Usuário desativado." })
+    return res.status(200).json({ message: hasUser.status ? "Usuário desativado." : "Usuário ativado" })
 
   }catch(error){
     if(error instanceof Error){

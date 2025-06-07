@@ -15,3 +15,7 @@ export const findScheduleByIdService = async (id: number) => {
 export const findScheduleByUserIdService = async (id: string) => {
     return await scheduleRepo.findScheduleByUserId(id)
 }
+
+export const updateScheduleService = async (id: number, payload:CreateScheduleDTO) => {
+    return await scheduleRepo.updateSchedule(id, payload)
+}
