@@ -54,7 +54,8 @@ export const updateUser = async(id: number, user: UpdateUserDTO) => {
            firstAccess: false,
            phone: user.phone,
            photo: user.photo,
-           photoUrl: user.photoUrl
+           photoUrl: user.photoUrl,
+           updatedAt: new Date()
         }
     })
 

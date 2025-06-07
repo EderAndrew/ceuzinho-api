@@ -171,8 +171,8 @@ export const editUser: RequestHandler = async (req: ExtendFileRequest, res): Pro
       ...EUser,
       photo: files.document[0].originalFilename?.split(".")[0],
       photoUrl: process.env.NODE_ENV === "production"
-      ? `${process.env.URL_DOC_PROD}media${files.document[0].originalFilename?.split(".")[0]}.webp`
-      : `${process.env.URL_DOC_DEV}media${files.document[0].originalFilename?.split(".")[0]}.webp`
+      ? `${process.env.URL_DOC_PROD}media/${files.document[0].originalFilename?.split(".")[0]}.webp`
+      : `${process.env.URL_DOC_DEV}media/${files.document[0].originalFilename?.split(".")[0]}.webp`
     }
 
     await fs.unlink(files.document[0].filepath)

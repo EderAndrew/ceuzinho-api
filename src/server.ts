@@ -10,6 +10,7 @@ const prisma = new PrismaClient()
 server.use(cors())
 server.use(helmet())
 server.use(express.json())
+server.use(express.static('public'));
 server.use(express.urlencoded({ extended: true }))
 server.use("/api", routes)
 
