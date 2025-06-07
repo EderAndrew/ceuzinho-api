@@ -258,3 +258,13 @@ export const scheduleByUserId: RequestHandler = async(req, res):Promise<any> => 
     }
 }
 
+export const changeScheduleProfessorId: RequestHandler = async(req, res):Promise<any> => {
+    try{
+        
+    }catch(error){
+        if(error instanceof Error){
+            console.error(error.message)
+        }
+    }
+}
+
