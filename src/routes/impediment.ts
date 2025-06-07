@@ -1,8 +1,9 @@
 import { Router } from "express"
 import * as controller from "../modules/impediment/controller"
+import { verifyJWT } from "../middlewares/jwt"
 
 const router = Router()
 
-router.post("/create", controller.createImpediment)
+router.post("/create", verifyJWT, controller.createImpediment)
 
 export default router
