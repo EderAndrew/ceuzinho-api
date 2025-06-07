@@ -65,7 +65,9 @@ export const signUp: RequestHandler = async (req, res): Promise<any> => {
       
       const email = await sendEmail(safeData.data.email, randonPwd.toString())
 
-      return res.status(201).json({  message: email.response })
+      if(!email.response) return res.status(201).json({ message: "Usuário criado. Email não enviado." })
+
+      return res.status(201).json({  message: "Usuário criado com sucesso." })
 
     }catch(error){
       if(error instanceof Error){

@@ -113,3 +113,48 @@ export const findScheduleById = async (id: string) => {
 
     return schedule
 }
+
+export const findScheduleByUserId = async (id: string) => {
+    const schedule = await prisma.schedule.findFirst({
+        where: {
+            OR: [
+                { teatcherOne: parseInt(id) },
+                { teatcherTwo: parseInt(id) }
+            ]
+        },
+        include: {
+            createdByUser: {
+                select: {
+                    id: true,
+                    photo: true,
+                    photoUrl: true,
+                    name: true,
+                    email: true,
+                    phone: true
+                }
+            },
+            teatcherOneUser: {
+                select: {
+                    id: true,
+                    photo: true,
+                    photoUrl: true,
+                    name: true,
+                    email: true,
+                    phone: true
+                }
+            },
+            teatcherTwoUser: {
+                select: {
+                    id: true,
+                    photo: true,
+                    photoUrl: true,
+                    name: true,
+                    email: true,
+                    phone: true
+                }
+            }
+        }
+    })
+
+    return schedule
+}

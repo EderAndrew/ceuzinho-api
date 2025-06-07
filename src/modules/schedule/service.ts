@@ -11,3 +11,7 @@ export const findSchedulesByDateService = async (date: string) => {
 export const findScheduleByIdService = async (id: string) => {
     return await scheduleRepo.findScheduleById(id)
 }
+
+export const findScheduleByUserIdService = async (id: string) => {
+    return await scheduleRepo.findScheduleByUserId(id)
+}
