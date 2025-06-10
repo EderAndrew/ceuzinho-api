@@ -79,6 +79,7 @@ export const verifyOTC: RequestHandler = async(req, res): Promise<any> => {
         const selectRecovery = await selectRecoveryService(safeData.data.email)
 
         if(!selectRecovery) return res.status(404).json({ message: "Não foi encontrado esse usuário." })
+            
         const verifyOtc = await compare(safeData.data.otc as string, selectRecovery.otc)
 
         if(!verifyOtc) return res.status(400).json({ message: "Código OTC não confere." })

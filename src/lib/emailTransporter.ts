@@ -13,6 +13,6 @@ export const transporter = nodemailer.createTransport({
     port: 2525,
     auth: {
         user: "3fb1ae64a4405f",
-        pass: "****c626"
+        pass: "6d02191e94c626"
     }
 })
