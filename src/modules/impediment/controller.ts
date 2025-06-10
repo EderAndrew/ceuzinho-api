@@ -2,8 +2,9 @@ import { RequestHandler } from "express";
 import { impedimentSchema } from "./validator";
 import { createImpedimentService } from "./service";
 import { CreateImpedimentDTO } from "./dto/createImpediment.dto";
-import { findScheduleByIdService } from "../schedule/service";
+import { findScheduleByIdService, findScheduleByUserIdService } from "../schedule/service";
 import { findUserByIdService } from "../users/service";
+
 
 export const createImpediment: RequestHandler = async(req, res): Promise<any> => {
     try{
@@ -20,6 +21,10 @@ export const createImpediment: RequestHandler = async(req, res): Promise<any> =>
         const verifyUser = await findUserByIdService(parseInt(userId))
     
         if(!verifyUser) return res.status(404).json({ message: "Não foi identificado nenhum usuário" })
+
+        const checkScheduleByUser = await findScheduleByUserIdService(userId)
+
+        if(!checkScheduleByUser) return res.status(404).json({ message: "Esse usuário não esta nesse agendamento." })
 
         const payload = {
             info: safeData.data.info,
