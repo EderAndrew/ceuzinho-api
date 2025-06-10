@@ -1,8 +1,8 @@
 import { Router } from "express"
 import * as controller from "../modules/recovery/controller"
-import { verifyJWT } from "../middlewares/jwt"
 const router = Router()
 
-router.post("/sendotc", verifyJWT, controller.sendotc)
+router.post("/sendotc", controller.sendotc)
+router.post("/otc", controller.verifyOTC)
 
 export default router
