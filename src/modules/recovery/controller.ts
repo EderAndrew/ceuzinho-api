@@ -40,7 +40,7 @@ export const sendotc: RequestHandler = async(req, res): Promise<any> => {
 
       if(!recovery) return res.status(500).json({ message: "OTC não registrado" })
       
-      return res.status(201).json({ message: "OTC enviado com sucesso." })
+      return res.status(200).json({ message: "OTC enviado com sucesso." })
     }
 
     const msg = `Esse é o seu código para confirmar e trocar a senha: ${OTCode}`
@@ -58,13 +58,40 @@ export const sendotc: RequestHandler = async(req, res): Promise<any> => {
 
     const recovery = await saveRecoveryService(payload)
 
-    if(!recovery) return res.status(500).json({ message: "OTC não registrado" })
+    if(!recovery) return res.status(500).json({ message: "Código OTC não registrado" })
     
-    return res.status(201).json({ message: "OTC enviado com sucesso." })
+    return res.status(201).json({ message: "Código OTC enviado com sucesso." })
     
   }catch(error){
     if(error instanceof Error){
       console.error(error.message)
     }
   }
+}
+
+export const verifyOTC: RequestHandler = async(req, res): Promise<any> => {
+    try{
+        const safeData = recoverySchema.safeParse(req.body);
+        if (!safeData.success) {
+            return res.status(400).json({ error: safeData.error.flatten().fieldErrors });
+        }
+
+        const selectRecovery = await selectRecoveryService(safeData.data.email)
+
+        if(!selectRecovery) return res.status(404).json({ message: "Não foi encontrado esse usuário." })
+        const verifyOtc = await compare(safeData.data.otc as string, selectRecovery.otc)
+
+        if(!verifyOtc) return res.status(200).json({ message: "Código OTC não confere." })
+        
+        const dateNow = new Date()
+        const verifyExpiresAt = dateNow.getTime() - selectRecovery.expiresAt.getTime()
+
+        if(verifyExpiresAt >= 5 * 60000) return res.status(200).json({ message: "Código de recuperação expirou. Tente novamente" })
+        
+        return res.status(200).json({ message: "Código aceito. Troque a senha." })
+    }catch(error){
+        if(error instanceof Error){
+            console.error(error.message)
+        }
+    }
 }
