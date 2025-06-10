@@ -33,11 +33,13 @@ model User {
   createdBySchedule    Schedule[]   @relation("CreatedByUser")
   teatcherOneSchedules Schedule[]   @relation("TeatcherOneUser")
   teatcherTwoSchedule  Schedule[]   @relation("TeatcherTwoUser")
-  Impediment           Impediment[]
+  acceptImpediment     Impediment[] @relation("AcceptImpediment")
+  requestImpediment    Impediment[] @relation("RequestImpediment")
   Post                 Post[]
   sessions             Session[]
   Document             Document[]   @relation("CreatedByUser")
   Recovery             Recovery[]
+  
 
   @@map("users")
 }
@@ -152,14 +154,17 @@ model ClassRoom {
 }
 
 model Impediment {
-  id         Int              @id @default(autoincrement())
-  info       String
-  userId     Int
-  scheduleId Int
-  status     ImpedimentStatus @default(AGUARDANDO)
-  users      User             @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  schedule   Schedule         @relation(fields: [scheduleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  createdAt  DateTime         @default(now()) @db.Timestamp(6)
+  id                Int              @id @default(autoincrement())
+  info              String
+  requestId         Int
+  acceptId          Int?
+  scheduleId        Int
+  status            ImpedimentStatus @default(AGUARDANDO)
+  requestImpediment User             @relation("RequestImpediment", fields: [requestId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  acceptImpediment  User?            @relation("AcceptImpediment", fields: [acceptId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  schedule          Schedule         @relation(fields: [scheduleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt         DateTime         @default(now()) @db.Timestamp(6)
+  updatedAt         DateTime?
 
   @@map("impediments")
 }

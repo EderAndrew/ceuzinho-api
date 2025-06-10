@@ -1,6 +1,6 @@
 export interface CreateImpedimentDTO {
  info: string,
- userId: number,
+ requestId: number,
  scheduleId: number,
  createdAt?: Date
 }

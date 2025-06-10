@@ -23,7 +23,7 @@ export const createImpediment: RequestHandler = async(req, res): Promise<any> =>
 
         const payload = {
             info: safeData.data.info,
-            userId: parseInt(userId),
+            requestId: parseInt(userId),
             scheduleId: safeData.data.scheduleId
         } as CreateImpedimentDTO
 
