@@ -1,0 +1,70 @@
+import { RequestHandler } from "express";
+import { findUserByEmailService } from "../users/service";
+import { compare, hashSync } from "bcrypt";
+import { sendEmail } from "../../lib/sendEmail";
+import { saveRecoveryService, selectRecoveryService, updateRecoveryService } from "./service";
+import { createRecoveryDTO } from "./dto/recovery.dto";
+import { recoverySchema } from "./validator";
+
+export const sendotc: RequestHandler = async(req, res): Promise<any> => {
+  try{
+    const safeData = recoverySchema.safeParse(req.body);
+    if (!safeData.success) {
+      return res.status(400).json({ error: safeData.error.flatten().fieldErrors });
+    }
+
+    if(!safeData.data.email) return res.status(400).json({ message: "Email não informado." })
+
+    const user = await findUserByEmailService(safeData.data.email)
+
+    if(!user?.status) return res.status(404).json({ message: "Usuário não identificado." })
+    
+    let OTCode = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000
+
+    const selectRecovery = await selectRecoveryService(safeData.data.email)
+
+    if(selectRecovery){
+      const verifyOTC = await compare(OTCode.toString(), selectRecovery.otc);
+
+      if(verifyOTC){
+        OTCode = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000
+      }
+
+      const msg = `Esse é o seu código para confirmar e trocar a senha: ${OTCode}`
+      const email = await sendEmail(safeData.data.email, msg)
+
+      if(!email.response) return res.status(201).json({ message: "Email não enviado." })
+      
+      const hash = hashSync(OTCode.toString(), 10)
+      const recovery = await updateRecoveryService(selectRecovery.id, hash)
+
+      if(!recovery) return res.status(500).json({ message: "OTC não registrado" })
+      
+      return res.status(201).json({ message: "OTC enviado com sucesso." })
+    }
+
+    const msg = `Esse é o seu código para confirmar e trocar a senha: ${OTCode}`
+    const email = await sendEmail(safeData.data.email, msg)
+
+    if(!email.response) return res.status(201).json({ message: "Email não enviado." })
+    
+    const hash = hashSync(OTCode.toString(), 10)
+
+    const payload = {
+        expiresAt: new Date(new Date().getTime() + 5 * 60000),
+        userEmail: safeData.data.email,
+        otc: hash
+    } as createRecoveryDTO
+
+    const recovery = await saveRecoveryService(payload)
+
+    if(!recovery) return res.status(500).json({ message: "OTC não registrado" })
+    
+    return res.status(201).json({ message: "OTC enviado com sucesso." })
+    
+  }catch(error){
+    if(error instanceof Error){
+      console.error(error.message)
+    }
+  }
+}
