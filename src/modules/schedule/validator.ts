@@ -21,3 +21,8 @@ export const createScheduleSchema = z.object({
     documentUrl: z.string().optional(),
     updatedAt: z.date().optional()
 })
+
+export const changeProfessorIdSchema = z.object({
+    newId: z.number(),
+    oldId: z.number()
+})

@@ -2,12 +2,13 @@ import fs from "fs/promises";
 import { RequestHandler } from "express";
 import { ExtendFileRequest } from "../../lib/types/extendRequest";
 import formidable from "formidable";
-import { createScheduleSchema } from "./validator";
+import { changeProfessorIdSchema, createScheduleSchema } from "./validator";
 import sharp from "sharp";
 import path from "path";
 import { createScheduleService, findScheduleByIdService, findScheduleByUserIdService, findSchedulesByDateService, updateScheduleService } from "./service";
 import { CreateScheduleDTO } from "./dto/createSchedule.dto";
 import { verifyDir } from "../../lib/verifyDir";
+import { findUserByIdService } from "../users/service";
 
 sharp.cache(false)
 
@@ -116,9 +117,7 @@ export const updateSchedule: RequestHandler = async(req: ExtendFileRequest, res)
             bgColor: req.fields?.period?.[0] === "MANHÃ" ? "#EBBC16" : req.fields?.period?.[0] === "TARDE" ? "#7A9B44" : "#043A68",
             scheduleType: req.fields?.scheduleType?.[0],
             room: req.fields?.room?.[0],
-            tema: req.fields?.tema?.[0],
-            teatcherOne: parseInt(req.fields?.teatcherOne?.[0] as string),
-            teatcherTwo:parseInt(req.fields?.teatcherTwo?.[0] as string)
+            tema: req.fields?.tema?.[0]
         } as CreateScheduleDTO
 
         const safeData = createScheduleSchema.safeParse(ESchedule)
@@ -260,7 +259,28 @@ export const scheduleByUserId: RequestHandler = async(req, res):Promise<any> => 
 
 export const changeScheduleProfessorId: RequestHandler = async(req, res):Promise<any> => {
     try{
+        let {scheduleId} = req.params
+        const safeData = changeProfessorIdSchema.safeParse(req.body);
+        if (!safeData.success) {
+            return res.status(400).json({ error: safeData.error.flatten().fieldErrors });
+        }
+
+        const schedule = await findScheduleByIdService(parseInt(scheduleId))
+
+        if(!schedule) return res.status(404).json({ message: "Agendamento nao encontrado."})
+
+        const newProfessor = await findUserByIdService(safeData.data.newId)
+
+        if(!newProfessor) return res.status(404).json({ message: "Professor nao encontrado." })
+
+        const oldProfessor = await findUserByIdService(safeData.data.oldId)
+
+        if(!oldProfessor) return res.status(404).json({ message: "Professor nao encontrado."})
         
+        if(newProfessor.id === schedule.teatcherOne || newProfessor.id === schedule.teatcherTwo) return res.status(400).json({ message: "Professor já está vinculado ao agendamento." })
+        
+        
+
     }catch(error){
         if(error instanceof Error){
             console.error(error.message)
