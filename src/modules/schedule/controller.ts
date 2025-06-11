@@ -257,7 +257,7 @@ export const scheduleByUserId: RequestHandler = async(req, res):Promise<any> => 
     }
 }
 
-export const changeScheduleProfessorId: RequestHandler = async(req, res):Promise<any> => {
+export const changeScheduleTeacherId: RequestHandler = async(req, res):Promise<any> => {
     let one = false
     try{
         let {scheduleId} = req.params
@@ -270,28 +270,28 @@ export const changeScheduleProfessorId: RequestHandler = async(req, res):Promise
 
         if(!schedule) return res.status(404).json({ message: "Agendamento nao encontrado."})
 
-        const newProfessor = await findUserByIdService(safeData.data.newId)
+        const newTeatcher = await findUserByIdService(safeData.data.newId)
 
-        if(!newProfessor) return res.status(404).json({ message: "Professor nao encontrado." })
+        if(!newTeatcher) return res.status(404).json({ message: "Professor nao encontrado." })
 
-        const oldProfessor = await findUserByIdService(safeData.data.oldId)
+        const oldTeatcher = await findUserByIdService(safeData.data.oldId)
 
-        if(!oldProfessor) return res.status(404).json({ message: "Professor nao encontrado."})
+        if(!oldTeatcher) return res.status(404).json({ message: "Professor nao encontrado."})
         
-        if(newProfessor.id === schedule.teatcherOne || newProfessor.id === schedule.teatcherTwo) return res.status(400).json({ message: "Professor já está vinculado ao agendamento." })
+        if(newTeatcher.id === schedule.teatcherOne || newTeatcher.id === schedule.teatcherTwo) return res.status(400).json({ message: "Professor já está vinculado ao agendamento." })
         
-        if(newProfessor.id === oldProfessor.id) return res.status(404).json({ message: "Você esta tentando trocar o mesmo professor?" })
+        if(newTeatcher.id === oldTeatcher.id) return res.status(404).json({ message: "Você esta tentando trocar o mesmo professor?" })
         
-        if(oldProfessor.id === schedule.teatcherOne){
+        if(oldTeatcher.id === schedule.teatcherOne){
             one = true
-            const first = await changeTeatcherService(parseInt(scheduleId), newProfessor.id, one)
+            const first = await changeTeatcherService(parseInt(scheduleId), newTeatcher.id, one)
 
             if(!first) return res.status(400).json({ message: "Não foi possível realizar a troca de professores." })
             
             return res.status(200).json({ message: "Troca de professor efetuada com sucesso" })
         }     
 
-        const first = await changeTeatcherService(parseInt(scheduleId), newProfessor.id, one)
+        const first = await changeTeatcherService(parseInt(scheduleId), newTeatcher.id, one)
 
         if(!first) return res.status(400).json({ message: "Não foi possível realizar a troca de professores." })
         
