@@ -19,3 +19,9 @@ export const findScheduleByUserIdService = async (id: string) => {
 export const updateScheduleService = async (id: number, payload:CreateScheduleDTO) => {
     return await scheduleRepo.updateSchedule(id, payload)
 }
+
+export const changeTeatcherService = async (id: number, teatcherId: number, first: boolean) => {
+    if(first) return await scheduleRepo.changeFirstTeatcher(id, teatcherId)
+    
+    return await scheduleRepo.changeSecondTeatcher(id, teatcherId)
+}

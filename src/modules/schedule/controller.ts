@@ -5,7 +5,7 @@ import formidable from "formidable";
 import { changeProfessorIdSchema, createScheduleSchema } from "./validator";
 import sharp from "sharp";
 import path from "path";
-import { createScheduleService, findScheduleByIdService, findScheduleByUserIdService, findSchedulesByDateService, updateScheduleService } from "./service";
+import { changeTeatcherService, createScheduleService, findScheduleByIdService, findScheduleByUserIdService, findSchedulesByDateService, updateScheduleService } from "./service";
 import { CreateScheduleDTO } from "./dto/createSchedule.dto";
 import { verifyDir } from "../../lib/verifyDir";
 import { findUserByIdService } from "../users/service";
@@ -258,6 +258,7 @@ export const scheduleByUserId: RequestHandler = async(req, res):Promise<any> => 
 }
 
 export const changeScheduleProfessorId: RequestHandler = async(req, res):Promise<any> => {
+    let one = false
     try{
         let {scheduleId} = req.params
         const safeData = changeProfessorIdSchema.safeParse(req.body);
@@ -279,8 +280,22 @@ export const changeScheduleProfessorId: RequestHandler = async(req, res):Promise
         
         if(newProfessor.id === schedule.teatcherOne || newProfessor.id === schedule.teatcherTwo) return res.status(400).json({ message: "Professor já está vinculado ao agendamento." })
         
+        if(newProfessor.id === oldProfessor.id) return res.status(404).json({ message: "Você esta tentando trocar o mesmo professor?" })
         
+        if(oldProfessor.id === schedule.teatcherOne){
+            one = true
+            const first = await changeTeatcherService(parseInt(scheduleId), newProfessor.id, one)
 
+            if(!first) return res.status(400).json({ message: "Não foi possível realizar a troca de professores." })
+            
+            return res.status(200).json({ message: "Troca de professor efetuada com sucesso" })
+        }     
+
+        const first = await changeTeatcherService(parseInt(scheduleId), newProfessor.id, one)
+
+        if(!first) return res.status(400).json({ message: "Não foi possível realizar a troca de professores." })
+        
+        return res.status(200).json({ message: "Troca de professor efetuada com sucesso" })
     }catch(error){
         if(error instanceof Error){
             console.error(error.message)

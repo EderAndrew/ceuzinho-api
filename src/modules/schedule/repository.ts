@@ -181,3 +181,29 @@ export const updateSchedule = async (id: number, payload:CreateScheduleDTO) => {
 
     return schedule
 }
+
+export const changeFirstTeatcher = async(id: number, teatcherId: number) => {
+    const schedule = await prisma.schedule.update({
+        where: {
+            id
+        },
+        data: {
+            teatcherOne: teatcherId
+        }
+    })
+
+    return schedule
+}
+
+export const changeSecondTeatcher = async(id: number, teatcherId: number) => {
+    const schedule = await prisma.schedule.update({
+        where: {
+            id
+        },
+        data: {
+            teatcherTwo: teatcherId
+        }
+    })
+
+    return schedule
+}
