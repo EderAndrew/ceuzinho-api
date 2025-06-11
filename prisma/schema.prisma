@@ -103,15 +103,15 @@ model Issue {
 
 model Schedule {
   id              Int          @id @default(autoincrement())
-  date            DateTime
+  date            DateTime?
   timeStart       String?
   timeEnd         String?
   period          Period?
-  scheduleType    String
+  scheduleType    String?
   room            Room?
-  tema            String
+  tema            String?
   info            String?
-  createdBy       Int
+  createdBy       Int?
   teatcherOne     Int?
   teatcherTwo     Int?
   ministratorOne  String?
@@ -121,7 +121,7 @@ model Schedule {
   bgColor         String?
   createdAt       DateTime     @default(now()) @db.Timestamp(6)
   updatedAt       DateTime?    @db.Timestamp(6)
-  createdByUser   User         @relation("CreatedByUser", fields: [createdBy], references: [id])
+  createdByUser   User?         @relation("CreatedByUser", fields: [createdBy], references: [id])
   teatcherOneUser User?        @relation("TeatcherOneUser", fields: [teatcherOne], references: [id])
   teatcherTwoUser User?        @relation("TeatcherTwoUser", fields: [teatcherTwo], references: [id])
   ClassRoom       ClassRoom[]
