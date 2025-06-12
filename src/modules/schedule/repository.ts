@@ -207,3 +207,11 @@ export const changeSecondTeatcher = async(id: number, teatcherId: number) => {
 
     return schedule
 }
+
+export const deleteSchedule = async(id: number) => {
+    return await prisma.schedule.delete({
+        where: {
+            id
+        }
+    })
+}

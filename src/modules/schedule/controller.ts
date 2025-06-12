@@ -5,7 +5,7 @@ import formidable from "formidable";
 import { changeProfessorIdSchema, createScheduleSchema } from "./validator";
 import sharp from "sharp";
 import path from "path";
-import { changeTeatcherService, createScheduleService, findScheduleByIdService, findScheduleByUserIdService, findSchedulesByDateService, updateScheduleService } from "./service";
+import { changeTeatcherService, createScheduleService, deleteScheduleService, findScheduleByIdService, findScheduleByUserIdService, findSchedulesByDateService, updateScheduleService } from "./service";
 import { CreateScheduleDTO } from "./dto/createSchedule.dto";
 import { verifyDir } from "../../lib/verifyDir";
 import { findUserByIdService } from "../users/service";
@@ -199,6 +199,13 @@ export const updateSchedule: RequestHandler = async(req: ExtendFileRequest, res)
 
 export const deleteSchedule: RequestHandler = async(req, res): Promise<any> => {
     try{
+        let { id } = req.params
+
+        const verifySchedule = await findScheduleByIdService(parseInt(id))
+
+        if(!verifySchedule) return res.status(404).json({ message: "Não existe Agendamento." })
+        
+        await deleteScheduleService(parseInt(id))
 
         return res.status(200).json({ message: "Agendamento excluido com sucesso." })
     }catch(error){

@@ -25,3 +25,7 @@ export const changeTeatcherService = async (id: number, teatcherId: number, firs
     
     return await scheduleRepo.changeSecondTeatcher(id, teatcherId)
 }
+
+export const deleteScheduleService = async(id: number) => {
+    return await scheduleRepo.deleteSchedule(id)
+}
