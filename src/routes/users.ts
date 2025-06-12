@@ -11,6 +11,7 @@ router.get("/me", verifyJWT, controller.me)
 router.get("/all", verifyJWT, controller.allUsers)
 router.put("/edituser/:id", verifyJWT, formMiddleware, controller.editUser)
 router.put("/disable/:id", verifyJWT, controller.disableUser)
+router.put("/changePassword", controller.changePassword)
 
 router.get("/ping", controller.pong)
 
