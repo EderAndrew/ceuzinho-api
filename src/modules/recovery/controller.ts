@@ -78,18 +78,18 @@ export const verifyOTC: RequestHandler = async(req, res): Promise<any> => {
 
         const selectRecovery = await selectRecoveryService(safeData.data.email)
 
-        if(!selectRecovery) return res.status(404).json({ message: "Não foi encontrado esse usuário." })
+        if(!selectRecovery) return res.status(404).json({ message: "Não foi encontrado esse usuário.", tokenOTC: null })
             
         const verifyOtc = await compare(safeData.data.otc as string, selectRecovery.otc)
 
-        if(!verifyOtc) return res.status(400).json({ message: "Código OTC não confere." })
+        if(!verifyOtc) return res.status(400).json({ message: "Código OTC não confere.", tokenOTC: null })
         
         const dateNow = new Date()
         const verifyExpiresAt = dateNow.getTime() - selectRecovery.expiresAt.getTime()
 
-        if(verifyExpiresAt >= 5 * 60000) return res.status(400).json({ message: "Código de recuperação expirou. Tente novamente" })
+        if(verifyExpiresAt >= 5 * 60000) return res.status(400).json({ message: "Código de recuperação expirou. Tente novamente", tokenOTC: null })
         
-        return res.status(200).json({ message: "Código aceito. Troque a senha." })
+        return res.status(200).json({ message: "Troca permitida.", tokenOTC: selectRecovery.otc })
     }catch(error){
         if(error instanceof Error){
             console.error(error.message)

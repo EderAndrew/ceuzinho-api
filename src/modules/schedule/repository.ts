@@ -175,7 +175,8 @@ export const updateSchedule = async (id: number, payload:CreateScheduleDTO) => {
             teatcherOne: payload.teatcherOne,
             teatcherTwo: payload.teatcherTwo,
             document: payload.document,
-            documentUrl: payload.documentUrl
+            documentUrl: payload.documentUrl,
+            updatedAt: new Date()
         }
     })
 

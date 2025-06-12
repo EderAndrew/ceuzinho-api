@@ -30,3 +30,21 @@ export const verifyJWT = async (req: Request, res: Response, next: NextFunction)
     next();
   });
 };
+
+export const verifyODT = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  const authHeader = req.headers["authorization"];
+
+  if (!authHeader) return res.status(401).json({ message: "Não autorizado a trocar a senha." });
+
+  const token = authHeader.split(" ")[1];
+
+  jwt.verify(token, process.env.JWT_SECRET as string, async (error, payload: any) => {
+    if (error) return res.status(401).json({ message: "Não autorizado a trocar a senha." });
+
+    const user = await selectRecoveryByOTCService(payload.email);
+
+    if (!user) return res.status(401).json({ message: "Não autorizado a trocar a senha." });
+
+    next();
+  });
+}
