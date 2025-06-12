@@ -12,3 +12,7 @@ export const saveRecoveryService = async(payload: createRecoveryDTO) => {
 export const updateRecoveryService = async(id: number, hash: string) => {
     return await recoveryRepo.updateRecovery(id, hash)
 }
+
+export const selectRecoveryByOTCService = async(id: number) => {
+    return await recoveryRepo.selectOTC(id)
+}

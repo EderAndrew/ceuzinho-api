@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { createRecoveryDTO } from "./dto/recovery.dto"
+import { addMinutes } from "date-fns"
 
 const prisma = new PrismaClient
 
@@ -31,9 +32,19 @@ export const updateRecovery = async(id: number, hash: string) => {
             id
         },
         data: {
-            expiresAt: new Date(new Date().getTime() + 5 * 60000),
+            expiresAt: addMinutes(new Date(), 5),
             otc: hash,
             updatedAt: new Date()
+        }
+    })
+
+    return otc
+}
+
+export const selectOTC = async(id: number) => {
+    const otc = await prisma.recovery.findFirst({
+        where: {
+            id
         }
     })
 

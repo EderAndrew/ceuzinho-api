@@ -5,6 +5,8 @@ import { sendEmail } from "../../lib/sendEmail";
 import { saveRecoveryService, selectRecoveryService, updateRecoveryService } from "./service";
 import { createRecoveryDTO } from "./dto/recovery.dto";
 import { recoverySchema } from "./validator";
+import { differenceInMinutes } from "date-fns";
+import { createJWT } from "../../middlewares/jwt";
 
 export const sendotc: RequestHandler = async(req, res): Promise<any> => {
   try{
@@ -85,11 +87,13 @@ export const verifyOTC: RequestHandler = async(req, res): Promise<any> => {
         if(!verifyOtc) return res.status(400).json({ message: "Código OTC não confere.", tokenOTC: null })
         
         const dateNow = new Date()
-        const verifyExpiresAt = dateNow.getTime() - selectRecovery.expiresAt.getTime()
+        const verifyExpiresAt = differenceInMinutes(dateNow, selectRecovery.expiresAt)
 
-        if(verifyExpiresAt >= 5 * 60000) return res.status(400).json({ message: "Código de recuperação expirou. Tente novamente", tokenOTC: null })
+        if(verifyExpiresAt >= 5) return res.status(400).json({ message: "Código de recuperação expirou. Tente novamente", tokenOTC: null })
+
+        const token = createJWT({id: selectRecovery.id})
         
-        return res.status(200).json({ message: "Troca permitida.", tokenOTC: selectRecovery.otc })
+        return res.status(200).json({ message: "Troca permitida.", tokenOTC: token })
     }catch(error){
         if(error instanceof Error){
             console.error(error.message)

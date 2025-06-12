@@ -2,6 +2,7 @@ import { Router } from "express"
 import * as controller from "../modules/users/controller"
 import { verifyJWT } from "../middlewares/jwt"
 import { formMiddleware } from "../middlewares/formMiddlware"
+import { verifyOTC } from "../modules/recovery/controller"
 
 const router = Router()
 
@@ -11,7 +12,7 @@ router.get("/me", verifyJWT, controller.me)
 router.get("/all", verifyJWT, controller.allUsers)
 router.put("/edituser/:id", verifyJWT, formMiddleware, controller.editUser)
 router.put("/disable/:id", verifyJWT, controller.disableUser)
-router.put("/changePassword", controller.changePassword)
+router.put("/changePassword", verifyOTC, controller.changePassword)
 
 router.get("/ping", controller.pong)
 

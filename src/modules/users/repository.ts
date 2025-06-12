@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client"
 import { CreateUserDTO } from "./dto/createuser.dto"
 import { UpdateUserDTO } from "./dto/updateuser.dto"
 import { LoginUserDTO } from "./dto/loginUser.dto"
+import { UpdateImageDTO } from "./dto/updateImage.dto"
 
 const prisma = new PrismaClient
 
@@ -87,4 +88,18 @@ export const changePassword = async(payload: LoginUserDTO) => {
     })
 
     return user
+}
+
+export const updatePhoto = async(id: number, payload: UpdateImageDTO) => {
+    const photo = await prisma.user.update({
+        where: {
+            id
+        },
+        data: {
+            photo: payload.photo,
+            photoUrl: payload.photoUrl
+        }
+    })
+
+    return photo
 }

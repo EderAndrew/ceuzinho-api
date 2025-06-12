@@ -1,12 +1,25 @@
 import { Request, NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
 import { findUserByIdService } from "../modules/users/service";
+import { selectRecoveryByOTCService } from "../modules/recovery/service";
 
 export const createJWT = (payload: object) => {
+  if(!process.env.JWT_SECRET){
+    throw new Error("JWT_SECRET não é definido.")
+  }
   return jwt.sign(payload, process.env.JWT_SECRET as string, {
     expiresIn: "2h",
   });
 };
+
+export const createOTC = (payload: object) => {
+  if(!process.env.JWT_SECRET){
+    throw new Error("JWT_SECRET não é definido.")
+  }
+  return jwt.sign(payload, process.env.JWT_SECRET as string, {
+    expiresIn: "5min" 
+  })
+}
 
 export const decodeJwt = (token: string) => {
   const resp = jwt.decode(token);
@@ -41,7 +54,7 @@ export const verifyODT = async (req: Request, res: Response, next: NextFunction)
   jwt.verify(token, process.env.JWT_SECRET as string, async (error, payload: any) => {
     if (error) return res.status(401).json({ message: "Não autorizado a trocar a senha." });
 
-    const user = await selectRecoveryByOTCService(payload.email);
+    const user = await selectRecoveryByOTCService(payload.id);
 
     if (!user) return res.status(401).json({ message: "Não autorizado a trocar a senha." });
 
