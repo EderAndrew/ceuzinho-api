@@ -7,6 +7,7 @@ export const createImpediment = async(payload: CreateImpedimentDTO) => {
     return await prisma.impediment.create({
         data: {
             info: payload.info,
+            status: "AGUARDANDO",
             requestId: payload.requestId,
             scheduleId: payload.scheduleId
         }
