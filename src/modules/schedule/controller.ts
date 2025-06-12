@@ -5,7 +5,15 @@ import formidable from "formidable";
 import { changeProfessorIdSchema, createScheduleSchema } from "./validator";
 import sharp from "sharp";
 import path from "path";
-import { changeTeatcherService, createScheduleService, deleteScheduleService, findScheduleByIdService, findScheduleByUserIdService, findSchedulesByDateService, updateScheduleService } from "./service";
+import { 
+    changeTeacherService,
+    createScheduleService,
+    deleteScheduleService,
+    findScheduleByIdService,
+    findScheduleByUserIdService,
+    findSchedulesByDateService,
+    updateScheduleService
+} from "./service";
 import { CreateScheduleDTO } from "./dto/createSchedule.dto";
 import { verifyDir } from "../../lib/verifyDir";
 import { findUserByIdService } from "../users/service";
@@ -291,14 +299,14 @@ export const changeScheduleTeacherId: RequestHandler = async(req, res):Promise<a
         
         if(oldTeatcher.id === schedule.teatcherOne){
             one = true
-            const first = await changeTeatcherService(parseInt(scheduleId), newTeatcher.id, one)
+            const first = await changeTeacherService(parseInt(scheduleId), newTeatcher.id, one)
 
             if(!first) return res.status(400).json({ message: "Não foi possível realizar a troca de professores." })
             
             return res.status(200).json({ message: "Troca de professor efetuada com sucesso" })
         }     
 
-        const first = await changeTeatcherService(parseInt(scheduleId), newTeatcher.id, one)
+        const first = await changeTeacherService(parseInt(scheduleId), newTeatcher.id, one)
 
         if(!first) return res.status(400).json({ message: "Não foi possível realizar a troca de professores." })
         

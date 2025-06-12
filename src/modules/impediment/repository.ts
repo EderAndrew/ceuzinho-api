@@ -12,3 +12,36 @@ export const createImpediment = async(payload: CreateImpedimentDTO) => {
         }
     })
 }
+
+export const selectImpediment = async (id: number) => {
+    return await prisma.impediment.findFirst({
+        where: {
+            id
+        }
+    })
+}
+
+export const updateImpediment = async (id: number, userId: number) => {
+    return await prisma.impediment.update({
+        where: {
+            id
+        },
+        data: {
+            acceptId: userId,
+            status: "ACEITO",
+            updatedAt: new Date()
+        }
+    })
+}
+
+export const cancelImpediment = async (id: number) => {
+    return await prisma.impediment.update({
+        where: {
+            id
+        },
+        data: {
+            status: "CANCELADO",
+            updatedAt: new Date()
+        }
+    })
+}

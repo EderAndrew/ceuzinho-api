@@ -1,8 +1,8 @@
 import { RequestHandler } from "express";
 import { impedimentSchema } from "./validator";
-import { createImpedimentService } from "./service";
+import { cancelImpedimentService, createImpedimentService, selectImpedimentService, updateImpedimentService } from "./service";
 import { CreateImpedimentDTO } from "./dto/createImpediment.dto";
-import { findScheduleByIdService, findScheduleByUserIdService } from "../schedule/service";
+import { changeTeacherService, findScheduleByIdService, findScheduleByUserIdService } from "../schedule/service";
 import { findUserByIdService } from "../users/service";
 
 
@@ -41,5 +41,68 @@ export const createImpediment: RequestHandler = async(req, res): Promise<any> =>
         if(error instanceof Error){
             console.error(error.message)
         }
+    }
+}
+
+export const updateImpediment: RequestHandler = async(req, res):Promise<any> => {
+    try{
+        let { id } = req.params
+        let userId = req.body.userId
+
+        //verificar se o impedimento existe
+        const hasImpediment = await selectImpedimentService(parseInt(id))
+
+        if(!hasImpediment) return res.status(404).json({ message: "Não existe nenhum impedimento com essa ID" })
+        
+        //Verifica se o usuário não é o solicitante
+        const verifyUser = hasImpediment.requestId === userId
+
+        if(verifyUser) return res.status(200).json({ message: "Você mesmo requisitou esse impedimento." })
+        
+        //Verifica se esse mesmo usuário já não respondeu a solicitação
+        const justUser = hasImpediment.acceptId === userId
+
+        if(justUser) return res.status(200).json({ message: "Você já respondeu a esse impedimento." })
+        //verific se o impedimento foi cancelado
+        if(hasImpediment.status === "CANCELADO") return res.status(200).json({ message: "Esse impedimento esta cancelado." })
+        
+        //verifica se o impedimento já não foi respondido.
+        if(hasImpediment.status === "ACEITO") return res.status(200).json({ message: "Esse impedimento já foi aceito por algum outro professor." })
+        
+        //verifico no schedule se o professor solicitante é o professor 1 ou o 2
+        const schedule = await findScheduleByIdService(hasImpediment.scheduleId)
+        
+        if(schedule?.teatcherOne === userId || schedule?.teatcherTwo === userId) return res.status(200).json({ message: "Professor já esta nessa agendamento." })
+        
+        const accept = await updateImpedimentService(parseInt(id), userId)
+
+        if(!accept) return res.status(404).json({ message: "Não foi possível salvar as informações" })
+        const firstOrSecond = schedule?.teatcherOne === hasImpediment.requestId ? true : false
+    
+        const changeTeacher = await changeTeacherService(hasImpediment.scheduleId, userId, firstOrSecond)
+
+        if(!changeTeacher) return res.status(404).json({ message: "Problema para trocar de professor." })
+        
+        return res.status(200).json({ message: "Solicitação respondida com sucesso." })
+        
+    }catch(error){
+        console.error(error)
+    }
+}
+
+export const removeImpediment: RequestHandler = async(req, res): Promise<any> => {
+    try{
+        const {id} = req.params
+
+        const hasImpediment = await selectImpedimentService(parseInt(id))
+
+        if(!hasImpediment) return res.status(404).json({ message: "Não existe nenhum impedimento com essa ID" })
+        
+        await cancelImpedimentService(parseInt(id))
+
+        return res.status(200).json({ message: "Impedimento cancelado com sucesso." })
+
+    }catch(error){
+        console.error(error)
     }
 }
