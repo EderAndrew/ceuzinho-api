@@ -2,6 +2,7 @@
 import { PrismaClient } from "@prisma/client"
 import { CreateUserDTO } from "./dto/createuser.dto"
 import { UpdateUserDTO } from "./dto/updateuser.dto"
+import { LoginUserDTO } from "./dto/loginUser.dto"
 
 const prisma = new PrismaClient
 
@@ -69,6 +70,19 @@ export const handleDisabled = async(id: number, userStatus: boolean) => {
         },
         data:{
             status: userStatus ? false : true
+        }
+    })
+
+    return user
+}
+
+export const changePassword = async(payload: LoginUserDTO) => {
+    const user = await prisma.user.update({
+        where: {
+            email: payload.email
+        },
+        data: {
+            password: payload.password
         }
     })
 

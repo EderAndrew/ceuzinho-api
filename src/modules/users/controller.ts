@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import { createUserSchema, loginUserSchema, updateUserSchema } from "./validator";
 import { compare, hashSync } from "bcrypt";
-import { createUserService, disableUserService, findUserByEmailService, findUserByIdService, findUsersService, updateUserService } from "./service";
+import { changePasswordService, createUserService, disableUserService, findUserByEmailService, findUserByIdService, findUsersService, updateUserService } from "./service";
 import { createJWT, decodeJwt } from "../../middlewares/jwt";
 import { Role, Sex } from "@prisma/client";
 import { sendEmail } from "../../lib/sendEmail";
@@ -213,6 +213,40 @@ export const disableUser: RequestHandler = async(req, res): Promise<any> => {
   }
 }
 
+export const changePassword: RequestHandler = async(req, res): Promise<any> => {
+  try{
+    const safeData = loginUserSchema.safeParse(req.body);
+    if (!safeData.success) {
+      return res.status(400).json({ error: safeData.error.flatten().fieldErrors });
+    }
+
+    const verifyUser = await findUserByEmailService(safeData.data.email)
+
+    if(!verifyUser) return res.status(404).json({ message: "Usuário não identificado." })
+    
+    if(!verifyUser?.status) return res.status(404).json({ message: "Usuário não identificado." })
+    
+    const hash = await compare(safeData.data.password, verifyUser.password);
+
+    if(hash) return res.status(200).json({ message: "Senha não pode ser igual a senha antiga." })
+
+    const newHash = hashSync(safeData.data.password, 10)
+
+    const payload = {
+      email: verifyUser.email,
+      password: newHash
+    }
+
+    const change = await changePasswordService(payload)
+
+    if(!change) return res.status(500).json({ massage: "Não foi possível trocar a senha do usuário." })
+    
+    return res.status(200).json({ message: "Senha alterada com sucesso." })
+    
+  }catch(error){
+    console.error(error)
+  }
+}
 
 
 export const pong: RequestHandler = (req, res) => {

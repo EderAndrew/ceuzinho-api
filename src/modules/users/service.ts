@@ -1,4 +1,5 @@
 import { CreateUserDTO } from './dto/createuser.dto';
+import { LoginUserDTO } from './dto/loginUser.dto';
 import { UpdateUserDTO } from './dto/updateuser.dto';
 import * as userRepo from './repository';
 
@@ -24,4 +25,8 @@ export const updateUserService = async (id: number, user: UpdateUserDTO) => {
 
 export const disableUserService = async (id: number, userStatus: boolean) => {
   return await userRepo.handleDisabled(id, userStatus)
+}
+
+export const changePasswordService = async(payload: LoginUserDTO) => {
+  return await userRepo.changePassword(payload)
 }
