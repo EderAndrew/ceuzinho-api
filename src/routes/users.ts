@@ -13,7 +13,7 @@ router.get("/all", verifyJWT, controller.allUsers)
 router.put("/edituser/:id", verifyJWT, formMiddleware, controller.editUser)
 router.put("/disable/:id", verifyJWT, controller.disableUser)
 router.put("/changePassword", verifyOTC, controller.changePassword)
-router.put("/updateimage/:id", verifyJWT, controller.updateAvatar)
+router.put("/uploadimage/:id", verifyJWT, controller.uploadAvatar)
 
 router.get("/ping", controller.pong)
 

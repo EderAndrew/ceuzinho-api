@@ -196,7 +196,7 @@ export const changePassword: RequestHandler = async(req, res): Promise<any> => {
   }
 }
 
-export const updateAvatar: RequestHandler = async(req: ExtendFileRequest, res): Promise<any> => {
+export const uploadAvatar: RequestHandler = async(req: ExtendFileRequest, res): Promise<any> => {
   try{
     let {id} = req.params
 
