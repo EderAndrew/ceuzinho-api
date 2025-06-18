@@ -6,7 +6,6 @@ import { createJWT, decodeJwt } from "../../middlewares/jwt";
 import { Role, Sex } from "@prisma/client";
 import { sendEmail } from "../../lib/sendEmail";
 import { ExtendFileRequest } from "../../lib/types/extendRequest";
-import { UpdateUserDTO } from "./dto/updateuser.dto";
 import formidable from "formidable";
 import path from "path";
 import { verifyDir } from "../../lib/verifyDir";
