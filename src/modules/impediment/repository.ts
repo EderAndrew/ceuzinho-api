@@ -46,3 +46,7 @@ export const cancelImpediment = async (id: number) => {
         }
     })
 }
+
+export const findAllImpediments = async () => {
+    return await prisma.impediment.findMany()
+}

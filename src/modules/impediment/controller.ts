@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { impedimentSchema } from "./validator";
-import { cancelImpedimentService, createImpedimentService, selectImpedimentService, updateImpedimentService } from "./service";
+import { cancelImpedimentService, createImpedimentService, findAllImpedimentsService, selectImpedimentService, updateImpedimentService } from "./service";
 import { CreateImpedimentDTO } from "./dto/createImpediment.dto";
 import { changeTeacherService, findScheduleByIdService, findScheduleByUserIdService } from "../schedule/service";
 import { findUserByIdService } from "../users/service";
