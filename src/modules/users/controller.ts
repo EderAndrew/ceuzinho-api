@@ -6,7 +6,6 @@ import { createJWT, decodeJwt } from "../../middlewares/jwt";
 import { Role, Sex } from "@prisma/client";
 import { sendEmail } from "../../lib/sendEmail";
 import { ExtendFileRequest } from "../../lib/types/extendRequest";
-import { UpdateUserDTO } from "./dto/updateuser.dto";
 import formidable from "formidable";
 import path from "path";
 import { verifyDir } from "../../lib/verifyDir";
@@ -196,7 +195,7 @@ export const changePassword: RequestHandler = async(req, res): Promise<any> => {
   }
 }
 
-export const updateAvatar: RequestHandler = async(req: ExtendFileRequest, res): Promise<any> => {
+export const uploadAvatar: RequestHandler = async(req: ExtendFileRequest, res): Promise<any> => {
   try{
     let {id} = req.params
 

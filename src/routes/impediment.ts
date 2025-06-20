@@ -4,6 +4,10 @@ import { verifyJWT } from "../middlewares/jwt"
 
 const router = Router()
 
-router.post("/create/:userId", verifyJWT, controller.createImpediment)
+router.post("/createImpediment/:userId", verifyJWT, controller.createImpediment)
+router.put("/updateImpediment/:id", verifyJWT, controller.updateImpediment)
+router.get("/impediment/:id", verifyJWT, controller.selectImpediment)
+router.get("/impediments", verifyJWT, controller.allImpediments)
+router.delete("/removeImpediment/:id", verifyJWT, controller.removeImpediment)
 
 export default router

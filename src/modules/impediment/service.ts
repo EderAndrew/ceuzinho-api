@@ -16,3 +16,7 @@ export const updateImpedimentService = async (id: number, userId: number) => {
 export const cancelImpedimentService = async (id: number) => {
     return await impedimentRepo.cancelImpediment(id)
 }
+
+export const findAllImpedimentsService = async () => {
+    return await impedimentRepo.findAllImpediments()
+}

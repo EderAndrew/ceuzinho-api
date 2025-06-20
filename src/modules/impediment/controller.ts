@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { impedimentSchema } from "./validator";
-import { cancelImpedimentService, createImpedimentService, selectImpedimentService, updateImpedimentService } from "./service";
+import { cancelImpedimentService, createImpedimentService, findAllImpedimentsService, selectImpedimentService, updateImpedimentService } from "./service";
 import { CreateImpedimentDTO } from "./dto/createImpediment.dto";
 import { changeTeacherService, findScheduleByIdService, findScheduleByUserIdService } from "../schedule/service";
 import { findUserByIdService } from "../users/service";
@@ -85,6 +85,30 @@ export const updateImpediment: RequestHandler = async(req, res):Promise<any> => 
         
         return res.status(200).json({ message: "Solicitação respondida com sucesso." })
         
+    }catch(error){
+        console.error(error)
+    }
+}
+
+export const selectImpediment: RequestHandler = async(req, res): Promise<any> => {
+    try{
+        const { id } = req.params
+
+        const hasImpediment = await selectImpedimentService(parseInt(id))
+
+        if(!hasImpediment) return res.status(404).json({ message: "Não existe nenhum impedimento com essa ID" })
+        
+        return res.status(200).json({ message: "Impedimento selecionado com sucesso.", data: hasImpediment })
+    }catch(error){
+        console.error(error)
+    }
+}
+
+export const allImpediments: RequestHandler = async(req, res): Promise<any> => {
+    try{
+        const impediments = await findAllImpedimentsService()
+
+        return res.status(200).json({ message:"Impedimentos encontrados com sucesso.", data: impediments })
     }catch(error){
         console.error(error)
     }
