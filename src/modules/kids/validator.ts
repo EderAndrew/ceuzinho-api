@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Room } from '../../../generated/prisma';
+import { Room } from '@prisma/client';
 
 export const createKidSchema = z.object({
   id: z.number().optional(),
@@ -7,5 +7,5 @@ export const createKidSchema = z.object({
   name: z.string().min(1),
   age: z.number(),
   birthDate: z.date(),
-  room: z.nativeEnum(Room).optional()
+  room: z.enum(Room).optional()
 });

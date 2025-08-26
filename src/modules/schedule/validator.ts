@@ -9,7 +9,7 @@ export const createScheduleSchema = z.object({
     bgColor: z.string().optional(),
     period: z.string().optional(),
     scheduleType: z.string().optional(),
-    room: z.nativeEnum(Room).optional(),
+    room: z.enum(Room).optional(),
     tema: z.string(),
     info: z.string().optional(),
     createdBy: z.number().optional(),
