@@ -12,6 +12,7 @@ import { verifyDir } from "../../lib/verifyDir";
 import sharp from "sharp";
 import fs from "fs/promises";
 import { UpdateImageDTO } from "./dto/updateImage.dto";
+import * as crypto from "crypto";
 
 sharp.cache(false)
 
@@ -22,18 +23,15 @@ export const signIn: RequestHandler = async (req, res): Promise<any> => {
       return res.status(400).json({ error: safeData.error.flatten().fieldErrors });
     }
 
-    if(!safeData.data.email || !safeData.data.password) return res.status(400).json({ message: "Email ou senha não informados.", token: null })
+    const { email, password } = safeData.data
+    const user = await findUserByEmailService(email)
 
-    const user = await findUserByEmailService(safeData.data.email)
-    
     //Verificar se o usuário encontrado esta ativo
-    if(!user?.status) return res.status(200).json({ message: "Usuário não identificado.", token: null })
+    if(!user || !user?.status) return res.status(403).json({ message: "Credenciais incorretas.", token: null })
 
-    if(!user) return res.status(404).json({ message: "Email ou senha incorreto.", token: null })
+    const isPasswordValid = await compare(password, user.password);
 
-    const hash = await compare(safeData.data.password, user.password);
-
-    if(!hash) return res.status(401).json({ message: "Email ou senha incorreto.", token: null })
+    if(!isPasswordValid) return res.status(401).json({ message: "Credenciais incorretas.", token: null })
   
     const token = createJWT({id: user.id})
 
@@ -42,6 +40,7 @@ export const signIn: RequestHandler = async (req, res): Promise<any> => {
   }catch(error){
     if(error instanceof Error){
       console.log(error.message)
+      return res.status(500).json({ message: "Erro interno do servidor." });
     }
   }
 }
@@ -54,11 +53,10 @@ export const signUp: RequestHandler = async (req, res): Promise<any> => {
       
       const hasUser = await findUserByEmailService(safeData.data.email)
 
-      if(hasUser) return res.status(200).json({message: "Já existe um usuário com este email."})
-      
-      let randonPwd = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000
-      
-      const hash = hashSync(randonPwd.toString(), 10)
+      if(hasUser) return res.status(409).json({message: "Já existe um usuário com este email."})
+  
+      const randomPwd = generateReadablePassword(6)
+      const hash = hashSync(randomPwd, 10)
 
       const payload = {
         name: safeData.data.name,
@@ -74,7 +72,7 @@ export const signUp: RequestHandler = async (req, res): Promise<any> => {
 
       if(!user) return res.status(500).json({ message: "Erro ao criar usuário." })
       
-      const msg = `Essa é sua senha para primeiro acesso: ${randonPwd}`
+      const msg = `Essa é sua senha para primeiro acesso: ${randomPwd}`
       const email = await sendEmail(safeData.data.email, msg)
 
       if(!email.response) return res.status(201).json({ message: "Usuário criado. Email não enviado." })
@@ -237,6 +235,15 @@ export const uploadAvatar: RequestHandler = async(req: ExtendFileRequest, res): 
   }catch(error){
     console.error(error)
   }
+}
+
+const generateReadablePassword = (length: number = 8) => {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789'; // sem caracteres ambíguos
+  let password = '';
+  for (let i = 0; i < length; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return password;
 }
 
 export const pong: RequestHandler = (req, res) => {
