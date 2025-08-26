@@ -12,7 +12,6 @@ import { verifyDir } from "../../lib/verifyDir";
 import sharp from "sharp";
 import fs from "fs/promises";
 import { UpdateImageDTO } from "./dto/updateImage.dto";
-import * as crypto from "crypto";
 
 sharp.cache(false)
 
@@ -20,7 +19,7 @@ export const signIn: RequestHandler = async (req, res): Promise<any> => {
   try{
     const safeData = loginUserSchema.safeParse(req.body);
     if (!safeData.success) {
-      return res.status(400).json({ error: safeData.error.flatten().fieldErrors });
+      return res.status(400).json({ message: safeData.error.flatten().fieldErrors, token: null });
     }
 
     const { email, password } = safeData.data
@@ -38,10 +37,8 @@ export const signIn: RequestHandler = async (req, res): Promise<any> => {
     return res.status(200).json({ message: "Acesso permitido.", token })
 
   }catch(error){
-    if(error instanceof Error){
-      console.log(error.message)
-      return res.status(500).json({ message: "Erro interno do servidor." });
-    }
+    console.error(error)
+    return res.status(500).json({ message: "Erro interno do servidor." });
   }
 }
 
@@ -80,9 +77,8 @@ export const signUp: RequestHandler = async (req, res): Promise<any> => {
       return res.status(201).json({  message: "Usuário criado com sucesso." })
 
     }catch(error){
-      if(error instanceof Error){
-        console.log(error.message)
-      }
+      console.error(error)
+      return res.status(500).json({ message: "Erro interno do servidor." });
     }
 }
 
@@ -108,9 +104,8 @@ export const allUsers: RequestHandler = async (req, res): Promise<any> => {
 
     return res.status(200).json({ users })
   }catch(error){
-    if(error instanceof Error){
-      console.log(error.message)
-    }
+    console.error(error)
+    return res.status(500).json({ message: "Erro interno do servidor." });
   }
 
 }
@@ -133,9 +128,8 @@ export const editUser: RequestHandler = async (req: ExtendFileRequest, res): Pro
     return res.status(200).json({ message: "Usuário atualizado com sucesso" })
 
   }catch(error){
-    if(error instanceof Error){
-      console.error(error.message)
-    }
+    console.error(error)
+    return res.status(500).json({ message: "Erro interno do servidor." });
   }
 }
 
@@ -152,9 +146,8 @@ export const disableUser: RequestHandler = async(req, res): Promise<any> => {
     return res.status(200).json({ message: hasUser.status ? "Usuário desativado." : "Usuário ativado" })
 
   }catch(error){
-    if(error instanceof Error){
-      console.error(error.message)
-    }
+    console.error(error)
+    return res.status(500).json({ message: "Erro interno do servidor." });
   }
 }
 
@@ -190,50 +183,58 @@ export const changePassword: RequestHandler = async(req, res): Promise<any> => {
     
   }catch(error){
     console.error(error)
+    return res.status(500).json({ message: "Erro interno do servidor." });
   }
 }
 
 export const uploadAvatar: RequestHandler = async(req: ExtendFileRequest, res): Promise<any> => {
   try{
-    let {id} = req.params
+    const userId = Number(req.params.id)
+    if (isNaN(userId)) {
+      return res.status(400).json({ message: "ID inválido." });
+    }
 
-    const hasUser = await findUserByIdService(parseInt(id))
+    const hasUser = await findUserByIdService(userId)
 
     if(!hasUser) return res.status(404).json({ message: "Usuário não existe." })
 
     let files = req.files as {[fieldname: string]: formidable.File[]}
-    if(!files.document) return res.status(404).json({ message: "Não foi identificada nenhuma imagem para upload." })
+    const file = files?.document?.[0];
+
+    if(!file) return res.status(400).json({ message: "Nenhuma imagem enviada." })
     
     const imageTypes = ["image/webp", "image/jpeg", "image/png", "image/jpg"]
 
-    if(!imageTypes.includes(files.document[0].mimetype as string)){
-      return res.status(500).json({ message: "Tipo de imagem incompativel. Escolha uma imagem do tipo jpg ou png." })
+    if(!imageTypes.includes(file.mimetype as string)){
+      return res.status(415).json({ message: "Tipo de imagem incompativel. Escolha uma imagem do tipo jpg ou png." })
     }
 
     const publicDir = path.join(__dirname, "../../../public/media");
+    const originalName = file.originalFilename?.split(".")[0]
     
     await verifyDir(publicDir)
 
-    await sharp(files.document[0].filepath)
+    await sharp(file.filepath)
      .toFormat("webp")
-     .toFile(`./public/media/${files.document[0].originalFilename?.split(".")[0]}.webp`)
+     .toFile(`./public/media/${originalName}.webp`)
 
     const formUser = {
-      photo: files.document[0].originalFilename?.split(".")[0],
+      photo: originalName,
       photoUrl: process.env.NODE_ENV === "production"
-      ? `${process.env.URL_DOC_PROD}media/${files.document[0].originalFilename?.split(".")[0]}.webp`
-      : `${process.env.URL_DOC_DEV}media/${files.document[0].originalFilename?.split(".")[0]}.webp`
+      ? `${process.env.URL_DOC_PROD}media/${originalName}.webp`
+      : `${process.env.URL_DOC_DEV}media/${originalName}.webp`
     } as UpdateImageDTO
 
-    const updateImage = await updateImageService(parseInt(id), formUser)
+    const updateImage = await updateImageService(userId, formUser)
 
-    await fs.unlink(files.document[0].filepath)
+    await fs.unlink(file.filepath)
     if(!updateImage) return res.status(500).json({ message: "Não foi possível alterar a foto." })
 
     return res.status(200).json({ message: "Foto alterada com sucesso." })
     
   }catch(error){
-    console.error(error)
+    console.error("Erro no upload de avatar: ",error)
+    return res.status(500).json({ message: "Erro interno no servidor." });
   }
 }
 
