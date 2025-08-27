@@ -12,7 +12,7 @@ import { verifyDir } from "../../lib/verifyDir";
 import sharp from "sharp";
 import fs from "fs/promises";
 import { UpdateImageDTO } from "./dto/updateImage.dto";
-import z, { email } from "zod";
+import z from "zod";
 import { UpdateUserDTO } from "./dto/updateuser.dto";
 
 sharp.cache(false)
@@ -154,15 +154,16 @@ export const disableUser: RequestHandler = async(req, res): Promise<any> => {
 
     const hasUser = await findUserByIdService(parseInt(id))
 
-    if(!hasUser) return res.status(200).json({message: "Usuário não identificado."})
+    if(!hasUser) return res.status(404).json({message: "Usuário não identificado."})
 
     await disableUserService(hasUser.id, hasUser.status)
 
     return res.status(200).json({ message: hasUser.status ? "Usuário desativado." : "Usuário ativado" })
 
   }catch(error){
-    console.error(error)
-    return res.status(500).json({ message: "Erro interno do servidor." });
+    if(error instanceof z.ZodError){
+      return res.status(500).json({ message: z.treeifyError(error).errors[0] });
+    }
   }
 }
 
@@ -174,10 +175,8 @@ export const changePassword: RequestHandler = async(req, res): Promise<any> => {
     }
 
     const verifyUser = await findUserByEmailService(safeData.data.email)
-
-    if(!verifyUser) return res.status(404).json({ message: "Usuário não identificado." })
     
-    if(!verifyUser?.status) return res.status(404).json({ message: "Usuário não identificado." })
+    if(!verifyUser || !verifyUser?.status) return res.status(404).json({ message: "Usuário não identificado." })
     
     const hash = await compare(safeData.data.password, verifyUser.password);
 
@@ -197,8 +196,9 @@ export const changePassword: RequestHandler = async(req, res): Promise<any> => {
     return res.status(200).json({ message: "Senha alterada com sucesso." })
     
   }catch(error){
-    console.error(error)
-    return res.status(500).json({ message: "Erro interno do servidor." });
+    if(error instanceof z.ZodError){
+      return res.status(500).json({ message: z.treeifyError(error).errors[0] });
+    }
   }
 }
 
@@ -248,8 +248,9 @@ export const uploadAvatar: RequestHandler = async(req: ExtendFileRequest, res): 
     return res.status(200).json({ message: "Foto alterada com sucesso." })
     
   }catch(error){
-    console.error("Erro no upload de avatar: ",error)
-    return res.status(500).json({ message: "Erro interno no servidor." });
+    if(error instanceof z.ZodError){
+      return res.status(500).json({ message: z.treeifyError(error).errors[0] });
+    }
   }
 }
 
