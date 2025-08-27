@@ -124,59 +124,23 @@ export const editUser: RequestHandler = async (req: ExtendFileRequest, res): Pro
 
     if(!existingUser ) return res.status(404).json({message: 'Usuário não encontrado.'})
     
-    const updatedData = {
-      name: normalizeField(req.fields?.name) ?? existingUser.name,
-      email: normalizeField(req.fields?.email) ?? existingUser.email,
-      role: normalizeField(req.fields?.role) ?? existingUser.role,
-      phone: normalizeField(req.fields?.phone) ?? existingUser.phone,
+    const safeData = updateUserSchema.safeParse(req.body)
+    if (!safeData.success) {
+      return res.status(400).json({ error: z.treeifyError(safeData.error) });
+    }
+
+    const payload = {
+      name: safeData.data.name ?? existingUser.name,
+      email: safeData.data.email ?? existingUser.email,
+      phone: safeData.data.phone ?? existingUser.phone,
+      role: safeData.data.role as Role ?? existingUser.role,
     } as UpdateUserDTO
-    
-    const safeData = updateUserSchema.safeParse(updatedData)
-    
-    if(!safeData.success) return res.status(400).json({error: z.treeifyError(safeData.error).errors[0]})
 
-    const file = req.files as {[fieldname: string]: formidable.File[]}
+    const user = await updateUserService(userId, payload)
 
-    //Save informations with out image
-    if(!file.document) {
-      const user = await updateUserService(userId, updatedData)
+    if(!user) return res.status(500).json({ message: "Erro ao editar usuário." })
 
-      if(!user) return res.status(500).json({ message: "Erro ao atualizar o usuário." })
-
-      return res.status(200).json({ message: "Usuário atualizado com sucesso" })
-    }
-    
-    const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
-
-    if(!allowedMimeTypes.includes(file.document[0]?.mimetype as string)){
-      return res.status(400).json({ message: "Tipo de arquivo não permitido." });
-    }
-
-    const publicDir = path.join(__dirname, "../../../public/media");
-
-    await verifyDir(publicDir)
-
-    await sharp(file.document[0].filepath)
-      .toFormat("webp")
-      .toFile(`./public/media/${file.document[0].originalFilename?.split(".")[0]}.webp`)
-
-    const avatar = file.document[0].originalFilename?.split(".")[0]
-    const formData = { 
-      ...updatedData,
-      photo: avatar,
-      photoUrl: process.env.NODE_ENV === "production"
-      ? `${process.env.URL_DOC_PROD}media/${avatar}.webp`
-      : `${process.env.URL_DOC_DEV}media/${avatar}.webp`
-    }
-  
-    await fs.unlink(file.document[0].filepath)
-
-    const schedule = await updateUserService(userId, formData)
-
-    if(!schedule) return res.status(500).json({ message: "Erro ao atualizar usuário." })
-
-    return res.status(201).json({ message: "Usuário atualizado com sucesso" })
-
+    return res.status(200).json({ message: "Usuário editado com sucesso." })
   }catch(error){
     if(error instanceof z.ZodError){
       return res.status(500).json({ message: z.treeifyError(error).errors[0] });
@@ -290,18 +254,13 @@ export const uploadAvatar: RequestHandler = async(req: ExtendFileRequest, res): 
 }
 
 const generateReadablePassword = (length: number = 8) => {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789'; // sem caracteres ambíguos
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789'; // sem caracteres ambíguos
   let password = '';
   for (let i = 0; i < length; i++) {
     password += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return password;
 }
-
-const normalizeField = (field?: string[] | string): string | undefined => {
-  if (Array.isArray(field)) return field[0];
-  return typeof field === 'string' ? field : undefined;
-};
 
 export const pong: RequestHandler = (req, res) => {
   res.status(200).json({ pong: true})
