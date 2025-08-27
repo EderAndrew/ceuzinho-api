@@ -12,6 +12,8 @@ import { verifyDir } from "../../lib/verifyDir";
 import sharp from "sharp";
 import fs from "fs/promises";
 import { UpdateImageDTO } from "./dto/updateImage.dto";
+import z, { email } from "zod";
+import { UpdateUserDTO } from "./dto/updateuser.dto";
 
 sharp.cache(false)
 
@@ -19,7 +21,7 @@ export const signIn: RequestHandler = async (req, res): Promise<any> => {
   try{
     const safeData = loginUserSchema.safeParse(req.body);
     if (!safeData.success) {
-      return res.status(400).json({ message: safeData.error.flatten().fieldErrors, token: null });
+      return res.status(400).json({ error: z.treeifyError(safeData.error) });
     }
 
     const { email, password } = safeData.data
@@ -37,8 +39,9 @@ export const signIn: RequestHandler = async (req, res): Promise<any> => {
     return res.status(200).json({ message: "Acesso permitido.", token })
 
   }catch(error){
-    console.error(error)
-    return res.status(500).json({ message: "Erro interno do servidor." });
+    if(error instanceof z.ZodError){
+      return res.status(500).json({ message: z.treeifyError(error) });
+    }
   }
 }
 
@@ -46,7 +49,7 @@ export const signUp: RequestHandler = async (req, res): Promise<any> => {
     try{
       const safeData = createUserSchema.safeParse(req.body)
 
-      if(!safeData.success) return res.status(400).json({ error: safeData.error.flatten().fieldErrors })
+      if(!safeData.success) return res.status(400).json({ error: z.treeifyError(safeData.error) })
       
       const hasUser = await findUserByEmailService(safeData.data.email)
 
@@ -112,24 +115,72 @@ export const allUsers: RequestHandler = async (req, res): Promise<any> => {
 
 export const editUser: RequestHandler = async (req: ExtendFileRequest, res): Promise<any> => {
   try{
-    const { id } = req.params
-    const safeData = updateUserSchema.safeParse(req.body)
+    const userId = Number(req.params.id)
+    if (isNaN(userId)) {
+      return res.status(400).json({ message: 'ID de usuário inválido.' });
+    }
 
-    if(!safeData.success) return res.status(400).json({ error: safeData.error.flatten().fieldErrors })
+    const existingUser  = await findUserByIdService(userId)
+
+    if(!existingUser ) return res.status(404).json({message: 'Usuário não encontrado.'})
     
-    const hasUser = await findUserByIdService(parseInt(id))
-
-    if(!hasUser) return res.status(404).json({message: "Não foi identificado um usuário com essas informações."})
+    const updatedData = {
+      name: normalizeField(req.fields?.name) ?? existingUser.name,
+      email: normalizeField(req.fields?.email) ?? existingUser.email,
+      role: normalizeField(req.fields?.role) ?? existingUser.role,
+      phone: normalizeField(req.fields?.phone) ?? existingUser.phone,
+    } as UpdateUserDTO
     
-    const user = await updateUserService(parseInt(id), safeData.data)
+    const safeData = updateUserSchema.safeParse(updatedData)
+    
+    if(!safeData.success) return res.status(400).json({error: z.treeifyError(safeData.error).errors[0]})
 
-    if(!user) return res.status(500).json({ message: "Erro ao atualizar usuário." })
-        
-    return res.status(200).json({ message: "Usuário atualizado com sucesso" })
+    const file = req.files as {[fieldname: string]: formidable.File[]}
+
+    //Save informations with out image
+    if(!file.document) {
+      const user = await updateUserService(userId, updatedData)
+
+      if(!user) return res.status(500).json({ message: "Erro ao atualizar o usuário." })
+
+      return res.status(200).json({ message: "Usuário atualizado com sucesso" })
+    }
+    
+    const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
+
+    if(!allowedMimeTypes.includes(file.document[0]?.mimetype as string)){
+      return res.status(400).json({ message: "Tipo de arquivo não permitido." });
+    }
+
+    const publicDir = path.join(__dirname, "../../../public/media");
+
+    await verifyDir(publicDir)
+
+    await sharp(file.document[0].filepath)
+      .toFormat("webp")
+      .toFile(`./public/media/${file.document[0].originalFilename?.split(".")[0]}.webp`)
+
+    const avatar = file.document[0].originalFilename?.split(".")[0]
+    const formData = { 
+      ...updatedData,
+      photo: avatar,
+      photoUrl: process.env.NODE_ENV === "production"
+      ? `${process.env.URL_DOC_PROD}media/${avatar}.webp`
+      : `${process.env.URL_DOC_DEV}media/${avatar}.webp`
+    }
+  
+    await fs.unlink(file.document[0].filepath)
+
+    const schedule = await updateUserService(userId, formData)
+
+    if(!schedule) return res.status(500).json({ message: "Erro ao atualizar usuário." })
+
+    return res.status(201).json({ message: "Usuário atualizado com sucesso" })
 
   }catch(error){
-    console.error(error)
-    return res.status(500).json({ message: "Erro interno do servidor." });
+    if(error instanceof z.ZodError){
+      return res.status(500).json({ message: z.treeifyError(error).errors[0] });
+    }
   }
 }
 
@@ -155,7 +206,7 @@ export const changePassword: RequestHandler = async(req, res): Promise<any> => {
   try{
     const safeData = loginUserSchema.safeParse(req.body);
     if (!safeData.success) {
-      return res.status(400).json({ error: safeData.error.flatten().fieldErrors });
+      return res.status(400).json({ error: z.treeifyError(safeData.error) });
     }
 
     const verifyUser = await findUserByEmailService(safeData.data.email)
@@ -246,6 +297,11 @@ const generateReadablePassword = (length: number = 8) => {
   }
   return password;
 }
+
+const normalizeField = (field?: string[] | string): string | undefined => {
+  if (Array.isArray(field)) return field[0];
+  return typeof field === 'string' ? field : undefined;
+};
 
 export const pong: RequestHandler = (req, res) => {
   res.status(200).json({ pong: true})
