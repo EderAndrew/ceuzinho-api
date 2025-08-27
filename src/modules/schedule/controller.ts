@@ -17,6 +17,7 @@ import {
 import { CreateScheduleDTO } from "./dto/createSchedule.dto";
 import { verifyDir } from "../../lib/verifyDir";
 import { findUserByIdService } from "../users/service";
+import z from "zod";
 
 sharp.cache(false)
 
@@ -38,7 +39,7 @@ export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res)
         
         const safeData = createScheduleSchema.safeParse(ESchedule)
 
-        if(!safeData.success) return res.status(400).json({ error: safeData.error.flatten().fieldErrors })
+        if(!safeData.success) return res.status(400).json({ error: z.treeifyError(safeData.error).errors[0] })
 
         const yesterday = new Date(req.fields?.date?.[0] as string)
         const today = new Date()
@@ -107,8 +108,8 @@ export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res)
         
         return res.status(201).json({ message: "Schedule criado com sucesso" })
     }catch(error){
-        if(error instanceof Error){
-            console.log(error.message)
+        if(error instanceof z.ZodError){
+            return res.status(500).json({ message: z.treeifyError(error).errors[0] });
         }
     }
     
@@ -130,7 +131,7 @@ export const updateSchedule: RequestHandler = async(req: ExtendFileRequest, res)
 
         const safeData = createScheduleSchema.safeParse(ESchedule)
 
-        if(!safeData.success) return res.status(400).json({ error: safeData.error.flatten().fieldErrors })
+        if(!safeData.success) return res.status(400).json({ error: z.treeifyError(safeData.error).errors[0] })
         //verificar se a schedule existe
         const hasSchedule = await findScheduleByIdService(parseInt(id))
 
@@ -198,8 +199,8 @@ export const updateSchedule: RequestHandler = async(req: ExtendFileRequest, res)
 
         return res.status(200).json({ message: "Agendamento atualizado com sucesso." })
     }catch(error){
-        if(error instanceof Error){
-            console.log(error.message)
+        if(error instanceof z.ZodError){
+            return res.status(500).json({ message: z.treeifyError(error).errors[0] });
         }
     }
     
@@ -217,9 +218,7 @@ export const deleteSchedule: RequestHandler = async(req, res): Promise<any> => {
 
         return res.status(200).json({ message: "Agendamento excluido com sucesso." })
     }catch(error){
-        if(error instanceof Error){
-            console.log(error.message)
-        }
+        console.error(error)
     }
     
 }
@@ -233,9 +232,7 @@ export const allSchedulesByDate: RequestHandler = async(req, res): Promise<any> 
             
         return res.status(200).json({ message: "Agendamentos encontrados com sucesso." , data: schedules })
     }catch(error){
-        if(error instanceof Error){
-            console.log(error.message)
-        }
+        console.error(error)
     }
     
 }
@@ -250,9 +247,7 @@ export const scheduleById: RequestHandler = async(req, res): Promise<any> => {
         
         return res.status(200).json({ message: "Agendamento encontrado com sucesso." , data: schedule })
     }catch(error){
-        if(error instanceof Error){
-            console.log(error.message)
-        }
+        console.error(error)
     }
 }
 
@@ -266,9 +261,7 @@ export const scheduleByUserId: RequestHandler = async(req, res):Promise<any> => 
         
         return res.status(200).json({ message: "Agendamento encontrado com sucesso." , data: schedule })
     }catch(error){
-        if(error instanceof Error){
-            console.error(error.message)
-        }
+        console.error(error)
     }
 }
 
@@ -278,7 +271,7 @@ export const changeScheduleTeacherId: RequestHandler = async(req, res):Promise<a
         let {scheduleId} = req.params
         const safeData = changeProfessorIdSchema.safeParse(req.body);
         if (!safeData.success) {
-            return res.status(400).json({ error: safeData.error.flatten().fieldErrors });
+            return res.status(400).json({ error: z.treeifyError(safeData.error).errors[0] });
         }
 
         const schedule = await findScheduleByIdService(parseInt(scheduleId))
@@ -312,8 +305,8 @@ export const changeScheduleTeacherId: RequestHandler = async(req, res):Promise<a
         
         return res.status(200).json({ message: "Troca de professor efetuada com sucesso" })
     }catch(error){
-        if(error instanceof Error){
-            console.error(error.message)
+        if(error instanceof z.ZodError){
+            return res.status(500).json({ message: z.treeifyError(error).errors[0] });
         }
     }
 }
