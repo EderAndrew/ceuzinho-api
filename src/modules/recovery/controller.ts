@@ -7,12 +7,13 @@ import { createRecoveryDTO } from "./dto/recovery.dto";
 import { recoverySchema } from "./validator";
 import { differenceInMinutes } from "date-fns";
 import { createJWT } from "../../middlewares/jwt";
+import z from "zod";
 
 export const sendotc: RequestHandler = async(req, res): Promise<any> => {
   try{
     const safeData = recoverySchema.safeParse(req.body);
     if (!safeData.success) {
-      return res.status(400).json({ error: safeData.error.flatten().fieldErrors });
+      return res.status(400).json({ error: z.treeifyError(safeData.error).errors[0] });
     }
 
     if(!safeData.data.email) return res.status(400).json({ message: "Email não informado." })
@@ -65,8 +66,8 @@ export const sendotc: RequestHandler = async(req, res): Promise<any> => {
     return res.status(201).json({ message: "Código OTC enviado com sucesso." })
     
   }catch(error){
-    if(error instanceof Error){
-      console.error(error.message)
+    if(error instanceof z.ZodError){
+      return res.status(500).json({ message: z.treeifyError(error).errors[0] });
     }
   }
 }
@@ -75,7 +76,7 @@ export const verifyOTC: RequestHandler = async(req, res): Promise<any> => {
     try{
         const safeData = recoverySchema.safeParse(req.body);
         if (!safeData.success) {
-            return res.status(400).json({ error: safeData.error.flatten().fieldErrors });
+            return res.status(400).json({ error: z.treeifyError(safeData.error).errors[0] });
         }
 
         const selectRecovery = await selectRecoveryService(safeData.data.email)
@@ -95,8 +96,8 @@ export const verifyOTC: RequestHandler = async(req, res): Promise<any> => {
         
         return res.status(200).json({ message: "Troca permitida.", tokenOTC: token })
     }catch(error){
-        if(error instanceof Error){
-            console.error(error.message)
-        }
+      if(error instanceof z.ZodError){
+        return res.status(500).json({ message: z.treeifyError(error).errors[0] });
+      }
     }
 }

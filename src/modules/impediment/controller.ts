@@ -4,6 +4,7 @@ import { cancelImpedimentService, createImpedimentService, findAllImpedimentsSer
 import { CreateImpedimentDTO } from "./dto/createImpediment.dto";
 import { changeTeacherService, findScheduleByIdService, findScheduleByUserIdService } from "../schedule/service";
 import { findUserByIdService } from "../users/service";
+import z from "zod";
 
 
 export const createImpediment: RequestHandler = async(req, res): Promise<any> => {
@@ -11,7 +12,7 @@ export const createImpediment: RequestHandler = async(req, res): Promise<any> =>
         const { userId } = req.params
         const safeData = impedimentSchema.safeParse(req.body);
         if (!safeData.success) {
-            return res.status(400).json({ error: safeData.error.flatten().fieldErrors });
+            return res.status(400).json({ error: z.treeifyError(safeData.error).errors[0] });
         }
         
         const verifySchedule = await findScheduleByIdService(safeData.data.scheduleId as number)
@@ -38,8 +39,8 @@ export const createImpediment: RequestHandler = async(req, res): Promise<any> =>
         
         return res.status(201).json({ message: "Solicitação de troca criada com sucesso." })
     }catch(error){
-        if(error instanceof Error){
-            console.error(error.message)
+        if(error instanceof z.ZodError){
+            return res.status(500).json({ message: z.treeifyError(error).errors[0] });
         }
     }
 }
