@@ -14,6 +14,8 @@ import fs from "fs/promises";
 import { UpdateImageDTO } from "./dto/updateImage.dto";
 import z from "zod";
 import { UpdateUserDTO } from "./dto/updateuser.dto";
+import { generateReadablePassword, getBackgroundColorBySex } from "../../lib/utils";
+import { USER_MESSAGES, PASSWORD_CONFIG } from "../../lib/constants";
 
 sharp.cache(false)
 
@@ -46,44 +48,82 @@ export const signIn: RequestHandler = async (req, res): Promise<any> => {
 }
 
 export const signUp: RequestHandler = async (req, res): Promise<any> => {
-    try{
-      const safeData = createUserSchema.safeParse(req.body)
-
-      if(!safeData.success) return res.status(400).json({ error: z.treeifyError(safeData.error) })
-      
-      const hasUser = await findUserByEmailService(safeData.data.email)
-
-      if(hasUser) return res.status(409).json({message: "Já existe um usuário com este email."})
-  
-      const randomPwd = generateReadablePassword(6)
-      const hash = hashSync(randomPwd, 10)
-
-      const payload = {
-        name: safeData.data.name,
-        email: safeData.data.email,
-        password: hash,
-        phone: safeData.data.phone,
-        role: safeData.data.role as Role,
-        sex: safeData.data.sex as Sex,
-        bgColor: safeData.data.sex === "MASCULINO" ? "#009CD9" : "#DF1B7D"
-      }
-
-      const user = await createUserService(payload)
-
-      if(!user) return res.status(500).json({ message: "Erro ao criar usuário." })
-      
-      const msg = `Essa é sua senha para primeiro acesso: ${randomPwd}`
-      const email = await sendEmail(safeData.data.email, msg)
-
-      if(!email.response) return res.status(201).json({ message: "Usuário criado. Email não enviado." })
-
-      return res.status(201).json({  message: "Usuário criado com sucesso." })
-
-    }catch(error){
-      console.error(error)
-      return res.status(500).json({ message: "Erro interno do servidor." });
+  try {
+    // 1. Validação dos dados de entrada
+    const safeData = createUserSchema.safeParse(req.body);
+    if (!safeData.success) {
+      return res.status(400).json({ 
+        error: z.treeifyError(safeData.error) 
+      });
     }
-}
+
+    // 2. Verificação de usuário existente
+    const existingUser = await findUserByEmailService(safeData.data.email);
+    if (existingUser) {
+      return res.status(409).json({
+        message: USER_MESSAGES.ALREADY_EXISTS
+      });
+    }
+
+    // 3. Geração de senha e hash
+    const randomPassword = generateReadablePassword(PASSWORD_CONFIG.DEFAULT_LENGTH);
+    const hashedPassword = hashSync(randomPassword, PASSWORD_CONFIG.SALT_ROUNDS);
+
+    // 4. Preparação do payload
+    const userPayload = {
+      name: safeData.data.name,
+      email: safeData.data.email,
+      password: hashedPassword,
+      phone: safeData.data.phone,
+      role: safeData.data.role as Role,
+      sex: safeData.data.sex as Sex,
+      bgColor: getBackgroundColorBySex(safeData.data.sex as string)
+    };
+
+    // 5. Criação do usuário
+    const createdUser = await createUserService(userPayload);
+    if (!createdUser) {
+      return res.status(500).json({ 
+        message: USER_MESSAGES.CREATION_ERROR
+      });
+    }
+
+    // 6. Envio de email com senha
+    const emailMessage = `Essa é sua senha para primeiro acesso: ${randomPassword}`;
+    const emailResult = await sendEmail(safeData.data.email, emailMessage);
+
+    // 7. Resposta baseada no resultado do email
+    if (!emailResult.response) {
+      return res.status(201).json({ 
+        message: USER_MESSAGES.CREATED_EMAIL_FAILED,
+        userId: createdUser.id
+      });
+    }
+
+    return res.status(201).json({ 
+      message: USER_MESSAGES.CREATED_SUCCESS,
+      userId: createdUser.id
+    });
+
+  } catch (error) {
+    console.error('Erro no signUp:', error);
+    
+    // Tratamento específico para erros de validação Zod
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ 
+        error: z.treeifyError(error) 
+      });
+    }
+
+    // Tratamento para outros tipos de erro
+    return res.status(500).json({ 
+      message: USER_MESSAGES.INTERNAL_ERROR,
+      ...(process.env.NODE_ENV === 'development' && { 
+        error: error instanceof Error ? error.message : 'Erro desconhecido' 
+      })
+    });
+  }
+};
 
 export const me: RequestHandler = async (req, res): Promise<any> => {
   const authHeader = req.headers["authorization"];
@@ -254,14 +294,7 @@ export const uploadAvatar: RequestHandler = async(req: ExtendFileRequest, res): 
   }
 }
 
-const generateReadablePassword = (length: number = 8) => {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789'; // sem caracteres ambíguos
-  let password = '';
-  for (let i = 0; i < length; i++) {
-    password += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return password;
-}
+
 
 export const pong: RequestHandler = (req, res) => {
   res.status(200).json({ pong: true})
