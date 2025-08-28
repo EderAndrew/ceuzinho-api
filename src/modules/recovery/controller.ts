@@ -8,96 +8,187 @@ import { recoverySchema } from "./validator";
 import { differenceInMinutes } from "date-fns";
 import { createJWT } from "../../middlewares/jwt";
 import z from "zod";
+import { generateOTCCode, calculateExpirationDate } from "../../lib/utils";
+import { RECOVERY_MESSAGES, OTC_CONFIG } from "../../lib/constants";
 
 export const sendotc: RequestHandler = async(req, res): Promise<any> => {
-  try{
+  try {
+    // 1. Validação dos dados de entrada
     const safeData = recoverySchema.safeParse(req.body);
     if (!safeData.success) {
-      return res.status(400).json({ error: z.treeifyError(safeData.error).errors[0] });
+      return res.status(400).json({ 
+        error: z.treeifyError(safeData.error).errors[0] 
+      });
     }
 
-    if(!safeData.data.email) return res.status(400).json({ message: "Email não informado." })
+    // 2. Verificação de email fornecido
+    if (!safeData.data.email) {
+      return res.status(400).json({ 
+        message: RECOVERY_MESSAGES.EMAIL_NOT_PROVIDED 
+      });
+    }
 
-    const user = await findUserByEmailService(safeData.data.email)
+    // 3. Verificação de usuário existente e ativo
+    const user = await findUserByEmailService(safeData.data.email);
+    if (!user?.status) {
+      return res.status(404).json({ 
+        message: RECOVERY_MESSAGES.USER_NOT_FOUND 
+      });
+    }
 
-    if(!user?.status) return res.status(404).json({ message: "Usuário não identificado." })
-    
-    let OTCode = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000
+    // 4. Geração do código OTC
+    let otcCode = generateOTCCode();
 
-    const selectRecovery = await selectRecoveryService(safeData.data.email)
+    // 5. Verificação de recovery existente
+    const existingRecovery = await selectRecoveryService(safeData.data.email);
 
-    if(selectRecovery){
-      const verifyOTC = await compare(OTCode.toString(), selectRecovery.otc);
-
-      if(verifyOTC){
-        OTCode = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000
+    if (existingRecovery) {
+      // 6a. Atualização de recovery existente
+      const verifyOTC = await compare(otcCode.toString(), existingRecovery.otc);
+      
+      // Gera novo código se o atual for igual
+      if (verifyOTC) {
+        otcCode = generateOTCCode();
       }
 
-      const msg = `Esse é o seu código para confirmar e trocar a senha: ${OTCode}`
-      const email = await sendEmail(safeData.data.email, msg)
+      // Envio de email
+      const emailMessage = `Esse é o seu código para confirmar e trocar a senha: ${otcCode}`;
+      const emailResult = await sendEmail(safeData.data.email, emailMessage);
 
-      if(!email.response) return res.status(201).json({ message: "Email não enviado." })
-      
-      const hash = hashSync(OTCode.toString(), 10)
-      const recovery = await updateRecoveryService(selectRecovery.id, hash)
+      if (!emailResult.response) {
+        return res.status(200).json({ 
+          message: RECOVERY_MESSAGES.OTC_SENT_FAILED 
+        });
+      }
 
-      if(!recovery) return res.status(500).json({ message: "OTC não registrado" })
-      
-      return res.status(200).json({ message: "OTC enviado com sucesso." })
+      // Atualização do recovery
+      const hashedOtc = hashSync(otcCode.toString(), OTC_CONFIG.SALT_ROUNDS);
+      const updatedRecovery = await updateRecoveryService(existingRecovery.id, hashedOtc);
+
+      if (!updatedRecovery) {
+        return res.status(500).json({ 
+          message: RECOVERY_MESSAGES.OTC_NOT_REGISTERED 
+        });
+      }
+
+      return res.status(200).json({ 
+        message: RECOVERY_MESSAGES.OTC_SENT_SUCCESS 
+      });
     }
 
-    const msg = `Esse é o seu código para confirmar e trocar a senha: ${OTCode}`
-    const email = await sendEmail(safeData.data.email, msg)
+    // 6b. Criação de novo recovery
+    const emailMessage = `Esse é o seu código para confirmar e trocar a senha: ${otcCode}`;
+    const emailResult = await sendEmail(safeData.data.email, emailMessage);
 
-    if(!email.response) return res.status(201).json({ message: "Email não enviado." })
-    
-    const hash = hashSync(OTCode.toString(), 10)
-
-    const payload = {
-        expiresAt: new Date(new Date().getTime() + 5 * 60000),
-        userEmail: safeData.data.email,
-        otc: hash
-    } as createRecoveryDTO
-
-    const recovery = await saveRecoveryService(payload)
-
-    if(!recovery) return res.status(500).json({ message: "Código OTC não registrado" })
-    
-    return res.status(201).json({ message: "Código OTC enviado com sucesso." })
-    
-  }catch(error){
-    if(error instanceof z.ZodError){
-      return res.status(500).json({ message: z.treeifyError(error).errors[0] });
+    if (!emailResult.response) {
+      return res.status(200).json({ 
+        message: RECOVERY_MESSAGES.OTC_SENT_FAILED 
+      });
     }
+
+    // Criação do payload para novo recovery
+    const hashedOtc = hashSync(otcCode.toString(), OTC_CONFIG.SALT_ROUNDS);
+    const recoveryPayload = {
+      expiresAt: calculateExpirationDate(),
+      userEmail: safeData.data.email,
+      otc: hashedOtc
+    } as createRecoveryDTO;
+
+    const newRecovery = await saveRecoveryService(recoveryPayload);
+
+    if (!newRecovery) {
+      return res.status(500).json({ 
+        message: RECOVERY_MESSAGES.OTC_CODE_NOT_REGISTERED 
+      });
+    }
+
+    return res.status(201).json({ 
+      message: RECOVERY_MESSAGES.OTC_CODE_SENT_SUCCESS 
+    });
+
+  } catch (error) {
+    console.error('Erro no sendotc:', error);
+    
+    // Tratamento específico para erros de validação Zod
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ 
+        error: z.treeifyError(error).errors[0] 
+      });
+    }
+
+    // Tratamento para outros tipos de erro
+    return res.status(500).json({ 
+      message: "Erro interno do servidor.",
+      ...(process.env.NODE_ENV === 'development' && { 
+        error: error instanceof Error ? error.message : 'Erro desconhecido' 
+      })
+    });
   }
-}
+};
 
 export const verifyOTC: RequestHandler = async(req, res): Promise<any> => {
-    try{
-        const safeData = recoverySchema.safeParse(req.body);
-        if (!safeData.success) {
-            return res.status(400).json({ error: z.treeifyError(safeData.error).errors[0] });
-        }
-
-        const selectRecovery = await selectRecoveryService(safeData.data.email)
-
-        if(!selectRecovery) return res.status(404).json({ message: "Não foi encontrado esse usuário.", tokenOTC: null })
-            
-        const verifyOtc = await compare(safeData.data.otc as string, selectRecovery.otc)
-
-        if(!verifyOtc) return res.status(400).json({ message: "Código OTC não confere.", tokenOTC: null })
-        
-        const dateNow = new Date()
-        const verifyExpiresAt = differenceInMinutes(dateNow, selectRecovery.expiresAt)
-
-        if(verifyExpiresAt >= 5) return res.status(400).json({ message: "Código de recuperação expirou. Tente novamente", tokenOTC: null })
-
-        const token = createJWT({id: selectRecovery.id})
-        
-        return res.status(200).json({ message: "Troca permitida.", tokenOTC: token })
-    }catch(error){
-      if(error instanceof z.ZodError){
-        return res.status(500).json({ message: z.treeifyError(error).errors[0] });
-      }
+  try {
+    // 1. Validação dos dados de entrada
+    const safeData = recoverySchema.safeParse(req.body);
+    if (!safeData.success) {
+      return res.status(400).json({ 
+        error: z.treeifyError(safeData.error).errors[0] 
+      });
     }
-}
+
+    // 2. Busca do recovery pelo email
+    const recovery = await selectRecoveryService(safeData.data.email);
+    if (!recovery) {
+      return res.status(404).json({ 
+        message: RECOVERY_MESSAGES.USER_NOT_FOUND_VERIFY, 
+        tokenOTC: null 
+      });
+    }
+
+    // 3. Verificação do código OTC
+    const verifyOtc = await compare(safeData.data.otc as string, recovery.otc);
+    if (!verifyOtc) {
+      return res.status(400).json({ 
+        message: RECOVERY_MESSAGES.OTC_INVALID, 
+        tokenOTC: null 
+      });
+    }
+
+    // 4. Verificação de expiração
+    const currentDate = new Date();
+    const expirationDifference = differenceInMinutes(currentDate, recovery.expiresAt);
+
+    if (expirationDifference >= OTC_CONFIG.EXPIRATION_MINUTES) {
+      return res.status(400).json({ 
+        message: RECOVERY_MESSAGES.OTC_EXPIRED, 
+        tokenOTC: null 
+      });
+    }
+
+    // 5. Geração do token JWT
+    const token = createJWT({ id: recovery.id });
+
+    return res.status(200).json({ 
+      message: RECOVERY_MESSAGES.OTC_VERIFIED_SUCCESS, 
+      tokenOTC: token 
+    });
+
+  } catch (error) {
+    console.error('Erro no verifyOTC:', error);
+    
+    // Tratamento específico para erros de validação Zod
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ 
+        error: z.treeifyError(error).errors[0] 
+      });
+    }
+
+    // Tratamento para outros tipos de erro
+    return res.status(500).json({ 
+      message: "Erro interno do servidor.",
+      ...(process.env.NODE_ENV === 'development' && { 
+        error: error instanceof Error ? error.message : 'Erro desconhecido' 
+      })
+    });
+  }
+};

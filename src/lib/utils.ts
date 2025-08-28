@@ -12,7 +12,7 @@ export const generateReadablePassword = (length: number = 8): string => {
   return password;
 };
 
-import { BACKGROUND_COLORS } from './constants';
+import { BACKGROUND_COLORS, OTC_CONFIG } from './constants';
 
 /**
  * Determina a cor de fundo baseada no sexo do usuário
@@ -21,4 +21,21 @@ import { BACKGROUND_COLORS } from './constants';
  */
 export const getBackgroundColorBySex = (sex: string): string => {
   return sex === "MASCULINO" ? BACKGROUND_COLORS.MALE : BACKGROUND_COLORS.FEMALE;
+};
+
+/**
+ * Gera um código OTC de 6 dígitos
+ * @returns Código OTC numérico
+ */
+export const generateOTCCode = (): number => {
+  return Math.floor(Math.random() * (OTC_CONFIG.MAX_VALUE - OTC_CONFIG.MIN_VALUE + 1)) + OTC_CONFIG.MIN_VALUE;
+};
+
+/**
+ * Calcula a data de expiração para códigos OTC
+ * @param minutes - Minutos para expiração (padrão: 5)
+ * @returns Data de expiração
+ */
+export const calculateExpirationDate = (minutes: number = OTC_CONFIG.EXPIRATION_MINUTES): Date => {
+  return new Date(new Date().getTime() + minutes * 60000);
 };
