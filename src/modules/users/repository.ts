@@ -51,7 +51,6 @@ export const updateUser = async(id: number, user: UpdateUserDTO) => {
         data: {
            name: user.name,
            email: user.email,
-           password: user.password,
            role: user.role,
            firstAccess: false,
            phone: user.phone,

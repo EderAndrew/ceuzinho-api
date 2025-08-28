@@ -18,30 +18,39 @@ import { CreateScheduleDTO } from "./dto/createSchedule.dto";
 import { verifyDir } from "../../lib/verifyDir";
 import { findUserByIdService } from "../users/service";
 import z from "zod";
+import { 
+    getPeriodConfig, 
+    getFieldValue, 
+    parseNumberField, 
+    buildDocumentUrl 
+} from "./utils/scheduleUtils";
 
 sharp.cache(false)
 
 export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res): Promise<any> => {
     try{
+        const period = getFieldValue(req.fields, 'period');
+        const periodConfig = getPeriodConfig(period || 'NOITE'); // fallback para NOITE
+        
         const ESchedule = {
-            date: req.fields?.date?.[0],
-            period: req.fields?.period?.[0],
-            timeStart: req.fields?.period?.[0] === "MANHÃ" ? "09:00" : req.fields?.period?.[0] === "TARDE" ? "14:00" : "19:00",
-            timeEnd: req.fields?.period?.[0] === "MANHÃ" ? "11:00" : req.fields?.period?.[0] === "TARDE" ? "16:00" : "21:00",
-            bgColor: req.fields?.period?.[0] === "MANHÃ" ? "#EBBC16" : req.fields?.period?.[0] === "TARDE" ? "#7A9B44" : "#043A68",
-            scheduleType: req.fields?.scheduleType?.[0],
-            room: req.fields?.room?.[0],
-            tema: req.fields?.tema?.[0],
-            createdBy: parseInt(req.fields?.createdBy?.[0] as string),
-            teatcherOne: parseInt(req.fields?.teatcherOne?.[0] as string),
-            teatcherTwo:parseInt(req.fields?.teatcherTwo?.[0] as string)
+            date: getFieldValue(req.fields, 'date'),
+            period,
+            timeStart: periodConfig.timeStart,
+            timeEnd: periodConfig.timeEnd,
+            bgColor: periodConfig.bgColor,
+            scheduleType: getFieldValue(req.fields, 'scheduleType'),
+            room: getFieldValue(req.fields, 'room'),
+            tema: getFieldValue(req.fields, 'tema'),
+            createdBy: parseNumberField(getFieldValue(req.fields, 'createdBy')),
+            teatcherOne: parseNumberField(getFieldValue(req.fields, 'teatcherOne')), // Mantido compatibilidade com DB
+            teatcherTwo: parseNumberField(getFieldValue(req.fields, 'teatcherTwo'))  // Mantido compatibilidade com DB
         } as CreateScheduleDTO
         
         const safeData = createScheduleSchema.safeParse(ESchedule)
 
         if(!safeData.success) return res.status(400).json({ error: z.treeifyError(safeData.error).errors[0] })
 
-        const yesterday = new Date(req.fields?.date?.[0] as string)
+        const yesterday = new Date(getFieldValue(req.fields, 'date') as string)
         const today = new Date()
         
         if(yesterday <= today) return res.status(200).json({message: "Data deve ser maior que a data atual."})
@@ -70,9 +79,12 @@ export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res)
             const formData = { 
                 ...ESchedule,
                 document: files.document[0].originalFilename?.split(".")[0],
-                documentUrl: process.env.NODE_ENV === "production"
-                ? `${process.env.URL_DOC_PROD}media/${files.document[0].originalFilename?.split(".")[0]}.webp`
-                : `${process.env.URL_DOC_DEV}media/${files.document[0].originalFilename?.split(".")[0]}.webp`
+                documentUrl: buildDocumentUrl(
+                    files.document[0].originalFilename?.split(".")[0] || '',
+                    process.env.NODE_ENV === "production",
+                    '',
+                    true
+                )
             }
 
             await fs.unlink(files.document[0].filepath)
@@ -81,24 +93,27 @@ export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res)
 
             if(!schedule) return res.status(500).json({ message: "Erro ao criar agendamento." })
 
-            return res.status(201).json({ message: "Schedule criado com sucesso!" })
-        }
+                    return res.status(201).json({ message: "Schedule criado com sucesso!" })
+    }
 
-        const publicDir = path.join(__dirname, "../../../public/files");
+    const publicDir = path.join(__dirname, "../../../public/files");
 
-        await verifyDir(publicDir)
+    await verifyDir(publicDir)
 
-        const filePath = path.join(publicDir, files.document[0].originalFilename as string);
+    const filePath = path.join(publicDir, files.document[0].originalFilename as string);
 
-        await fs.writeFile(filePath, files.document[0].originalFilename as string);
+    await fs.writeFile(filePath, files.document[0].originalFilename as string);
 
-        const formData = { 
-            ...ESchedule,
-            document: files.document[0].originalFilename?.split(".pdf")[0],
-            documentUrl: process.env.NODE_ENV === "production"
-            ? `${process.env.URL_DOC_PROD}files/${files.document[0].originalFilename}`
-            : `${process.env.URL_DOC_DEV}files/${files.document[0].originalFilename}`
-        }
+    const formData = { 
+        ...ESchedule,
+        document: files.document[0].originalFilename?.split(".pdf")[0],
+        documentUrl: buildDocumentUrl(
+            files.document[0].originalFilename || '',
+            process.env.NODE_ENV === "production",
+            '',
+            false
+        )
+    }
 
         await fs.unlink(files.document[0].filepath)
 
@@ -119,14 +134,17 @@ export const updateSchedule: RequestHandler = async(req: ExtendFileRequest, res)
     try{
         //pegar os dados
         const { id } = req.params
+        const period = getFieldValue(req.fields, 'period');
+        const periodConfig = getPeriodConfig(period || 'NOITE'); // fallback para NOITE
+        
         const ESchedule = {
-            period: req.fields?.period?.[0],
-            timeStart: req.fields?.period?.[0] === "MANHÃ" ? "09:00" : req.fields?.period?.[0] === "TARDE" ? "14:00" : "19:00",
-            timeEnd: req.fields?.period?.[0] === "MANHÃ" ? "11:00" : req.fields?.period?.[0] === "TARDE" ? "16:00" : "21:00",
-            bgColor: req.fields?.period?.[0] === "MANHÃ" ? "#EBBC16" : req.fields?.period?.[0] === "TARDE" ? "#7A9B44" : "#043A68",
-            scheduleType: req.fields?.scheduleType?.[0],
-            room: req.fields?.room?.[0],
-            tema: req.fields?.tema?.[0]
+            period,
+            timeStart: periodConfig.timeStart,
+            timeEnd: periodConfig.timeEnd,
+            bgColor: periodConfig.bgColor,
+            scheduleType: getFieldValue(req.fields, 'scheduleType'),
+            room: getFieldValue(req.fields, 'room'),
+            tema: getFieldValue(req.fields, 'tema')
         } as CreateScheduleDTO
 
         const safeData = createScheduleSchema.safeParse(ESchedule)
@@ -159,9 +177,12 @@ export const updateSchedule: RequestHandler = async(req: ExtendFileRequest, res)
             const formData = { 
                 ...ESchedule,
                 document: files.document[0].originalFilename?.split(".")[0],
-                documentUrl: process.env.NODE_ENV === "production"
-                ? `${process.env.URL_DOC_PROD}media/${files.document[0].originalFilename?.split(".")[0]}.webp`
-                : `${process.env.URL_DOC_DEV}media/${files.document[0].originalFilename?.split(".")[0]}.webp`
+                documentUrl: buildDocumentUrl(
+                    files.document[0].originalFilename?.split(".")[0] || '',
+                    process.env.NODE_ENV === "production",
+                    '',
+                    true
+                )
             }
 
             await fs.unlink(files.document[0].filepath)
@@ -185,9 +206,12 @@ export const updateSchedule: RequestHandler = async(req: ExtendFileRequest, res)
         const formData = { 
             ...ESchedule,
             document: files.document[0].originalFilename?.split(".pdf")[0],
-            documentUrl: process.env.NODE_ENV === "production"
-            ? `${process.env.URL_DOC_PROD}files/${files.document[0].originalFilename}`
-            : `${process.env.URL_DOC_DEV}files/${files.document[0].originalFilename}`
+            documentUrl: buildDocumentUrl(
+                files.document[0].originalFilename || '',
+                process.env.NODE_ENV === "production",
+                '',
+                false
+            )
         }
 
         await fs.unlink(hasSchedule.documentUrl as string)
