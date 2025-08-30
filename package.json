@@ -9,6 +9,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "local": "node --import=tsx --watch --env-file=.env ./endpoint.js",
     "dev": "node --import=tsx --watch --env-file=.env ./src/server.ts",
     "prod": "set NODE_ENV=production && node --import=tsx --env-file=.env dist/server.js",
     "deploy": "git pull && pnpm install && npx prisma migrate deploy && prisma generate && tsc && pm2 restart ceuzinho-api"
@@ -31,6 +32,7 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
+    "@ngrok/ngrok": "^1.5.2",
     "@prisma/adapter-neon": "^6.14.0",
     "@prisma/client": "^6.14.0",
     "@types/bcrypt": "^6.0.0",

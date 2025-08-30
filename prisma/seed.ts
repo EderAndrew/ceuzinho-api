@@ -1,10 +1,9 @@
 import { PrismaClient } from "@prisma/client"
-import { generateReadablePassword, getBackgroundColorBySex } from "../src/modules/users/utils/userUtils";
+import { getBackgroundColorBySex } from "../src/modules/users/utils/userUtils";
 import { hashSync } from "bcrypt";
 import { PASSWORD_CONFIG } from "../src/modules/users/utils/constants";
 const prisma = new PrismaClient()
 
-//const randomPassword = generateReadablePassword(PASSWORD_CONFIG.DEFAULT_LENGTH);
 const hashedPassword = hashSync(process.env.SEED_PASSWORD as string, PASSWORD_CONFIG.SALT_ROUNDS);
 
 async function main() {
