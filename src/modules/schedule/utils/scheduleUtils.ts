@@ -1,3 +1,5 @@
+import fs from "fs/promises";
+
 // Constantes para configuração dos períodos
 export const PERIOD_CONFIG = {
     MANHÃ: {
@@ -51,3 +53,13 @@ export const buildDocumentUrl = (
     
     return `${process.env[envVar]}${folder}/${filename}${extension}`;
 };
+
+export const verifyDir = async (path: string) => {
+    try{
+        await fs.access(path)
+        return
+    }catch{
+        await fs.mkdir(path, { recursive: true })
+        return
+    }
+}

@@ -15,7 +15,7 @@ import {
     updateScheduleService
 } from "./service";
 import { CreateScheduleDTO } from "./dto/createSchedule.dto";
-import { verifyDir } from "../../lib/verifyDir";
+import { verifyDir } from "./utils/scheduleUtils";
 import { findUserByIdService } from "../users/service";
 import z from "zod";
 import { 

@@ -1,15 +1,15 @@
 import { RequestHandler } from "express";
 import { findUserByEmailService } from "../users/service";
 import { compare, hashSync } from "bcrypt";
-import { sendEmail } from "../../lib/sendEmail";
+import { sendEmail } from "./utils/recoveryUtils";
 import { saveRecoveryService, selectRecoveryService, updateRecoveryService } from "./service";
 import { createRecoveryDTO } from "./dto/recovery.dto";
 import { recoverySchema } from "./validator";
 import { differenceInMinutes } from "date-fns";
 import { createJWT } from "../../middlewares/jwt";
 import z from "zod";
-import { generateOTCCode, calculateExpirationDate } from "../../lib/utils";
-import { RECOVERY_MESSAGES, OTC_CONFIG } from "../../lib/constants";
+import { generateOTCCode, calculateExpirationDate } from "../users/utils/userUtils";
+import { RECOVERY_MESSAGES, OTC_CONFIG } from "../users/utils/constants";
 
 export const sendotc: RequestHandler = async(req, res): Promise<any> => {
   try {

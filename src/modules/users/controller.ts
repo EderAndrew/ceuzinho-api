@@ -1,21 +1,30 @@
 import { RequestHandler } from "express";
 import { createUserSchema, loginUserSchema, updateUserSchema } from "./validator";
 import { compare, hashSync } from "bcrypt";
-import { changePasswordService, createUserService, disableUserService, findUserByEmailService, findUserByIdService, findUsersService, updateImageService, updateUserService } from "./service";
+import { 
+  changePasswordService, 
+  createUserService, 
+  disableUserService, 
+  findUserByEmailService, 
+  findUserByIdService, 
+  findUsersService, 
+  updateImageService, 
+  updateUserService 
+} from "./service";
 import { createJWT, decodeJwt } from "../../middlewares/jwt";
 import { Role, Sex } from "@prisma/client";
-import { sendEmail } from "../../lib/sendEmail";
+import {  generateReadablePassword, getBackgroundColorBySex } from "./utils/userUtils";
+import { sendEmail } from "../recovery/utils/recoveryUtils";
 import { ExtendFileRequest } from "../../lib/types/extendRequest";
 import formidable from "formidable";
 import path from "path";
-import { verifyDir } from "../../lib/verifyDir";
+import { verifyDir } from "../schedule/utils/scheduleUtils";
 import sharp from "sharp";
 import fs from "fs/promises";
 import { UpdateImageDTO } from "./dto/updateImage.dto";
 import z from "zod";
 import { UpdateUserDTO } from "./dto/updateuser.dto";
-import { generateReadablePassword, getBackgroundColorBySex } from "../../lib/utils";
-import { USER_MESSAGES, PASSWORD_CONFIG } from "../../lib/constants";
+import { USER_MESSAGES, PASSWORD_CONFIG } from "./utils/constants";
 
 sharp.cache(false)
 
