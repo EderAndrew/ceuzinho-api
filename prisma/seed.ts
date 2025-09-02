@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient, Role, Sex } from "@prisma/client"
 import { getBackgroundColorBySex } from "../src/modules/users/utils/userUtils";
 import { hashSync } from "bcrypt";
 import { PASSWORD_CONFIG } from "../src/modules/users/utils/constants";
@@ -11,13 +11,13 @@ async function main() {
         where: { email: "ederandrew0028@gmail.com" },
         update: {},
         create: {
-            name: "Eder Andrew",
-            email: "ederandrew0028@gmail.com",
+            name: process.env.SEED_NAME as string,
+            email: process.env.SEED_EMAIL as string,
             password: hashedPassword,
-            phone: "(11) 98625-7092",
-            role: "ADMIN",
-            sex: "MASCULINO",
-            bgColor: getBackgroundColorBySex("MASCULINO"),
+            phone: process.env.SEED_PHONE as string,
+            role: process.env.SED_ROLE as Role,
+            sex: process.env.SEED_SEX as Sex,
+            bgColor: getBackgroundColorBySex(process.env.SEED_SEX as Sex),
         }
     })
     console.log(`User created: ${user}`)
