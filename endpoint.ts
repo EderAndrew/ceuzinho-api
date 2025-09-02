@@ -8,7 +8,7 @@ import ngrok from "@ngrok/ngrok"
         domain: process.env.NGROK_RESERVED_DOMAIN,
         // Secure your endpoint with a traffic policy.
         // This could also be a path to a traffic policy file.
-        traffic_policy: '{"on_http_request": [{"actions": [{"type": "oauth","config": {"provider": "google"}}]}]}'
+        //traffic_policy: '{"on_http_request": [{"actions": [{"type": "oauth","config": {"provider": "google"}}]}]}'
     });
 
     // Output ngrok url to console
