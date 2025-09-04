@@ -1,4 +1,4 @@
-import { Room } from "../../../../generated/prisma";
+import { Room } from "@prisma/client";
 
 export interface createKidsDTO {
     id?: number;

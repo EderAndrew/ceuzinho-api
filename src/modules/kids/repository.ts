@@ -1,9 +1,9 @@
-import { PrismaClient } from "../../../generated/prisma";
+import { PrismaClient } from "@prisma/client";
 import { createKidsDTO } from "./dto/createKids.dto";
 
 const prisma = new PrismaClient()
 
-export const createKid = async(payload: createKidsDTO) => {
+/* export const createKid = async(payload: createKidsDTO) => {
     const kid = await prisma.kid.create({
         data: {
             name: payload.name,
@@ -16,4 +16,4 @@ export const createKid = async(payload: createKidsDTO) => {
     })
 
     return kid
-}
+} */

@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { createKidSchema } from "./validator";
-import { createKidService } from "./service";
+//import { createKidService } from "./service";
 import { ExtendFileRequest } from "../../lib/types/extendRequest";
 
 export const createKid: RequestHandler = async (req: ExtendFileRequest, res): Promise<any> => {
