@@ -307,8 +307,8 @@ export const uploadAvatar: RequestHandler = async(req: ExtendFileRequest, res): 
     const formUser = {
       photo: originalName,
       photoUrl: process.env.NODE_ENV === "production"
-      ? `${process.env.URL_DOC_PROD}media/${originalName}.webp`
-      : `${process.env.URL_DOC_DEV}media/${originalName}.webp`
+      ? `${process.env.URL_DOC_PROD}/media/${originalName}.webp`
+      : `${process.env.URL_DOC_DEV}/media/${originalName}.webp`
     } as UpdateImageDTO
 
     const updateImage = await updateImageService(userId, formUser)
