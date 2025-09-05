@@ -262,25 +262,47 @@ export const uploadAvatar: RequestHandler = async(req: ExtendFileRequest, res): 
 
     if(!hasUser) return res.status(404).json({ message: "Usuário não existe." })
 
-    let files = req.files as {[fieldname: string]: formidable.File[]}
-    const file = files?.document?.[0];
+    const files = req.files as {[fieldname: string]: formidable.File[]}
+    const candidateKeys = ["document", "file", "avatar", "image"]
+    let uploaded: formidable.File | undefined
+    if(files){
+      for(const key of candidateKeys){
+        const arr = (files as any)[key] as formidable.File[] | undefined
+        if(Array.isArray(arr) && arr[0]){
+          uploaded = arr[0]
+          break
+        }
+      }
+      if(!uploaded){
+        const firstKey = Object.keys(files)[0]
+        if(firstKey){
+          const arr = (files as any)[firstKey] as formidable.File[]
+          uploaded = Array.isArray(arr) ? arr[0] : undefined
+        }
+      }
+    }
 
-    if(!file) return res.status(400).json({ message: "Nenhuma imagem enviada." })
+    if(!uploaded) return res.status(400).json({ message: "Nenhuma imagem enviada." })
     
-    const imageTypes = ["image/webp", "image/jpeg", "image/png", "image/jpg"]
+    const imageTypes = ["image/webp", "image/jpeg", "image/png", "image/jpg", "image/heic", "image/heif"]
 
-    if(!imageTypes.includes(file.mimetype as string)){
+    if(!imageTypes.includes(uploaded.mimetype as string)){
       return res.status(415).json({ message: "Tipo de imagem incompativel. Escolha uma imagem do tipo jpg ou png." })
     }
 
     const publicDir = path.join(__dirname, "../../../public/media");
-    const originalName = file.originalFilename?.split(".")[0]
+    const originalName = uploaded.originalFilename?.split(".")[0]
     
     await verifyDir(publicDir)
 
-    await sharp(file.filepath)
-     .toFormat("webp")
-     .toFile(`./public/media/${originalName}.webp`)
+    const sharpInput = uploaded.filepath
+    // Reduzir/comprimir imagens grandes
+    const transformer = sharp(sharpInput)
+      .rotate()
+      .resize({ width: 1024, withoutEnlargement: true })
+      .webp({ quality: 80 })
+
+    await transformer.toFile(`./public/media/${originalName}.webp`)
 
     const formUser = {
       photo: originalName,
@@ -291,7 +313,7 @@ export const uploadAvatar: RequestHandler = async(req: ExtendFileRequest, res): 
 
     const updateImage = await updateImageService(userId, formUser)
 
-    await fs.unlink(file.filepath)
+    await fs.unlink(uploaded.filepath)
     if(!updateImage) return res.status(500).json({ message: "Não foi possível alterar a foto." })
 
     return res.status(200).json({ message: "Foto alterada com sucesso." })
