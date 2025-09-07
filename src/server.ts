@@ -9,9 +9,9 @@ const prisma = new PrismaClient()
 
 server.use(cors())
 server.use(helmet())
-server.use(express.json({ limit:'128mb' }))
+server.use(express.json())
 server.use(express.static('public'));
-server.use(express.urlencoded({ limit: '128mb', extended: true }))
+server.use(express.urlencoded({ extended: true }))
 server.use("/api", routes)
 
 server.use((req: Request, res: Response) => {

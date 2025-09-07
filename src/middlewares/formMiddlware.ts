@@ -41,6 +41,7 @@ export const formMiddleware = async (req: ExtendFileRequest, res: Response, next
 
         form
             .on("field", (name, value) => {
+                
                 fields.push({ name, value })
             })
             .on("file", (name, file) => {
