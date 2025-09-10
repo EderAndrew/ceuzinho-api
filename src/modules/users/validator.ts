@@ -18,6 +18,13 @@ export const loginUserSchema = z.object({
   password: z.string().min(6)
 }).strict();
 
+export const changePasswordSchema = z.object({
+  email: z.email(),
+  oldPassword: z.string().min(6),
+  newPassWord: z.string().min(6),
+  repeatePassword: z.string().min(6)
+})
+
 export const updateUserSchema =  z.object({
   name: z.string().min(1).optional(),
   email: z.email().optional(),

@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { createUserSchema, loginUserSchema, updateUserSchema } from "./validator";
+import { changePasswordSchema, createUserSchema, loginUserSchema, updateUserSchema } from "./validator";
 import { compare, hashSync } from "bcrypt";
 import { 
   changePasswordService, 
@@ -216,40 +216,53 @@ export const disableUser: RequestHandler = async(req, res): Promise<any> => {
   }
 }
 
-export const changePassword: RequestHandler = async(req, res): Promise<any> => {
-  try{
-    const safeData = loginUserSchema.safeParse(req.body);
-    if (!safeData.success) {
-      return res.status(400).json({ error: z.treeifyError(safeData.error) });
+export const changePassword: RequestHandler = async (req, res): Promise<any> => {
+  try {
+    const parsed = changePasswordSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: z.treeifyError(parsed.error) });
     }
 
-    const verifyUser = await findUserByEmailService(safeData.data.email)
-    
-    if(!verifyUser || !verifyUser?.status) return res.status(404).json({ message: "Usuário não identificado." })
-    
-    const hash = await compare(safeData.data.password, verifyUser.password);
+    const { email, oldPassword, newPassWord, repeatePassword } = parsed.data;
 
-    if(hash) return res.status(200).json({ message: "Senha não pode ser igual a senha antiga." })
-
-    const newHash = hashSync(safeData.data.password, 10)
-
-    const payload = {
-      email: verifyUser.email,
-      password: newHash
+    const user = await findUserByEmailService(email);
+    if (!user || !user.status) {
+      return res.status(404).json({ message: "Usuário não identificado." });
     }
 
-    const change = await changePasswordService(payload)
+    const isOldPasswordValid = await compare(oldPassword, user.password);
+    if (!isOldPasswordValid) {
+      return res.status(400).json({ message: "Senha antiga não corresponde." });
+    }
 
-    if(!change) return res.status(500).json({ massage: "Não foi possível trocar a senha do usuário." })
-    
-    return res.status(200).json({ message: "Senha alterada com sucesso." })
-    
-  }catch(error){
-    if(error instanceof z.ZodError){
+    const isNewPasswordSameAsOld = await compare(newPassWord, user.password);
+    if (isNewPasswordSameAsOld) {
+      return res.status(400).json({ message: "Senha não pode ser igual à senha antiga." });
+    }
+
+    if (newPassWord !== repeatePassword) {
+      return res.status(400).json({ message: "Nova senha e confirmação não correspondem." });
+    }
+
+    const newHashedPassword = hashSync(newPassWord, 10);
+    const updatePayload = { email: user.email, password: newHashedPassword };
+
+    const passwordChanged = await changePasswordService(updatePayload);
+    if (!passwordChanged) {
+      return res.status(500).json({ message: "Não foi possível trocar a senha do usuário." });
+    }
+
+    return res.status(200).json({ message: "Senha alterada com sucesso." });
+
+  } catch (error) {
+    if (error instanceof z.ZodError) {
       return res.status(500).json({ message: z.treeifyError(error).errors[0] });
     }
+
+    return res.status(500).json({ message: "Erro interno no servidor." });
   }
-}
+};
+
 
 export const uploadAvatar: RequestHandler = async(req: ExtendFileRequest, res): Promise<any> => {
   try{
