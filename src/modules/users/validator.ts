@@ -21,7 +21,7 @@ export const loginUserSchema = z.object({
 export const changePasswordSchema = z.object({
   email: z.email(),
   oldPassword: z.string().min(6),
-  newPassWord: z.string().min(6),
+  newPassword: z.string().min(6),
   repeatePassword: z.string().min(6)
 })
 

@@ -222,8 +222,8 @@ export const changePassword: RequestHandler = async (req, res): Promise<any> => 
     if (!parsed.success) {
       return res.status(400).json({ error: z.treeifyError(parsed.error) });
     }
-
-    const { email, oldPassword, newPassWord, repeatePassword } = parsed.data;
+    console.log(parsed.data)
+    const { email, oldPassword, newPassword, repeatePassword } = parsed.data;
 
     const user = await findUserByEmailService(email);
     if (!user || !user.status) {
@@ -235,16 +235,16 @@ export const changePassword: RequestHandler = async (req, res): Promise<any> => 
       return res.status(400).json({ message: "Senha antiga não corresponde." });
     }
 
-    const isNewPasswordSameAsOld = await compare(newPassWord, user.password);
+    const isNewPasswordSameAsOld = await compare(newPassword, user.password);
     if (isNewPasswordSameAsOld) {
       return res.status(400).json({ message: "Senha não pode ser igual à senha antiga." });
     }
 
-    if (newPassWord !== repeatePassword) {
+    if (newPassword !== repeatePassword) {
       return res.status(400).json({ message: "Nova senha e confirmação não correspondem." });
     }
 
-    const newHashedPassword = hashSync(newPassWord, 10);
+    const newHashedPassword = hashSync(newPassword, 10);
     const updatePayload = { email: user.email, password: newHashedPassword };
 
     const passwordChanged = await changePasswordService(updatePayload);
