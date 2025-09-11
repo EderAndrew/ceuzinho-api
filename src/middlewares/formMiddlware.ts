@@ -1,14 +1,32 @@
 import { NextFunction, Response } from "express";
 import { ExtendFileRequest } from "../lib/types/extendRequest";
 import formidable from "formidable";
+import fs from "fs/promises";
+import path from "path";
 
 export const formMiddleware = async (req: ExtendFileRequest, res: Response, next: NextFunction) => {
     try{
+        const uploadDir = path.resolve("./tmp")
+        await fs.access(uploadDir).catch(async () => {
+            await fs.mkdir(uploadDir, { recursive: true })
+        })
+
         const form = formidable({
-            uploadDir: "./tmp",
-            maxFileSize: 100 * 1024 * 1024,
+            uploadDir,
+            maxFileSize: 100 * 1024 * 1024, // 100MB por arquivo
+            maxTotalFileSize: 200 * 1024 * 1024, // 200MB por requisição
+            allowEmptyFiles: false,
+            multiples: false,
             filter: (part) => {
-                const allowed: string[] = ["image/webp", "image/jpeg", "image/png", "image/jpg", "application/pdf"]
+                const allowed: string[] = [
+                    "image/webp",
+                    "image/jpeg",
+                    "image/png",
+                    "image/jpg",
+                    "image/heic",
+                    "image/heif",
+                    "application/pdf"
+                ]
 
                 if(part.mimetype && !allowed.includes(part.mimetype)){
                     return false
@@ -23,6 +41,7 @@ export const formMiddleware = async (req: ExtendFileRequest, res: Response, next
 
         form
             .on("field", (name, value) => {
+                
                 fields.push({ name, value })
             })
             .on("file", (name, file) => {
@@ -35,6 +54,11 @@ export const formMiddleware = async (req: ExtendFileRequest, res: Response, next
         
         form.parse(req, (err, fields, files) => {
             if(err){
+                const anyErr = err as any
+                if(anyErr?.code === 'ETOOBIG'){
+                    res.status(413).json({ message: "Arquivo muito grande. Tamanho máximo permitido excedido." })
+                    return
+                }
                 next(err)
                 return
             }

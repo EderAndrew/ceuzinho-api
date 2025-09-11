@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { createUserSchema, loginUserSchema, updateUserSchema } from "./validator";
+import { changePasswordSchema, createUserSchema, loginUserSchema, updateUserSchema } from "./validator";
 import { compare, hashSync } from "bcrypt";
 import { 
   changePasswordService, 
@@ -216,40 +216,53 @@ export const disableUser: RequestHandler = async(req, res): Promise<any> => {
   }
 }
 
-export const changePassword: RequestHandler = async(req, res): Promise<any> => {
-  try{
-    const safeData = loginUserSchema.safeParse(req.body);
-    if (!safeData.success) {
-      return res.status(400).json({ error: z.treeifyError(safeData.error) });
+export const changePassword: RequestHandler = async (req, res): Promise<any> => {
+  try {
+    const parsed = changePasswordSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: z.treeifyError(parsed.error) });
+    }
+    console.log(parsed.data)
+    const { email, oldPassword, newPassword, repeatePassword } = parsed.data;
+
+    const user = await findUserByEmailService(email);
+    if (!user || !user.status) {
+      return res.status(404).json({ message: "Usuário não identificado." });
     }
 
-    const verifyUser = await findUserByEmailService(safeData.data.email)
-    
-    if(!verifyUser || !verifyUser?.status) return res.status(404).json({ message: "Usuário não identificado." })
-    
-    const hash = await compare(safeData.data.password, verifyUser.password);
-
-    if(hash) return res.status(200).json({ message: "Senha não pode ser igual a senha antiga." })
-
-    const newHash = hashSync(safeData.data.password, 10)
-
-    const payload = {
-      email: verifyUser.email,
-      password: newHash
+    const isOldPasswordValid = await compare(oldPassword, user.password);
+    if (!isOldPasswordValid) {
+      return res.status(400).json({ message: "Senha antiga não corresponde." });
     }
 
-    const change = await changePasswordService(payload)
+    const isNewPasswordSameAsOld = await compare(newPassword, user.password);
+    if (isNewPasswordSameAsOld) {
+      return res.status(400).json({ message: "Senha não pode ser igual à senha antiga." });
+    }
 
-    if(!change) return res.status(500).json({ massage: "Não foi possível trocar a senha do usuário." })
-    
-    return res.status(200).json({ message: "Senha alterada com sucesso." })
-    
-  }catch(error){
-    if(error instanceof z.ZodError){
+    if (newPassword !== repeatePassword) {
+      return res.status(400).json({ message: "Nova senha e confirmação não correspondem." });
+    }
+
+    const newHashedPassword = hashSync(newPassword, 10);
+    const updatePayload = { email: user.email, password: newHashedPassword };
+
+    const passwordChanged = await changePasswordService(updatePayload);
+    if (!passwordChanged) {
+      return res.status(500).json({ message: "Não foi possível trocar a senha do usuário." });
+    }
+
+    return res.status(200).json({ message: "Senha alterada com sucesso." });
+
+  } catch (error) {
+    if (error instanceof z.ZodError) {
       return res.status(500).json({ message: z.treeifyError(error).errors[0] });
     }
+
+    return res.status(500).json({ message: "Erro interno no servidor." });
   }
-}
+};
+
 
 export const uploadAvatar: RequestHandler = async(req: ExtendFileRequest, res): Promise<any> => {
   try{
@@ -262,36 +275,58 @@ export const uploadAvatar: RequestHandler = async(req: ExtendFileRequest, res): 
 
     if(!hasUser) return res.status(404).json({ message: "Usuário não existe." })
 
-    let files = req.files as {[fieldname: string]: formidable.File[]}
-    const file = files?.document?.[0];
+    const files = req.files as {[fieldname: string]: formidable.File[]}
+    const candidateKeys = ["document", "file", "avatar", "image"]
+    let uploaded: formidable.File | undefined
+    if(files){
+      for(const key of candidateKeys){
+        const arr = (files as any)[key] as formidable.File[] | undefined
+        if(Array.isArray(arr) && arr[0]){
+          uploaded = arr[0]
+          break
+        }
+      }
+      if(!uploaded){
+        const firstKey = Object.keys(files)[0]
+        if(firstKey){
+          const arr = (files as any)[firstKey] as formidable.File[]
+          uploaded = Array.isArray(arr) ? arr[0] : undefined
+        }
+      }
+    }
 
-    if(!file) return res.status(400).json({ message: "Nenhuma imagem enviada." })
+    if(!uploaded) return res.status(400).json({ message: "Nenhuma imagem enviada." })
     
-    const imageTypes = ["image/webp", "image/jpeg", "image/png", "image/jpg"]
+    const imageTypes = ["image/webp", "image/jpeg", "image/png", "image/jpg", "image/heic", "image/heif"]
 
-    if(!imageTypes.includes(file.mimetype as string)){
+    if(!imageTypes.includes(uploaded.mimetype as string)){
       return res.status(415).json({ message: "Tipo de imagem incompativel. Escolha uma imagem do tipo jpg ou png." })
     }
 
     const publicDir = path.join(__dirname, "../../../public/media");
-    const originalName = file.originalFilename?.split(".")[0]
+    const originalName = uploaded.originalFilename?.split(".")[0]
     
     await verifyDir(publicDir)
 
-    await sharp(file.filepath)
-     .toFormat("webp")
-     .toFile(`./public/media/${originalName}.webp`)
+    const sharpInput = uploaded.filepath
+    // Reduzir/comprimir imagens grandes
+    const transformer = sharp(sharpInput)
+      .rotate()
+      .resize({ width: 1024, withoutEnlargement: true })
+      .webp({ quality: 80 })
+
+    await transformer.toFile(`./public/media/${originalName}.webp`)
 
     const formUser = {
       photo: originalName,
       photoUrl: process.env.NODE_ENV === "production"
-      ? `${process.env.URL_DOC_PROD}media/${originalName}.webp`
-      : `${process.env.URL_DOC_DEV}media/${originalName}.webp`
+      ? `${process.env.URL_DOC_PROD}/media/${originalName}.webp`
+      : `${process.env.URL_DOC_DEV}/media/${originalName}.webp`
     } as UpdateImageDTO
 
     const updateImage = await updateImageService(userId, formUser)
 
-    await fs.unlink(file.filepath)
+    await fs.unlink(uploaded.filepath)
     if(!updateImage) return res.status(500).json({ message: "Não foi possível alterar a foto." })
 
     return res.status(200).json({ message: "Foto alterada com sucesso." })

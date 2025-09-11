@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "prisma generate && tsc",
-    "local": "node --import=tsx --watch --env-file=.env ./endpoint.js",
+    "local": "node --import=tsx --watch --env-file=.env ./src/endpoint.js",
     "dev": "node --import=tsx --watch --env-file=.env ./src/server.ts",
     "prod": "set NODE_ENV=production && node --import=tsx --env-file=.env dist/server.js",
     "custom-deploy": "pnpm install && npx prisma migrate deploy && prisma generate && tsc && pm2 restart ceuzinho-api"
