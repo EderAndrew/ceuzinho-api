@@ -324,6 +324,21 @@ export const uploadAvatar: RequestHandler = async(req: ExtendFileRequest, res): 
       : `${process.env.URL_DOC_DEV}/media/${originalName}.webp`
     } as UpdateImageDTO
 
+    if(hasUser.photo){
+      //Remover a foto antiga
+      const oldImagePath = path.join(__dirname, `../../../public/media/${hasUser.photo}.webp`)
+      try{
+        await fs.stat(oldImagePath)
+      }catch{
+        console.log("Arquivo não existe.")
+      }
+      try{
+        await fs.unlink(oldImagePath)
+      }catch(error){
+        console.log("Não foi possível apagar a imagem antiga.")
+      }
+    }
+
     const updateImage = await updateImageService(userId, formUser)
 
     await fs.unlink(uploaded.filepath)
