@@ -15,30 +15,30 @@ datasource db {
 }
 
 model User {
-  id                   Int          @id @default(autoincrement())
-  name                 String
-  email                String       @unique
-  password             String
-  role                 Role?
-  photo                String?
-  photoUrl             String?
-  phone                String?
-  sex                  Sex
-  status               Boolean      @default(true)
-  bgColor              String
-  firstAccess          Boolean      @default(true)
-  createdAt            DateTime     @default(now()) @db.Timestamp(6)
-  updatedAt            DateTime?    @db.Timestamp(6)
-  Kid                  Kid[]
-  createdBySchedule    Schedule[]   @relation("CreatedByUser")
-  teatcherOneSchedules Schedule[]   @relation("TeatcherOneUser")
-  teatcherTwoSchedule  Schedule[]   @relation("TeatcherTwoUser")
-  acceptImpediment     Impediment[] @relation("AcceptImpediment")
-  requestImpediment    Impediment[] @relation("RequestImpediment")
-  Post                 Post[]
-  sessions             Session[]
-  Document             Document[]   @relation("CreatedByUser")
-  Recovery             Recovery[]
+  id                  Int          @id @default(autoincrement())
+  name                String
+  email               String       @unique
+  password            String
+  role                Role?
+  photo               String?
+  photoUrl            String?
+  phone               String?
+  sex                 Sex
+  status              Boolean      @default(true)
+  bgColor             String
+  firstAccess         Boolean      @default(true)
+  createdAt           DateTime     @default(now()) @db.Timestamp(6)
+  updatedAt           DateTime?    @db.Timestamp(6)
+  Kid                 Kid[]
+  createdBySchedule   Schedule[]   @relation("CreatedByUser")
+  teacherOneSchedules Schedule[]   @relation("TeacherOneUser")
+  teacherTwoSchedule  Schedule[]   @relation("TeacherTwoUser")
+  acceptImpediment    Impediment[] @relation("AcceptImpediment")
+  requestImpediment   Impediment[] @relation("RequestImpediment")
+  Post                Post[]
+  sessions            Session[]
+  Document            Document[]   @relation("CreatedByUser")
+  Recovery            Recovery[]
 
   @@map("users")
 }
@@ -101,30 +101,31 @@ model Issue {
 }
 
 model Schedule {
-  id              Int          @id @default(autoincrement())
-  date            DateTime?
-  timeStart       String?
-  timeEnd         String?
-  period          Period?
-  scheduleType    String?
-  room            Room?
-  tema            String?
-  info            String?
-  createdBy       Int?
-  teatcherOne     Int?
-  teatcherTwo     Int?
-  ministratorOne  String?
-  ministratorTwo  String?
-  document        String?
-  documentUrl     String?
-  bgColor         String?
-  createdAt       DateTime     @default(now()) @db.Timestamp(6)
-  updatedAt       DateTime?    @db.Timestamp(6)
-  createdByUser   User?        @relation("CreatedByUser", fields: [createdBy], references: [id])
-  teatcherOneUser User?        @relation("TeatcherOneUser", fields: [teatcherOne], references: [id])
-  teatcherTwoUser User?        @relation("TeatcherTwoUser", fields: [teatcherTwo], references: [id])
-  ClassRoom       ClassRoom[]
-  Impediment      Impediment[]
+  id             Int          @id @default(autoincrement())
+  date           DateTime?
+  timeStart      String?
+  timeEnd        String?
+  period         Period?
+  scheduleType   String?
+  room           Room?
+  tema           String?
+  status         ScheduleStatus      @default(AGUARDANDO)
+  info           String?        
+  createdBy      Int?
+  teacherOne     Int?
+  teacherTwo     Int?
+  ministratorOne String?
+  ministratorTwo String?
+  document       String?
+  documentUrl    String?
+  bgColor        String?
+  createdAt      DateTime     @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime?    @db.Timestamp(6)
+  createdByUser  User?        @relation("CreatedByUser", fields: [createdBy], references: [id])
+  teacherOneUser User?        @relation("TeacherOneUser", fields: [teacherOne], references: [id])
+  teacherTwoUser User?        @relation("TeacherTwoUser", fields: [teacherTwo], references: [id])
+  ClassRoom      ClassRoom[]
+  Impediment     Impediment[]
 
   @@map("schedules")
 }
@@ -210,4 +211,11 @@ enum ImpedimentStatus {
   AGUARDANDO
   CANCELADO
   ACEITO
+}
+
+enum ScheduleStatus {
+  AGUARDANDO
+  AULA
+  FINALIZADO
+  CANCELADO
 }

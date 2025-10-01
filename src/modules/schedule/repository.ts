@@ -17,8 +17,8 @@ export const createSchedule = async (payload: CreateScheduleDTO) => {
             tema: payload.tema as string,
             info: payload.info,
             createdBy: payload.createdBy as number,
-            teatcherOne: payload.teatcherOne,
-            teatcherTwo: payload.teatcherTwo,
+            teacherOne: payload.teacherOne,
+            teacherTwo: payload.teacherTwo,
             document: payload.document ? payload.document : null,
             documentUrl: payload.documentUrl ? payload.documentUrl : null
         }
@@ -46,7 +46,7 @@ export const findSchedulesByDate = async (date: string) => {
                     phone: true
                 }
             },
-            teatcherOneUser: {
+            teacherOneUser: {
                 select: {
                     id: true,
                     photo: true,
@@ -56,7 +56,7 @@ export const findSchedulesByDate = async (date: string) => {
                     phone: true
                 }
             },
-            teatcherTwoUser: {
+            teacherTwoUser: {
                 select: {
                     id: true,
                     photo: true,
@@ -88,7 +88,7 @@ export const findScheduleById = async (id: number) => {
                     phone: true
                 }
             },
-            teatcherOneUser: {
+            teacherOneUser: {
                 select: {
                     id: true,
                     photo: true,
@@ -98,7 +98,7 @@ export const findScheduleById = async (id: number) => {
                     phone: true
                 }
             },
-            teatcherTwoUser: {
+            teacherTwoUser: {
                 select: {
                     id: true,
                     photo: true,
@@ -118,8 +118,8 @@ export const findScheduleByUserId = async (id: string) => {
     const schedule = await prisma.schedule.findFirst({
         where: {
             OR: [
-                { teatcherOne: parseInt(id) },
-                { teatcherTwo: parseInt(id) }
+                { teacherOne: parseInt(id) },
+                { teacherTwo: parseInt(id) }
             ]
         },
         include: {
@@ -133,7 +133,7 @@ export const findScheduleByUserId = async (id: string) => {
                     phone: true
                 }
             },
-            teatcherOneUser: {
+            teacherOneUser: {
                 select: {
                     id: true,
                     photo: true,
@@ -143,7 +143,7 @@ export const findScheduleByUserId = async (id: string) => {
                     phone: true
                 }
             },
-            teatcherTwoUser: {
+            teacherTwoUser: {
                 select: {
                     id: true,
                     photo: true,
@@ -172,8 +172,8 @@ export const updateSchedule = async (id: number, payload:CreateScheduleDTO) => {
             scheduleType: payload.scheduleType,
             room: payload.room,
             tema: payload.tema,
-            teatcherOne: payload.teatcherOne,
-            teatcherTwo: payload.teatcherTwo,
+            teacherOne: payload.teacherOne,
+            teacherTwo: payload.teacherTwo,
             document: payload.document,
             documentUrl: payload.documentUrl,
             updatedAt: new Date()
@@ -183,26 +183,26 @@ export const updateSchedule = async (id: number, payload:CreateScheduleDTO) => {
     return schedule
 }
 
-export const changeFirstTeatcher = async(id: number, teatcherId: number) => {
+export const changeFirstTeacher = async(id: number, teacherId: number) => {
     const schedule = await prisma.schedule.update({
         where: {
             id
         },
         data: {
-            teatcherOne: teatcherId
+            teacherOne: teacherId
         }
     })
 
     return schedule
 }
 
-export const changeSecondTeatcher = async(id: number, teatcherId: number) => {
+export const changeSecondTeacher = async(id: number, teacherId: number) => {
     const schedule = await prisma.schedule.update({
         where: {
             id
         },
         data: {
-            teatcherTwo: teatcherId
+            teacherTwo: teacherId
         }
     })
 

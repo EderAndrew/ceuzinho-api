@@ -42,10 +42,10 @@ export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res)
             room: getFieldValue(req.fields, 'room'),
             tema: getFieldValue(req.fields, 'tema'),
             createdBy: parseNumberField(getFieldValue(req.fields, 'createdBy')),
-            teatcherOne: parseNumberField(getFieldValue(req.fields, 'teatcherOne')), // Mantido compatibilidade com DB
-            teatcherTwo: parseNumberField(getFieldValue(req.fields, 'teatcherTwo'))  // Mantido compatibilidade com DB
+            teacherOne: parseNumberField(getFieldValue(req.fields, 'teacherOne')), // Mantido compatibilidade com DB
+            teacherTwo: parseNumberField(getFieldValue(req.fields, 'teacherTwo'))  // Mantido compatibilidade com DB
         } as CreateScheduleDTO
-        
+        console.log(ESchedule)
         const safeData = createScheduleSchema.safeParse(ESchedule)
 
         if(!safeData.success) return res.status(400).json({ error: z.treeifyError(safeData.error).errors[0] })
@@ -302,28 +302,28 @@ export const changeScheduleTeacherId: RequestHandler = async(req, res):Promise<a
 
         if(!schedule) return res.status(404).json({ message: "Agendamento nao encontrado."})
 
-        const newTeatcher = await findUserByIdService(safeData.data.newId)
+        const newTeacher = await findUserByIdService(safeData.data.newId)
 
-        if(!newTeatcher) return res.status(404).json({ message: "Professor nao encontrado." })
+        if(!newTeacher) return res.status(404).json({ message: "Professor nao encontrado." })
 
-        const oldTeatcher = await findUserByIdService(safeData.data.oldId)
+        const oldTeacher = await findUserByIdService(safeData.data.oldId)
 
-        if(!oldTeatcher) return res.status(404).json({ message: "Professor nao encontrado."})
+        if(!oldTeacher) return res.status(404).json({ message: "Professor nao encontrado."})
         
-        if(newTeatcher.id === schedule.teatcherOne || newTeatcher.id === schedule.teatcherTwo) return res.status(400).json({ message: "Professor já está vinculado ao agendamento." })
+        if(newTeacher.id === schedule.teacherOne || newTeacher.id === schedule.teacherTwo) return res.status(400).json({ message: "Professor já está vinculado ao agendamento." })
         
-        if(newTeatcher.id === oldTeatcher.id) return res.status(404).json({ message: "Você esta tentando trocar o mesmo professor?" })
+        if(newTeacher.id === oldTeacher.id) return res.status(404).json({ message: "Você esta tentando trocar o mesmo professor?" })
         
-        if(oldTeatcher.id === schedule.teatcherOne){
+        if(oldTeacher.id === schedule.teacherOne){
             one = true
-            const first = await changeTeacherService(parseInt(scheduleId), newTeatcher.id, one)
+            const first = await changeTeacherService(parseInt(scheduleId), newTeacher.id, one)
 
             if(!first) return res.status(400).json({ message: "Não foi possível realizar a troca de professores." })
             
             return res.status(200).json({ message: "Troca de professor efetuada com sucesso" })
         }     
 
-        const first = await changeTeacherService(parseInt(scheduleId), newTeatcher.id, one)
+        const first = await changeTeacherService(parseInt(scheduleId), newTeacher.id, one)
 
         if(!first) return res.status(400).json({ message: "Não foi possível realizar a troca de professores." })
         

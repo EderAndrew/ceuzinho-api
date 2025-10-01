@@ -79,12 +79,12 @@ export const updateImpediment: RequestHandler = async(req, res):Promise<any> => 
         //verifico no schedule se o professor solicitante é o professor 1 ou o 2
         const schedule = await findScheduleByIdService(hasImpediment.scheduleId)
         
-        if(schedule?.teatcherOne === userId || schedule?.teatcherTwo === userId) return res.status(200).json({ message: "Professor já esta nessa agendamento." })
+        if(schedule?.teacherOne === userId || schedule?.teacherTwo === userId) return res.status(200).json({ message: "Professor já esta nessa agendamento." })
         
         const accept = await updateImpedimentService(parseInt(id), userId)
 
         if(!accept) return res.status(404).json({ message: "Não foi possível salvar as informações" })
-        const firstOrSecond = schedule?.teatcherOne === hasImpediment.requestId ? true : false
+        const firstOrSecond = schedule?.teacherOne === hasImpediment.requestId ? true : false
     
         const changeTeacher = await changeTeacherService(hasImpediment.scheduleId, userId, firstOrSecond)
 

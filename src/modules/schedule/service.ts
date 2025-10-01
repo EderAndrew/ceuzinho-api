@@ -20,10 +20,10 @@ export const updateScheduleService = async (id: number, payload:CreateScheduleDT
     return await scheduleRepo.updateSchedule(id, payload)
 }
 
-export const changeTeacherService = async (id: number, teatcherId: number, first: boolean) => {
-    if(first) return await scheduleRepo.changeFirstTeatcher(id, teatcherId)
+export const changeTeacherService = async (id: number, teacherId: number, first: boolean) => {
+    if(first) return await scheduleRepo.changeFirstTeacher(id, teacherId)
     
-    return await scheduleRepo.changeSecondTeatcher(id, teatcherId)
+    return await scheduleRepo.changeSecondTeacher(id, teacherId)
 }
 
 export const deleteScheduleService = async(id: number) => {
