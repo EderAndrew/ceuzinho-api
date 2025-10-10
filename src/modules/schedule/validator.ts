@@ -4,6 +4,7 @@ import { z } from 'zod';
 export const createScheduleSchema = z.object({
     id: z.number().optional(),
     date: z.string().optional(),
+    month: z.string().optional(),
     timeStart: z.string().optional(),
     timeEnd: z.string().optional(),
     bgColor: z.string().optional(),

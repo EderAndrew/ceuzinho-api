@@ -10,6 +10,7 @@ import {
     createScheduleService,
     deleteScheduleService,
     findScheduleByIdService,
+    findScheduleByMonthService,
     findScheduleByUserIdService,
     findSchedulesByDateService,
     updateScheduleService
@@ -34,6 +35,7 @@ export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res)
         
         const ESchedule = {
             date: getFieldValue(req.fields, 'date'),
+            month: getFieldValue(req.fields, 'month'),
             period,
             timeStart: periodConfig.timeStart,
             timeEnd: periodConfig.timeEnd,
@@ -45,7 +47,7 @@ export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res)
             teacherOne: parseNumberField(getFieldValue(req.fields, 'teacherOne')), // Mantido compatibilidade com DB
             teacherTwo: parseNumberField(getFieldValue(req.fields, 'teacherTwo'))  // Mantido compatibilidade com DB
         } as CreateScheduleDTO
-        console.log(ESchedule)
+        
         const safeData = createScheduleSchema.safeParse(ESchedule)
 
         if(!safeData.success) return res.status(400).json({ error: z.treeifyError(safeData.error).errors[0] })
@@ -259,6 +261,24 @@ export const allSchedulesByDate: RequestHandler = async(req, res): Promise<any> 
         console.error(error)
     }
     
+}
+
+export const allSchedulesByMonth: RequestHandler = async(req, res): Promise<any> => {
+    try{
+        let { userId, month } = req.params
+        const schedules = await findScheduleByMonthService(month)
+
+        if(!schedules) return res.status(404).json({ message: "Agendamentos nao encontrados." , data: [] })
+
+        const userSchedules = schedules.filter(item => item.teacherOne === Number(userId) || item.teacherTwo === Number(userId))
+
+        if(!userSchedules) return res.status(404).json({ message: "Agendamentos nao encontrados." , data: [] })
+        
+        return res.status(200).json({ message: "Agendamentos encontrados com sucesso." , data: userSchedules })
+
+    }catch(error){
+        console.error(error)
+    }
 }
 
 export const scheduleById: RequestHandler = async(req, res): Promise<any> => {

@@ -115,12 +115,54 @@ export const findScheduleById = async (id: number) => {
 }
 
 export const findScheduleByUserId = async (id: string) => {
-    const schedule = await prisma.schedule.findFirst({
+    const schedule = await prisma.schedule.findMany({
         where: {
             OR: [
                 { teacherOne: parseInt(id) },
                 { teacherTwo: parseInt(id) }
             ]
+        },
+        include: {
+            createdByUser: {
+                select: {
+                    id: true,
+                    photo: true,
+                    photoUrl: true,
+                    name: true,
+                    email: true,
+                    phone: true
+                }
+            },
+            teacherOneUser: {
+                select: {
+                    id: true,
+                    photo: true,
+                    photoUrl: true,
+                    name: true,
+                    email: true,
+                    phone: true
+                }
+            },
+            teacherTwoUser: {
+                select: {
+                    id: true,
+                    photo: true,
+                    photoUrl: true,
+                    name: true,
+                    email: true,
+                    phone: true
+                }
+            }
+        }
+    })
+
+    return schedule
+}
+
+export const findScheduleByMonth = async (month: string) => {
+     const schedule = await prisma.schedule.findMany({
+        where: {
+            month
         },
         include: {
             createdByUser: {

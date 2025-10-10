@@ -3,6 +3,7 @@ import { Room } from "@prisma/client"
 export interface CreateScheduleDTO {
     id?: number,
     date?: string,
+    month?: string,
     timeStart?: string,
     timeEnd?: string,
     bgColor?: string,
