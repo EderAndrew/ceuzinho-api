@@ -47,6 +47,8 @@ export const createSchedule: RequestHandler = async(req: ExtendFileRequest, res)
             teacherOne: parseNumberField(getFieldValue(req.fields, 'teacherOne')), // Mantido compatibilidade com DB
             teacherTwo: parseNumberField(getFieldValue(req.fields, 'teacherTwo'))  // Mantido compatibilidade com DB
         } as CreateScheduleDTO
+
+        console.log("eschedule: ",ESchedule)
         
         const safeData = createScheduleSchema.safeParse(ESchedule)
 

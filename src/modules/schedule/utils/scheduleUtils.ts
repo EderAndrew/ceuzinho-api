@@ -23,6 +23,7 @@ export type PeriodType = keyof typeof PERIOD_CONFIG;
 
 // Função utilitária para obter configuração do período
 export const getPeriodConfig = (period: string) => {
+    console.log("PERIOD: ", period)
     const config = PERIOD_CONFIG[period as PeriodType];
     if (!config) {
         throw new Error(`Período inválido: ${period}`);

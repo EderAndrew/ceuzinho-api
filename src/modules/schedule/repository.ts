@@ -8,6 +8,7 @@ export const createSchedule = async (payload: CreateScheduleDTO) => {
     const schedule = await prisma.schedule.create({
         data: {
             date: new Date(payload.date as string),
+            month: payload.month,
             timeStart: payload.timeStart,
             timeEnd: payload.timeEnd,
             period: payload.period as Period,
