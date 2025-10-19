@@ -27,14 +27,14 @@
     "@types/node": "^24.7.1",
     "@types/nodemailer": "^6.4.20",
     "jest": "^30.2.0",
-    "prisma": "^6.17.0",
+    "prisma": "^6.17.1",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   },
   "dependencies": {
     "@ngrok/ngrok": "^1.5.2",
     "@prisma/adapter-neon": "^6.17.0",
-    "@prisma/client": "^6.17.0",
+    "@prisma/client": "^6.17.1",
     "@types/bcrypt": "^6.0.0",
     "@types/pg": "^8.15.5",
     "bcrypt": "^6.0.0",
