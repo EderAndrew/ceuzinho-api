@@ -5,6 +5,7 @@ import {
   changePasswordService, 
   createUserService, 
   disableUserService, 
+  findAllTeachersService, 
   findUserByEmailService, 
   findUserByIdService, 
   findUsersService, 
@@ -160,6 +161,19 @@ export const allUsers: RequestHandler = async (req, res): Promise<any> => {
     return res.status(500).json({ message: "Erro interno do servidor." });
   }
 
+}
+
+export const allTeachers: RequestHandler = async (req, res): Promise<any> => {
+  try{
+    const teachers = await findAllTeachersService()
+
+    if(!teachers) return res.status(404).json({ message: "Professores nao encontrados." })
+
+    return res.status(200).json({ teachers })
+  }catch(error){
+    console.error(error)
+    return res.status(500).json({ message: "Erro interno do servidor." });
+  }
 }
 
 export const editUser: RequestHandler = async (req: ExtendFileRequest, res): Promise<any> => {

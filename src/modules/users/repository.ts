@@ -43,6 +43,18 @@ export const findUsers = async() => {
     return await prisma.user.findMany({})
 }
 
+export const findAllteachers = async() => {
+    return await prisma.user.findMany({
+        where: {
+            OR: [
+                { role: "PROFESSOR" },
+                { role: "PASTOR" },
+                { role: "ADMIN" }
+            ]
+        }
+    })
+}
+
 export const updateUser = async(id: number, user: UpdateUserDTO) => {
     const userData = await prisma.user.update({
         where: {

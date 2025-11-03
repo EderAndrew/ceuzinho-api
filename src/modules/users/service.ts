@@ -20,6 +20,10 @@ export const findUsersService = async () => {
   return await userRepo.findUsers();
 }
 
+export const findAllTeachersService = async () => {
+  return await userRepo.findAllteachers();
+}
+
 export const updateUserService = async (id: number, user: UpdateUserDTO) => {
   return await userRepo.updateUser(id, user)
 }
