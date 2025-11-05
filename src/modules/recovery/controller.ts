@@ -20,7 +20,7 @@ export const sendotc: RequestHandler = async(req, res): Promise<any> => {
         error: z.treeifyError(safeData.error).errors[0] 
       });
     }
-
+    console.log(safeData.data)
     // 2. Verificação de email fornecido
     if (!safeData.data.email) {
       return res.status(400).json({ 
@@ -56,7 +56,7 @@ export const sendotc: RequestHandler = async(req, res): Promise<any> => {
       const emailResult = await sendEmail(safeData.data.email, emailMessage);
 
       if (!emailResult.response) {
-        return res.status(200).json({ 
+        return res.status(404).json({ 
           message: RECOVERY_MESSAGES.OTC_SENT_FAILED 
         });
       }
