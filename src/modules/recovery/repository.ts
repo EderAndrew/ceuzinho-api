@@ -50,3 +50,16 @@ export const selectOTC = async(id: number) => {
 
     return otc
 }
+
+export const changePasswordWithOTC = async(email: string, password: string) => {
+    const user = await prisma.user.update({
+        where: {
+            email
+        },
+        data: {
+            password
+        }
+    })
+
+    return user
+}

@@ -5,7 +5,7 @@ export const selectRecoveryService = async(email: string) => {
     return await recoveryRepo.selectRecovery(email)
 }
 
-export const saveRecoveryService = async(payload: createRecoveryDTO) => {
+export const createRecoveryService = async(payload: createRecoveryDTO) => {
     return await recoveryRepo.saveRecovery(payload)
 }
 
@@ -15,4 +15,8 @@ export const updateRecoveryService = async(id: number, hash: string) => {
 
 export const selectRecoveryByOTCService = async(id: number) => {
     return await recoveryRepo.selectOTC(id)
+}
+
+export const changePasswordWithOTCService = async(email: string, password: string) => {
+    return await recoveryRepo.changePasswordWithOTC(email, password)
 }

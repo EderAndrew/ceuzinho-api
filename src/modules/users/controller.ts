@@ -236,7 +236,7 @@ export const changePassword: RequestHandler = async (req, res): Promise<any> => 
     if (!parsed.success) {
       return res.status(400).json({ error: z.treeifyError(parsed.error) });
     }
-    console.log(parsed.data)
+    
     const { email, oldPassword, newPassword, repeatePassword } = parsed.data;
 
     const user = await findUserByEmailService(email);

@@ -35,7 +35,11 @@ export const RECOVERY_MESSAGES = {
   OTC_VERIFIED_SUCCESS: "Troca permitida.",
   OTC_INVALID: "Código OTC não confere.",
   OTC_EXPIRED: "Código de recuperação expirou. Tente novamente",
-  USER_NOT_FOUND_VERIFY: "Não foi encontrado esse usuário."
+  USER_NOT_FOUND_VERIFY: "Não foi encontrado esse usuário.",
+  PASSWORD_NOT_MATCH: "Senhas não correspondem.",
+  PASSWORD_TOO_SHORT: "Senha deve ter no mínimo 6 caracteres.",
+  PASSWORD_CHANGE_FAILED: "Erro ao mudar senha.",
+  PASSWORD_CHANGED_SUCCESS: "Senha alterada com sucesso."
 } as const;
 
 export const OTC_CONFIG = {

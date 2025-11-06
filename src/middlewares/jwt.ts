@@ -44,7 +44,7 @@ export const verifyJWT = async (req: Request, res: Response, next: NextFunction)
   });
 };
 
-export const verifyODT = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+export const verifyOTC = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   const authHeader = req.headers["authorization"];
 
   if (!authHeader) return res.status(401).json({ message: "Não autorizado a trocar a senha." });

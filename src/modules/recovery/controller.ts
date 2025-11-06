@@ -2,33 +2,27 @@ import { RequestHandler } from "express";
 import { findUserByEmailService } from "../users/service";
 import { compare, hashSync } from "bcrypt";
 import { sendEmail } from "./utils/recoveryUtils";
-import { saveRecoveryService, selectRecoveryService, updateRecoveryService } from "./service";
+import { changePasswordWithOTCService, createRecoveryService, selectRecoveryService, updateRecoveryService } from "./service";
 import { createRecoveryDTO } from "./dto/recovery.dto";
-import { recoverySchema } from "./validator";
+import { createOtcSchema, verifyOtcSchema, changePasswordSchema } from "./validator";
 import { differenceInMinutes } from "date-fns";
 import { createJWT } from "../../middlewares/jwt";
 import z from "zod";
 import { generateOTCCode, calculateExpirationDate } from "../users/utils/userUtils";
 import { RECOVERY_MESSAGES, OTC_CONFIG } from "../users/utils/constants";
 
-export const sendotc: RequestHandler = async(req, res): Promise<any> => {
+export const createOtc: RequestHandler = async(req, res): Promise<any> => {
   try {
     // 1. Validação dos dados de entrada
-    const safeData = recoverySchema.safeParse(req.body);
+    const safeData = createOtcSchema.safeParse(req.body);
     if (!safeData.success) {
       return res.status(400).json({ 
         error: z.treeifyError(safeData.error).errors[0] 
       });
     }
     console.log(safeData.data)
-    // 2. Verificação de email fornecido
-    if (!safeData.data.email) {
-      return res.status(400).json({ 
-        message: RECOVERY_MESSAGES.EMAIL_NOT_PROVIDED 
-      });
-    }
-
-    // 3. Verificação de usuário existente e ativo
+    
+    // 2. Verificação de usuário existente e ativo
     const user = await findUserByEmailService(safeData.data.email);
     if (!user?.status) {
       return res.status(404).json({ 
@@ -94,7 +88,7 @@ export const sendotc: RequestHandler = async(req, res): Promise<any> => {
       otc: hashedOtc
     } as createRecoveryDTO;
 
-    const newRecovery = await saveRecoveryService(recoveryPayload);
+    const newRecovery = await createRecoveryService(recoveryPayload);
 
     if (!newRecovery) {
       return res.status(500).json({ 
@@ -129,7 +123,7 @@ export const sendotc: RequestHandler = async(req, res): Promise<any> => {
 export const verifyOTC: RequestHandler = async(req, res): Promise<any> => {
   try {
     // 1. Validação dos dados de entrada
-    const safeData = recoverySchema.safeParse(req.body);
+    const safeData = verifyOtcSchema.safeParse(req.body);
     if (!safeData.success) {
       return res.status(400).json({ 
         error: z.treeifyError(safeData.error).errors[0] 
@@ -167,7 +161,7 @@ export const verifyOTC: RequestHandler = async(req, res): Promise<any> => {
 
     // 5. Geração do token JWT
     const token = createJWT({ id: recovery.id });
-
+    console.log("TOKEN: ", token)
     return res.status(200).json({ 
       message: RECOVERY_MESSAGES.OTC_VERIFIED_SUCCESS, 
       tokenOTC: token 
@@ -192,3 +186,63 @@ export const verifyOTC: RequestHandler = async(req, res): Promise<any> => {
     });
   }
 };
+
+export const changePasswordWithOTC: RequestHandler = async(req, res): Promise<any> => {
+  try {
+    // 1. Validação dos dados de entrada
+    const safeData = changePasswordSchema.safeParse(req.body);
+    if (!safeData.success) {
+      return res.status(400).json({ 
+        error: z.treeifyError(safeData.error).errors[0] 
+      });
+    }
+    const { email, password, repeatPassword } = safeData.data;
+
+    // 2. Verificação de senhas
+    if (safeData.data.password !== repeatPassword) {
+      return res.status(400).json({ 
+        message: RECOVERY_MESSAGES.PASSWORD_NOT_MATCH 
+      });
+    }
+
+    // 3. Verificação de senhas
+    if (password.length < 6) {
+      return res.status(400).json({ 
+        message: RECOVERY_MESSAGES.PASSWORD_TOO_SHORT 
+      });
+    }
+    
+    const user = await findUserByEmailService(email);
+    if (!user) {
+      return res.status(404).json({ 
+        message: RECOVERY_MESSAGES.USER_NOT_FOUND 
+      });
+    }
+    
+    const isNewPasswordSameAsOld = await compare(password, user.password);
+    if (isNewPasswordSameAsOld) {
+      return res.status(400).json({ message: "Senha não pode ser igual à senha antiga." });
+    }
+
+    // 4. Mudança de senha
+    const newHashedPassword = hashSync(password, 10);
+    const changedPassword = await changePasswordWithOTCService(email, newHashedPassword);
+    if (!changedPassword) {
+      return res.status(500).json({ 
+        message: RECOVERY_MESSAGES.PASSWORD_CHANGE_FAILED 
+      });
+    }
+
+    return res.status(200).json({ 
+      message: RECOVERY_MESSAGES.PASSWORD_CHANGED_SUCCESS 
+    });  
+  } catch (error) {
+  console.error('Erro no changePasswordWithOTC:', error);
+  
+  // Tratamento específico para erros de validação Zod
+  if (error instanceof z.ZodError) {
+    return res.status(400).json({ 
+      error: z.treeifyError(error).errors[0] 
+    });
+  }
+}}
