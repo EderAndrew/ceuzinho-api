@@ -20,7 +20,6 @@ export const createOtc: RequestHandler = async(req, res): Promise<any> => {
         error: z.treeifyError(safeData.error).errors[0] 
       });
     }
-    console.log(safeData.data)
     
     // 2. Verificação de usuário existente e ativo
     const user = await findUserByEmailService(safeData.data.email);
