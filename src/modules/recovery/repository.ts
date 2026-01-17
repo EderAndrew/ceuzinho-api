@@ -1,8 +1,7 @@
-import { PrismaClient } from "@prisma/client"
+import { prisma } from "../../lib/prisma"
 import { createRecoveryDTO } from "./dto/recovery.dto"
 import { addMinutes } from "date-fns"
 
-const prisma = new PrismaClient
 
 export const selectRecovery = async(email: string) => {
     const otc = await prisma.recovery.findFirst({

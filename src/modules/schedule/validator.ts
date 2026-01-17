@@ -1,5 +1,6 @@
-import { Room } from '@prisma/client';
+
 import { z } from 'zod';
+import { Room } from '../../generated/prisma/enums';
 
 export const createScheduleSchema = z.object({
     id: z.number().optional(),

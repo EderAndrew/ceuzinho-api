@@ -1,7 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../lib/prisma";
 import { CreateImpedimentDTO } from "./dto/createImpediment.dto";
 
-const prisma = new PrismaClient
 
 export const createImpediment = async(payload: CreateImpedimentDTO) => {
     return await prisma.impediment.create({

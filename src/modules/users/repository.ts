@@ -1,11 +1,10 @@
 //configuração de conexão com o prisma
-import { PrismaClient } from "@prisma/client"
+
 import { CreateUserDTO } from "./dto/createuser.dto"
 import { UpdateUserDTO } from "./dto/updateuser.dto"
 import { LoginUserDTO } from "./dto/loginUser.dto"
 import { UpdateImageDTO } from "./dto/updateImage.dto"
-
-const prisma = new PrismaClient
+import { prisma } from "../../lib/prisma"
 
 export const create = async(payload: CreateUserDTO) => {
     const user = await prisma.user.create({

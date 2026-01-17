@@ -3,6 +3,7 @@ import cors from "cors"
 import helmet from "helmet"
 import routes from "./routes"
 import cookieParser from "cookie-parser"
+import { prisma } from "./lib/prisma"
 
 const server = express()
 
@@ -30,6 +31,19 @@ const errorHandler:ErrorRequestHandler = (err, req, res, next) => {
 }
 
 server.use(errorHandler)
+
+process.on('SIGINT', async () => {
+    await prisma.$disconnect()
+    console.log('Conexão Prisma fechada (SIGINT)');
+    process.exit(0);
+})
+
+process.on('SIGTERM', async () => {
+    await prisma.$disconnect();
+    console.log('Conexão com Prisma fechada devido ao SIGTERM.');
+    process.exit(0);
+});
+
 
 server.listen(process.env.PORT || 3000, () => {
     console.log(`Server online on port: ${process.env.PORT || 3000}`)

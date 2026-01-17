@@ -1,8 +1,9 @@
-import { PrismaClient, Role, Sex } from "@prisma/client"
+
 import { getBackgroundColorBySex } from "../src/modules/users/utils/userUtils";
 import { hashSync } from "bcrypt";
 import { PASSWORD_CONFIG } from "../src/modules/users/utils/constants";
-const prisma = new PrismaClient()
+import { Role, Sex } from "./generated/prisma/client";
+import { prisma } from "./lib/prisma";
 
 const hashedPassword = hashSync(process.env.SEED_PASSWORD as string, PASSWORD_CONFIG.SALT_ROUNDS);
 
@@ -15,7 +16,7 @@ async function main() {
             email: process.env.SEED_EMAIL as string,
             password: hashedPassword,
             phone: process.env.SEED_PHONE as string,
-            role: process.env.SED_ROLE as Role,
+            role: process.env.SEED_ROLE as Role,
             sex: process.env.SEED_SEX as Sex,
             bgColor: getBackgroundColorBySex(process.env.SEED_SEX as Sex),
         }

@@ -1,8 +1,8 @@
-import { Period, PrismaClient } from "@prisma/client";
+import { Period } from "../../generated/prisma/enums";
+import { prisma } from "../../lib/prisma";
 import { CreateScheduleDTO } from "./dto/createSchedule.dto";
 import { startOfDay, endOfDay } from 'date-fns';
 
-const prisma = new PrismaClient
 
 export const createSchedule = async (payload: CreateScheduleDTO) => {
     const schedule = await prisma.schedule.create({

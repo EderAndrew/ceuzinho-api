@@ -4,9 +4,6 @@
   "description": "",
   "main": "index.js",
   "type": "module",
-  "prisma": {
-    "seed": "tsx src/seed.ts"
-  },
   "scripts": {
     "build": "prisma generate && tsc",
     "local": "node --import=tsx --watch --env-file=.env ./src/endpoint.js",
