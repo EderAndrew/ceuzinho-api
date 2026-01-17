@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { changePasswordSchema, createUserSchema, loginUserSchema, updateUserSchema } from "./validator";
 import { compare, hashSync } from "bcrypt";
+import jwt from "jsonwebtoken";
 import { 
   changePasswordService, 
   createUserService, 
@@ -12,7 +13,7 @@ import {
   updateImageService, 
   updateUserService 
 } from "./service";
-import { createJWT, decodeJwt } from "../../middlewares/jwt";
+import { createJWT, createRefreshJWT, decodeJwt } from "../../middlewares/jwt";
 import { Role, Sex } from "@prisma/client";
 import {  generateReadablePassword, getBackgroundColorBySex } from "./utils/userUtils";
 import { sendEmail } from "../recovery/utils/recoveryUtils";
@@ -40,20 +41,68 @@ export const signIn: RequestHandler = async (req, res): Promise<any> => {
     const user = await findUserByEmailService(email)
 
     //Verificar se o usuário encontrado esta ativo
-    if(!user || !user?.status) return res.status(403).json({ message: "Credenciais incorretas.", token: null })
+    if(!user || !user?.status) return res.status(401).json({ message: "Credenciais incorretas." })
 
     const isPasswordValid = await compare(password, user.password);
 
-    if(!isPasswordValid) return res.status(401).json({ message: "Credenciais incorretas.", token: null })
+    if(!isPasswordValid) return res.status(401).json({ message: "Credenciais incorretas." })
   
-    const token = createJWT({id: user.id})
+    const accessToken = createJWT(String(user.id))
+    const refreshToken = createRefreshJWT(String(user.id))
 
-    return res.status(200).json({ message: "Acesso permitido.", token })
+    res.cookie("access_token", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 15 * 60 * 1000,
+    })
+
+    res.cookie("refresh_token", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
+
+    return res.status(200).json({ message: "Acesso permitido." })
 
   }catch(error){
-    if(error instanceof z.ZodError){
-      return res.status(500).json({ message: z.treeifyError(error) });
+    return res.status(500).json({ message: "Erro interno." })
+  }
+}
+
+export const refreshToken: RequestHandler = async (req, res): Promise<any> => {
+  const refreshToken = req.cookies?.refresh_token
+
+  if(!refreshToken){
+    return res.status(401).json({ message: "Não autenticado" })
+  }
+
+  try {
+    const payload = jwt.verify(
+      refreshToken,
+      process.env.JWT_REFRESH_SECRET!
+    ) as { sub: string }
+
+    const user = await findUserByIdService(Number(payload.sub))
+
+    if(!user || !user.status){
+      return res.status(401).json({ message: "Não autenticado." })
     }
+
+    const newAccessToken = createJWT(payload.sub)
+
+    res.cookie("access_token", newAccessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      maxAge: 15 * 60 * 1000,
+    })
+
+    return res.json({ message: "Token renovado" })
+
+  }catch(error){
+    return res.status(401).json({ message: "Refresh token inválido" })
   }
 }
 
@@ -136,15 +185,17 @@ export const signUp: RequestHandler = async (req, res): Promise<any> => {
 };
 
 export const me: RequestHandler = async (req, res): Promise<any> => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader?.split(" ")[1];
-  const resp = decodeJwt(token as string)
+  const userId = req.userId
 
-  if(!resp?.id) return res.status(400).json({ message: "ID não informado." })
-  
-  const user = await findUserByIdService(resp.id)
+  if(!userId){
+    return res.status(401).json({ message: "Não autenticado" })
+  }
 
-  if(!user) return res.status(404).json({ message: "Usuário não encontrado." })
+  const user = await findUserByIdService(Number(userId))
+
+  if(!user){
+    return res.status(404).json({ message: "Usuário não encontrado" })
+  }
 
   return res.status(200).json({ user })
 }
@@ -213,13 +264,18 @@ export const editUser: RequestHandler = async (req: ExtendFileRequest, res): Pro
 
 export const disableUser: RequestHandler = async(req, res): Promise<any> => {
   try{
-    let { id } = req.params
+    const userId = Number(req.params.id);
+    if (isNaN(userId)) {
+      return res.status(400).json({ message: "ID de usuário inválido." });
+    }
 
-    const hasUser = await findUserByIdService(parseInt(id))
+    const hasUser = await findUserByIdService(userId);
 
-    if(!hasUser) return res.status(404).json({message: "Usuário não identificado."})
+    if (!hasUser) {
+      return res.status(404).json({ message: "Usuário não identificado." });
+    }
 
-    await disableUserService(hasUser.id, hasUser.status)
+    await disableUserService(hasUser.id, hasUser.status);
 
     return res.status(200).json({ message: hasUser.status ? "Usuário desativado." : "Usuário ativado" })
 

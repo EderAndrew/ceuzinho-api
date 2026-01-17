@@ -20,6 +20,7 @@
   "packageManager": "pnpm@10.15.0",
   "devDependencies": {
     "@jest/globals": "^30.2.0",
+    "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/formidable": "^3.4.6",
@@ -38,6 +39,7 @@
     "@types/bcrypt": "^6.0.0",
     "@types/pg": "^8.16.0",
     "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "date-fns": "^4.1.0",
     "express": "^5.2.1",

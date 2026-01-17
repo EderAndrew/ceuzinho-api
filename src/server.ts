@@ -3,12 +3,18 @@ import cors from "cors"
 import helmet from "helmet"
 import { PrismaClient } from "@prisma/client"
 import routes from "./routes"
+import cookieParser from "cookie-parser"
 
 const server = express()
 const prisma = new PrismaClient()
 
-server.use(cors())
+server.use(cors(
+    {
+        credentials: true
+    }
+))
 server.use(helmet())
+server.use(cookieParser())
 server.use(express.json())
 server.use(express.static('public'));
 server.use(express.urlencoded({ extended: true }))
