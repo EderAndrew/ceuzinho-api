@@ -1,29 +1,32 @@
 -- CreateEnum
-CREATE TYPE "public"."Role" AS ENUM ('ADMIN', 'PROFESSOR', 'PARENTE', 'PASTOR');
+CREATE TYPE "Role" AS ENUM ('ADMIN', 'PROFESSOR', 'PARENTE', 'PASTOR');
 
 -- CreateEnum
-CREATE TYPE "public"."Room" AS ENUM ('MATERNAL', 'INFANTIL_I', 'INFANTIL_II');
+CREATE TYPE "Room" AS ENUM ('MATERNAL', 'INFANTIL_I', 'INFANTIL_II');
 
 -- CreateEnum
-CREATE TYPE "public"."Period" AS ENUM ('MANHÃ', 'TARDE', 'NOITE');
+CREATE TYPE "Period" AS ENUM ('MANHÃ', 'TARDE', 'NOITE');
 
 -- CreateEnum
-CREATE TYPE "public"."Sex" AS ENUM ('MASCULINO', 'FEMININO');
+CREATE TYPE "Sex" AS ENUM ('MASCULINO', 'FEMININO');
 
 -- CreateEnum
-CREATE TYPE "public"."ImpedimentStatus" AS ENUM ('AGUARDANDO', 'CANCELADO', 'ACEITO');
+CREATE TYPE "ImpedimentStatus" AS ENUM ('AGUARDANDO', 'CANCELADO', 'ACEITO');
+
+-- CreateEnum
+CREATE TYPE "ScheduleStatus" AS ENUM ('AGUARDANDO', 'AULA', 'FINALIZADO', 'CANCELADO');
 
 -- CreateTable
-CREATE TABLE "public"."users" (
+CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "role" "public"."Role",
+    "role" "Role",
     "photo" TEXT,
     "photoUrl" TEXT,
     "phone" TEXT,
-    "sex" "public"."Sex" NOT NULL,
+    "sex" "Sex" NOT NULL,
     "status" BOOLEAN NOT NULL DEFAULT true,
     "bgColor" TEXT NOT NULL,
     "firstAccess" BOOLEAN NOT NULL DEFAULT true,
@@ -34,7 +37,7 @@ CREATE TABLE "public"."users" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."sessions" (
+CREATE TABLE "sessions" (
     "id" TEXT NOT NULL,
     "expiresAt" TIMESTAMP(3) NOT NULL,
     "token" TEXT NOT NULL,
@@ -48,7 +51,7 @@ CREATE TABLE "public"."sessions" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."recoveries" (
+CREATE TABLE "recoveries" (
     "id" SERIAL NOT NULL,
     "expiresAt" TIMESTAMP(3) NOT NULL,
     "userEmail" TEXT NOT NULL,
@@ -60,14 +63,14 @@ CREATE TABLE "public"."recoveries" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."kids" (
+CREATE TABLE "kids" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(255) NOT NULL,
     "age" INTEGER NOT NULL,
     "photo" TEXT NOT NULL,
     "photUrl" TEXT NOT NULL,
     "birthDate" TIMESTAMP(3),
-    "room" "public"."Room" NOT NULL,
+    "room" "Room" NOT NULL,
     "userId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(6),
@@ -76,7 +79,7 @@ CREATE TABLE "public"."kids" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."issues" (
+CREATE TABLE "issues" (
     "id" SERIAL NOT NULL,
     "type" TEXT NOT NULL,
     "description" TEXT,
@@ -88,19 +91,21 @@ CREATE TABLE "public"."issues" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."schedules" (
+CREATE TABLE "schedules" (
     "id" SERIAL NOT NULL,
     "date" TIMESTAMP(3),
+    "month" TEXT,
     "timeStart" TEXT,
     "timeEnd" TEXT,
-    "period" "public"."Period",
+    "period" "Period",
     "scheduleType" TEXT,
-    "room" "public"."Room",
+    "room" "Room",
     "tema" TEXT,
+    "status" "ScheduleStatus" NOT NULL DEFAULT 'AGUARDANDO',
     "info" TEXT,
     "createdBy" INTEGER,
-    "teatcherOne" INTEGER,
-    "teatcherTwo" INTEGER,
+    "teacherOne" INTEGER,
+    "teacherTwo" INTEGER,
     "ministratorOne" TEXT,
     "ministratorTwo" TEXT,
     "document" TEXT,
@@ -113,7 +118,7 @@ CREATE TABLE "public"."schedules" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."Document" (
+CREATE TABLE "Document" (
     "id" SERIAL NOT NULL,
     "dataInitial" TIMESTAMP(3) NOT NULL,
     "dataFinal" TIMESTAMP(3) NOT NULL,
@@ -125,7 +130,7 @@ CREATE TABLE "public"."Document" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."classRooms" (
+CREATE TABLE "classRooms" (
     "id" SERIAL NOT NULL,
     "startClass" BOOLEAN NOT NULL DEFAULT false,
     "closeClass" BOOLEAN NOT NULL DEFAULT false,
@@ -137,13 +142,13 @@ CREATE TABLE "public"."classRooms" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."impediments" (
+CREATE TABLE "impediments" (
     "id" SERIAL NOT NULL,
     "info" TEXT NOT NULL,
     "requestId" INTEGER NOT NULL,
     "acceptId" INTEGER,
     "scheduleId" INTEGER NOT NULL,
-    "status" "public"."ImpedimentStatus" NOT NULL DEFAULT 'AGUARDANDO',
+    "status" "ImpedimentStatus" NOT NULL DEFAULT 'AGUARDANDO',
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
 
@@ -151,7 +156,7 @@ CREATE TABLE "public"."impediments" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."posts" (
+CREATE TABLE "posts" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
@@ -165,55 +170,55 @@ CREATE TABLE "public"."posts" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_email_key" ON "public"."users"("email");
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "sessions_token_key" ON "public"."sessions"("token");
+CREATE UNIQUE INDEX "sessions_token_key" ON "sessions"("token");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "recoveries_userEmail_key" ON "public"."recoveries"("userEmail");
+CREATE UNIQUE INDEX "recoveries_userEmail_key" ON "recoveries"("userEmail");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "recoveries_otc_key" ON "public"."recoveries"("otc");
+CREATE UNIQUE INDEX "recoveries_otc_key" ON "recoveries"("otc");
 
 -- AddForeignKey
-ALTER TABLE "public"."sessions" ADD CONSTRAINT "sessions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "sessions" ADD CONSTRAINT "sessions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."recoveries" ADD CONSTRAINT "recoveries_userEmail_fkey" FOREIGN KEY ("userEmail") REFERENCES "public"."users"("email") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "recoveries" ADD CONSTRAINT "recoveries_userEmail_fkey" FOREIGN KEY ("userEmail") REFERENCES "users"("email") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."kids" ADD CONSTRAINT "kids_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "kids" ADD CONSTRAINT "kids_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."issues" ADD CONSTRAINT "issues_kidId_fkey" FOREIGN KEY ("kidId") REFERENCES "public"."kids"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "issues" ADD CONSTRAINT "issues_kidId_fkey" FOREIGN KEY ("kidId") REFERENCES "kids"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."schedules" ADD CONSTRAINT "schedules_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "public"."users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "schedules" ADD CONSTRAINT "schedules_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."schedules" ADD CONSTRAINT "schedules_teatcherOne_fkey" FOREIGN KEY ("teatcherOne") REFERENCES "public"."users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "schedules" ADD CONSTRAINT "schedules_teacherOne_fkey" FOREIGN KEY ("teacherOne") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."schedules" ADD CONSTRAINT "schedules_teatcherTwo_fkey" FOREIGN KEY ("teatcherTwo") REFERENCES "public"."users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "schedules" ADD CONSTRAINT "schedules_teacherTwo_fkey" FOREIGN KEY ("teacherTwo") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Document" ADD CONSTRAINT "Document_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "public"."users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Document" ADD CONSTRAINT "Document_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."classRooms" ADD CONSTRAINT "classRooms_scheduleId_fkey" FOREIGN KEY ("scheduleId") REFERENCES "public"."schedules"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "classRooms" ADD CONSTRAINT "classRooms_scheduleId_fkey" FOREIGN KEY ("scheduleId") REFERENCES "schedules"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."classRooms" ADD CONSTRAINT "classRooms_kidId_fkey" FOREIGN KEY ("kidId") REFERENCES "public"."kids"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "classRooms" ADD CONSTRAINT "classRooms_kidId_fkey" FOREIGN KEY ("kidId") REFERENCES "kids"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."impediments" ADD CONSTRAINT "impediments_requestId_fkey" FOREIGN KEY ("requestId") REFERENCES "public"."users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "impediments" ADD CONSTRAINT "impediments_requestId_fkey" FOREIGN KEY ("requestId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."impediments" ADD CONSTRAINT "impediments_acceptId_fkey" FOREIGN KEY ("acceptId") REFERENCES "public"."users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "impediments" ADD CONSTRAINT "impediments_acceptId_fkey" FOREIGN KEY ("acceptId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."impediments" ADD CONSTRAINT "impediments_scheduleId_fkey" FOREIGN KEY ("scheduleId") REFERENCES "public"."schedules"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "impediments" ADD CONSTRAINT "impediments_scheduleId_fkey" FOREIGN KEY ("scheduleId") REFERENCES "schedules"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."posts" ADD CONSTRAINT "posts_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "posts" ADD CONSTRAINT "posts_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -3,3 +3,4 @@ tmp
 .env
 public
 dist
+/generated/prisma

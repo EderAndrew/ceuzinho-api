@@ -1,18 +1,18 @@
 import express, { ErrorRequestHandler, Request, Response } from "express"
 import cors from "cors"
 import helmet from "helmet"
-import { PrismaClient } from "@prisma/client"
 import routes from "./routes"
 import cookieParser from "cookie-parser"
 
 const server = express()
-const prisma = new PrismaClient()
 
 server.use(cors(
     {
+        origin: "*",
         credentials: true
     }
 ))
+
 server.use(helmet())
 server.use(cookieParser())
 server.use(express.json())
@@ -30,19 +30,6 @@ const errorHandler:ErrorRequestHandler = (err, req, res, next) => {
 }
 
 server.use(errorHandler)
-
-process.on('SIGINT', async () => {
-    await prisma.$disconnect()
-    console.log('Conexão Prisma fechada (SIGINT)');
-    process.exit(0);
-})
-
-process.on('SIGTERM', async () => {
-    await prisma.$disconnect();
-    console.log('Conexão com Prisma fechada devido ao SIGTERM.');
-    process.exit(0);
-});
-
 
 server.listen(process.env.PORT || 3000, () => {
     console.log(`Server online on port: ${process.env.PORT || 3000}`)

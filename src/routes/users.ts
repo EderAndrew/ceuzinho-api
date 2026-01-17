@@ -7,6 +7,7 @@ const router = Router()
 
 router.post("/signin", controller.signIn)
 router.post("/signup", verifyJWT, controller.signUp)
+router.post("/refresh", controller.refreshToken)
 router.get("/me", verifyJWT, controller.me)
 router.get("/all", verifyJWT, controller.allUsers)
 router.get("/teachers", verifyJWT, controller.allTeachers)
