@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import { createKidsDTO } from "./dto/createKids.dto";
 
-const prisma = new PrismaClient()
 
 /* export const createKid = async(payload: createKidsDTO) => {
     const kid = await prisma.kid.create({

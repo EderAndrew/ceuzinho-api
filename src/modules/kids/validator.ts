@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { Room } from '@prisma/client';
+import { Room } from '../../generated/prisma/enums';
+
 
 export const createKidSchema = z.object({
   id: z.number().optional(),

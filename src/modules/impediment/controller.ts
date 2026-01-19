@@ -25,17 +25,17 @@ export const createImpediment: RequestHandler = async(req, res): Promise<any> =>
 
         if(!verifySchedule) return res.status(404).json({ message: "Não foi identificado nenhum agendamento." })
         
-        const verifyUser = await findUserByIdService(parseInt(userId))
+        const verifyUser = await findUserByIdService(parseInt(userId as string))
     
         if(!verifyUser) return res.status(404).json({ message: "Não foi identificado nenhum usuário" })
 
-        const checkScheduleByUser = await findScheduleByUserIdService(userId)
+        const checkScheduleByUser = await findScheduleByUserIdService(userId as string)
 
         if(!checkScheduleByUser) return res.status(404).json({ message: "Esse usuário não esta nesse agendamento." })
 
         const payload = {
             info: safeData.data.info,
-            requestId: parseInt(userId),
+            requestId: parseInt(userId as string),
             scheduleId: safeData.data.scheduleId
         } as CreateImpedimentDTO
 
@@ -57,7 +57,7 @@ export const updateImpediment: RequestHandler = async(req, res):Promise<any> => 
         let userId = req.body.userId
 
         //verificar se o impedimento existe
-        const hasImpediment = await selectImpedimentService(parseInt(id))
+        const hasImpediment = await selectImpedimentService(parseInt(id as string))
 
         if(!hasImpediment) return res.status(404).json({ message: "Não existe nenhum impedimento com essa ID" })
         
@@ -81,7 +81,7 @@ export const updateImpediment: RequestHandler = async(req, res):Promise<any> => 
         
         if(schedule?.teacherOne === userId || schedule?.teacherTwo === userId) return res.status(200).json({ message: "Professor já esta nessa agendamento." })
         
-        const accept = await updateImpedimentService(parseInt(id), userId)
+        const accept = await updateImpedimentService(parseInt(id as string), userId)
 
         if(!accept) return res.status(404).json({ message: "Não foi possível salvar as informações" })
         const firstOrSecond = schedule?.teacherOne === hasImpediment.requestId ? true : false
@@ -101,7 +101,7 @@ export const selectImpediment: RequestHandler = async(req, res): Promise<any> =>
     try{
         const { id } = req.params
 
-        const hasImpediment = await selectImpedimentService(parseInt(id))
+        const hasImpediment = await selectImpedimentService(parseInt(id as string))
 
         if(!hasImpediment) return res.status(404).json({ message: "Não existe nenhum impedimento com essa ID" })
         
@@ -125,11 +125,11 @@ export const removeImpediment: RequestHandler = async(req, res): Promise<any> =>
     try{
         const {id} = req.params
 
-        const hasImpediment = await selectImpedimentService(parseInt(id))
+        const hasImpediment = await selectImpedimentService(parseInt(id as string))
 
         if(!hasImpediment) return res.status(404).json({ message: "Não existe nenhum impedimento com essa ID" })
         
-        await cancelImpedimentService(parseInt(id))
+        await cancelImpedimentService(parseInt(id as string))
 
         return res.status(200).json({ message: "Impedimento cancelado com sucesso." })
 

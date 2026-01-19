@@ -14,7 +14,6 @@ import {
   updateUserService 
 } from "./service";
 import { createJWT, createRefreshJWT, decodeJwt } from "../../middlewares/jwt";
-import { Role, Sex } from "@prisma/client";
 import {  generateReadablePassword, getBackgroundColorBySex } from "./utils/userUtils";
 import { sendEmail } from "../recovery/utils/recoveryUtils";
 import { ExtendFileRequest } from "../../lib/types/extendRequest";
@@ -27,6 +26,7 @@ import { UpdateImageDTO } from "./dto/updateImage.dto";
 import z from "zod";
 import { UpdateUserDTO } from "./dto/updateuser.dto";
 import { USER_MESSAGES, PASSWORD_CONFIG } from "./utils/constants";
+import { Role, Sex } from "../../generated/prisma/enums";
 
 sharp.cache(false)
 
@@ -41,11 +41,11 @@ export const signIn: RequestHandler = async (req, res): Promise<any> => {
     const user = await findUserByEmailService(email)
 
     //Verificar se o usuário encontrado esta ativo
-    if(!user || !user?.status) return res.status(401).json({ message: "Credenciais incorretas." })
+    if(!user || !user?.status) return res.status(401).json({ message: "Credenciais incorretas.", token: null })
 
     const isPasswordValid = await compare(password, user.password);
 
-    if(!isPasswordValid) return res.status(401).json({ message: "Credenciais incorretas." })
+    if(!isPasswordValid) return res.status(401).json({ message: "Credenciais incorretas.", token: null })
   
     const accessToken = createJWT(String(user.id))
     const refreshToken = createRefreshJWT(String(user.id))
@@ -60,11 +60,11 @@ export const signIn: RequestHandler = async (req, res): Promise<any> => {
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
 
-    return res.status(200).json({ message: "Acesso permitido." })
+    return res.status(200).json({ message: "Acesso permitido.", token: accessToken })
 
   }catch(error){
     return res.status(500).json({ message: "Erro interno." })
@@ -87,7 +87,7 @@ export const refreshToken: RequestHandler = async (req, res): Promise<any> => {
     const user = await findUserByIdService(Number(payload.sub))
 
     if(!user || !user.status){
-      return res.status(401).json({ message: "Não autenticado." })
+      return res.status(401).json({ message: "Não autenticado.", token: null })
     }
 
     const newAccessToken = createJWT(payload.sub)
@@ -95,11 +95,11 @@ export const refreshToken: RequestHandler = async (req, res): Promise<any> => {
     res.cookie("access_token", newAccessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 15 * 60 * 1000,
     })
 
-    return res.json({ message: "Token renovado" })
+    return res.json({ message: "Token renovado", token: newAccessToken })
 
   }catch(error){
     return res.status(401).json({ message: "Refresh token inválido" })
@@ -196,8 +196,24 @@ export const me: RequestHandler = async (req, res): Promise<any> => {
   if(!user){
     return res.status(404).json({ message: "Usuário não encontrado" })
   }
+  const payload = {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    photo: user.photo,
+    photoUrl: user.photoUrl,
+    phone: user.phone,
+    sex: user.sex,
+    status: user.status,
+    bgColor: user.bgColor,
+    firstAccess: user.firstAccess,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt
+  }
 
-  return res.status(200).json({ user })
+
+  return res.status(200).json({ user: payload })
 }
 
 export const allUsers: RequestHandler = async (req, res): Promise<any> => {

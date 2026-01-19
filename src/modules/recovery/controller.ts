@@ -159,8 +159,8 @@ export const verifyOTC: RequestHandler = async(req, res): Promise<any> => {
     }
 
     // 5. Geração do token JWT
-    const token = createJWT({ id: recovery.id });
-    console.log("TOKEN: ", token)
+    const token = createJWT(String(recovery.id));
+    
     return res.status(200).json({ 
       message: RECOVERY_MESSAGES.OTC_VERIFIED_SUCCESS, 
       tokenOTC: token 

@@ -1,4 +1,5 @@
-import { Role, Sex } from "@prisma/client";
+import { Role, Sex } from "../../../generated/prisma/enums";
+
 
 export interface CreateUserDTO {
   name: string;

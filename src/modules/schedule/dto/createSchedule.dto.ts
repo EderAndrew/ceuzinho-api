@@ -1,4 +1,4 @@
-import { Room } from "@prisma/client"
+import { Room } from "../../../generated/prisma/enums";
 
 export interface CreateScheduleDTO {
     id?: number,

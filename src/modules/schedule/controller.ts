@@ -155,14 +155,14 @@ export const updateSchedule: RequestHandler = async(req: ExtendFileRequest, res)
 
         if(!safeData.success) return res.status(400).json({ error: z.treeifyError(safeData.error).errors[0] })
         //verificar se a schedule existe
-        const hasSchedule = await findScheduleByIdService(parseInt(id))
+        const hasSchedule = await findScheduleByIdService(parseInt(id as string))
 
         if(!hasSchedule) return res.status(404).json({ message: "Agendamento não identificado." })
         
         let files = req.files as {[fieldname: string]: formidable.File[]}
         
         if(!files.document) {
-            const schedule = await updateScheduleService(parseInt(id), ESchedule)
+            const schedule = await updateScheduleService(parseInt(id as string), ESchedule)
 
             if(!schedule) return res.status(500).json({ message: "Erro ao atualziar agendamento." })
 
@@ -192,7 +192,7 @@ export const updateSchedule: RequestHandler = async(req: ExtendFileRequest, res)
             await fs.unlink(files.document[0].filepath)
             await fs.unlink(hasSchedule.documentUrl as string)
 
-            const schedule = await updateScheduleService(parseInt(id), formData)
+            const schedule = await updateScheduleService(parseInt(id as string), formData)
 
             if(!schedule) return res.status(500).json({ message: "Erro ao atualizar agendamento." })
 
@@ -221,7 +221,7 @@ export const updateSchedule: RequestHandler = async(req: ExtendFileRequest, res)
         await fs.unlink(hasSchedule.documentUrl as string)
         await fs.unlink(files.document[0].filepath)
 
-        const schedule = await updateScheduleService(parseInt(id), formData)
+        const schedule = await updateScheduleService(parseInt(id as string), formData)
 
         if(!schedule) return res.status(500).json({ message: "Erro ao criar agendamento." })
 
@@ -238,11 +238,11 @@ export const deleteSchedule: RequestHandler = async(req, res): Promise<any> => {
     try{
         let { id } = req.params
 
-        const verifySchedule = await findScheduleByIdService(parseInt(id))
+        const verifySchedule = await findScheduleByIdService(parseInt(id as string))
 
         if(!verifySchedule) return res.status(404).json({ message: "Não existe Agendamento." })
         
-        await deleteScheduleService(parseInt(id))
+        await deleteScheduleService(parseInt(id as string))
 
         return res.status(200).json({ message: "Agendamento excluido com sucesso." })
     }catch(error){
@@ -254,7 +254,7 @@ export const deleteSchedule: RequestHandler = async(req, res): Promise<any> => {
 export const allSchedulesByDate: RequestHandler = async(req, res): Promise<any> => {
     try{
         let { date } = req.params
-        const schedules = await findSchedulesByDateService(date)
+        const schedules = await findSchedulesByDateService(date as string)
 
         if(!schedules) return res.status(404).json({ message: "Agendamentos nao encontrados." , data: [] })
             
@@ -268,7 +268,7 @@ export const allSchedulesByDate: RequestHandler = async(req, res): Promise<any> 
 export const allSchedulesByMonth: RequestHandler = async(req, res): Promise<any> => {
     try{
         let { userId, month } = req.params
-        const schedules = await findScheduleByMonthService(month)
+        const schedules = await findScheduleByMonthService(month as string)
 
         if(!schedules) return res.status(404).json({ message: "Agendamentos nao encontrados." , data: [] })
 
@@ -287,7 +287,7 @@ export const scheduleById: RequestHandler = async(req, res): Promise<any> => {
     try{
         let { id } = req.params
 
-        const schedule = await findScheduleByIdService(parseInt(id))
+        const schedule = await findScheduleByIdService(parseInt(id as string))
 
         if(!schedule) return res.status(404).json({ message: "Agendamento nao encontrados." , data: [] })
         
@@ -301,7 +301,7 @@ export const scheduleByUserId: RequestHandler = async(req, res):Promise<any> => 
     try{
         let { id } = req.params
 
-        const schedule = await findScheduleByUserIdService(id)
+        const schedule = await findScheduleByUserIdService(id as string)
 
         if(!schedule) return res.status(404).json({ message: "Agendamento nao encontrados." , data: [] })
         
@@ -320,7 +320,7 @@ export const changeScheduleTeacherId: RequestHandler = async(req, res):Promise<a
             return res.status(400).json({ error: z.treeifyError(safeData.error).errors[0] });
         }
 
-        const schedule = await findScheduleByIdService(parseInt(scheduleId))
+        const schedule = await findScheduleByIdService(parseInt(scheduleId as string))
 
         if(!schedule) return res.status(404).json({ message: "Agendamento nao encontrado."})
 
@@ -338,14 +338,14 @@ export const changeScheduleTeacherId: RequestHandler = async(req, res):Promise<a
         
         if(oldTeacher.id === schedule.teacherOne){
             one = true
-            const first = await changeTeacherService(parseInt(scheduleId), newTeacher.id, one)
+            const first = await changeTeacherService(parseInt(scheduleId as string), newTeacher.id, one)
 
             if(!first) return res.status(400).json({ message: "Não foi possível realizar a troca de professores." })
             
             return res.status(200).json({ message: "Troca de professor efetuada com sucesso" })
         }     
 
-        const first = await changeTeacherService(parseInt(scheduleId), newTeacher.id, one)
+        const first = await changeTeacherService(parseInt(scheduleId as string), newTeacher.id, one)
 
         if(!first) return res.status(400).json({ message: "Não foi possível realizar a troca de professores." })
         
