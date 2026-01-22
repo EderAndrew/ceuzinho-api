@@ -52,15 +52,17 @@ export const signIn: RequestHandler = async (req, res): Promise<any> => {
 
     res.cookie("access_token", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: true,
+      sameSite: process.env.NODE_ENV === "production" ? "lax" : "none",
+      path: "/",
       maxAge: 15 * 60 * 1000,
     })
 
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: true,
+      sameSite: process.env.NODE_ENV === "production" ? "lax" : "none",
+      path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
 
@@ -94,8 +96,9 @@ export const refreshToken: RequestHandler = async (req, res): Promise<any> => {
 
     res.cookie("access_token", newAccessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: true,
+      sameSite: process.env.NODE_ENV === "production" ? "lax" : "none",
+      path: "/",
       maxAge: 15 * 60 * 1000,
     })
 
@@ -110,6 +113,7 @@ export const signUp: RequestHandler = async (req, res): Promise<any> => {
   try {
     // 1. Validação dos dados de entrada
     const safeData = createUserSchema.safeParse(req.body);
+    console.log(safeData)
     if (!safeData.success) {
       return res.status(400).json({ 
         error: z.treeifyError(safeData.error) 

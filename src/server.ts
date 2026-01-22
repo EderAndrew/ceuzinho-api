@@ -7,14 +7,19 @@ import { prisma } from "./lib/prisma"
 
 const server = express()
 
-server.use(cors(
-    {
-        origin: process.env.FRONTEND_URL,
-        credentials: true
-    }
-))
+const corsOptions = {
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Cookie"]
+}
+server.use(cors(corsOptions))
+server.options(/.*/, cors(corsOptions))
 
-server.use(helmet())
+server.use(helmet({
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" }
+}))
 server.use(cookieParser())
 server.use(express.json())
 server.use(express.static('public'));
@@ -43,7 +48,6 @@ process.on('SIGTERM', async () => {
     console.log('Conexão com Prisma fechada devido ao SIGTERM.');
     process.exit(0);
 });
-
 
 server.listen(process.env.PORT || 3000, () => {
     console.log(`Server online on port: ${process.env.PORT || 3000}`)
